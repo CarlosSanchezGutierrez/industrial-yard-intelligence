@@ -43,6 +43,22 @@ function getSourceLabel(source: SmokeSeedSource): string {
   return "Fallback local";
 }
 
+function getConflictLabel(event: EdgeSyncEvent): string {
+  if (event.conflictType !== undefined && event.conflictType.length > 0) {
+    return event.conflictType;
+  }
+
+  return "sync_conflict";
+}
+
+function getConflictDescription(event: EdgeSyncEvent): string {
+  if (event.message !== undefined && event.message.length > 0) {
+    return event.message;
+  }
+
+  return "El edge detectó que el evento no puede aplicarse automáticamente y requiere revisión.";
+}
+
 function downloadJsonFile(fileName: string, value: unknown): void {
   const blob = new Blob([`${JSON.stringify(value, null, 2)}\n`], {
     type: "application/json"
@@ -163,6 +179,7 @@ function App() {
   const movements = seed.movements;
   const recommendations = seed.recommendations;
   const scenarios = seed.scenarios;
+  const conflictEvents = edgeEvents.filter((event) => event.status === "conflict");
 
   return (
     <main className="app-shell" style={applyThemeVariables()}>
@@ -373,8 +390,8 @@ function App() {
             <strong>{edgeSummary?.accepted ?? 0}</strong>
           </article>
           <article>
-            <span>Duplicados</span>
-            <strong>{edgeSummary?.duplicates ?? 0}</strong>
+            <span>Conflictos</span>
+            <strong>{edgeSummary?.conflicts ?? 0}</strong>
           </article>
         </div>
 
@@ -398,6 +415,41 @@ function App() {
             ))
           )}
         </div>
+      </section>
+
+      <section className="conflict-review-panel">
+        <div className="panel-header">
+          <div>
+            <p className="eyebrow">Conflict Review Queue</p>
+            <h2>Eventos que requieren revisión de supervisor</h2>
+          </div>
+          <span className="conflict-count">{conflictEvents.length}</span>
+        </div>
+
+        {conflictEvents.length === 0 ? (
+          <div className="empty-state">
+            Sin conflictos pendientes. Envía varios sync batches contra el mismo agregado para simular versión stale.
+          </div>
+        ) : (
+          <div className="conflict-list">
+            {conflictEvents.slice(0, 6).map((event) => (
+              <article className="conflict-card" key={`${event.eventId}-${event.receivedAtEdge}`}>
+                <div className="conflict-card-main">
+                  <span className="conflict-type">{getConflictLabel(event)}</span>
+                  <strong>{event.eventType}</strong>
+                  <p>{getConflictDescription(event)}</p>
+                  <small>
+                    {event.aggregateType} · {event.aggregateId} · {event.deviceId}
+                  </small>
+                </div>
+                <div className="conflict-card-side">
+                  <span>{event.validationState}</span>
+                  <strong>{event.receivedAtEdge}</strong>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="intel-grid">
