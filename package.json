@@ -10,11 +10,11 @@
     "pnpm": ">=10.0.0"
   },
   "scripts": {
-    "typecheck": "pnpm --filter @iyi/kernel build && pnpm -r --if-present typecheck",
+    "typecheck": "pnpm -r --if-present build && pnpm -r --if-present typecheck",
     "lint": "pnpm -r --if-present lint",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "test": "pnpm --filter @iyi/kernel build && pnpm -r --if-present test",
+    "test": "pnpm -r --if-present build && pnpm -r --if-present test",
     "build": "pnpm -r --if-present build"
   },
   "keywords": [

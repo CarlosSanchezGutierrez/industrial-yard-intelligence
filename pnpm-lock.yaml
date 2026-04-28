@@ -41,6 +41,15 @@ importers:
         specifier: workspace:*
         version: link:../kernel
 
+  packages/sync-core:
+    dependencies:
+      '@iyi/kernel':
+        specifier: workspace:*
+        version: link:../kernel
+      '@iyi/sync-protocol':
+        specifier: workspace:*
+        version: link:../sync-protocol
+
   packages/sync-protocol:
     dependencies:
       '@iyi/kernel':
