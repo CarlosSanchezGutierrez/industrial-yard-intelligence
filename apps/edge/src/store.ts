@@ -61,6 +61,7 @@ export interface EdgeStoreFile {
   readonly exportedAt?: string;
   readonly batches: StoredSyncBatch[];
   readonly events: StoredSyncEvent[];
+  readonly aggregateVersions: Record<string, number>;
 }
 
 export interface EdgeStoreImportResult {
@@ -75,12 +76,29 @@ function createEmptyStore(): EdgeStoreFile {
   return {
     version: 1,
     batches: [],
-    events: []
+    events: [],
+    aggregateVersions: {}
   };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
+}
+
+function normalizeAggregateVersions(value: unknown): Record<string, number> {
+  if (!isRecord(value)) {
+    return {};
+  }
+
+  const aggregateVersions: Record<string, number> = {};
+
+  for (const [key, rawVersion] of Object.entries(value)) {
+    if (typeof rawVersion === "number" && Number.isInteger(rawVersion) && rawVersion >= 0) {
+      aggregateVersions[key] = rawVersion;
+    }
+  }
+
+  return aggregateVersions;
 }
 
 function normalizeStoredBatch(value: unknown): StoredSyncBatch | null {
@@ -215,8 +233,13 @@ function normalizeStoreFile(value: unknown): EdgeStoreFile | null {
     version: 1,
     ...(typeof value["exportedAt"] === "string" ? { exportedAt: value["exportedAt"] } : {}),
     batches,
-    events
+    events,
+    aggregateVersions: normalizeAggregateVersions(value["aggregateVersions"])
   };
+}
+
+function getAggregateVersionKey(event: SyncEventEnvelope): string {
+  return `${event.aggregateType}:${String(event.aggregateId)}`;
 }
 
 export function getEdgeDataDirectory(): string {
@@ -312,6 +335,23 @@ function toStoredSyncBatch(batch: SyncBatch, result: SyncBatchResult): StoredSyn
   };
 }
 
+function updateAggregateVersions(store: EdgeStoreFile, batch: SyncBatch, result: SyncBatchResult): void {
+  for (const event of batch.events) {
+    const eventResult = result.results.find(
+      (candidate) => String(candidate.eventId) === String(event.eventId)
+    );
+
+    if (eventResult?.status !== "accepted") {
+      continue;
+    }
+
+    const key = getAggregateVersionKey(event);
+    const currentVersion = store.aggregateVersions[key] ?? 0;
+
+    store.aggregateVersions[key] = currentVersion + 1;
+  }
+}
+
 export function recordSyncBatch(batch: SyncBatch, result: SyncBatchResult): void {
   const store = loadStore();
 
@@ -329,6 +369,7 @@ export function recordSyncBatch(batch: SyncBatch, result: SyncBatchResult): void
     store.events.push(toStoredSyncEvent(event, eventResult, result.receivedAtEdge));
   }
 
+  updateAggregateVersions(store, batch, result);
   persistStore(store);
 }
 
@@ -356,6 +397,12 @@ export function getKnownSyncIdempotencyKeys(): ReadonlySet<string> {
   return new Set(store.events.map((event) => event.idempotencyKey));
 }
 
+export function getAggregateVersions(): ReadonlyMap<string, number> {
+  const store = loadStore();
+
+  return new Map(Object.entries(store.aggregateVersions));
+}
+
 export function getSyncSummary(): EdgeSyncSummary {
   const store = loadStore();
   const events = store.events;
@@ -380,7 +427,8 @@ export function exportEdgeStore(now: string): EdgeStoreFile {
     version: 1,
     exportedAt: now,
     batches: [...store.batches],
-    events: [...store.events]
+    events: [...store.events],
+    aggregateVersions: { ...store.aggregateVersions }
   };
 }
 
@@ -395,7 +443,8 @@ export function importEdgeStore(value: unknown, replaceExistingStore = true): Ed
     cachedStore = {
       version: 1,
       batches: [...imported.batches],
-      events: [...imported.events]
+      events: [...imported.events],
+      aggregateVersions: { ...imported.aggregateVersions }
     };
 
     persistStore(cachedStore);
@@ -425,6 +474,11 @@ export function importEdgeStore(value: unknown, replaceExistingStore = true): Ed
       existingEventIds.add(event.eventId);
       existingIdempotencyKeys.add(event.idempotencyKey);
     }
+  }
+
+  for (const [key, version] of Object.entries(imported.aggregateVersions)) {
+    const currentVersion = store.aggregateVersions[key] ?? 0;
+    store.aggregateVersions[key] = Math.max(currentVersion, version);
   }
 
   persistStore(store);

@@ -10,6 +10,7 @@ import { cooperSmokeSeed } from "@iyi/seed-data";
 import { reconcileSyncBatch } from "@iyi/sync-core";
 import {
   exportEdgeStore,
+  getAggregateVersions,
   getEdgeStoreFilePath,
   getKnownSyncEventIds,
   getKnownSyncIdempotencyKeys,
@@ -146,7 +147,7 @@ function handleSyncBatch(request: EdgeRouteRequest): EdgeRouteResponse {
       expectedTenantId: syncRequest.context.tenantId,
       knownEventIds: getKnownSyncEventIds(),
       knownIdempotencyKeys: getKnownSyncIdempotencyKeys(),
-      aggregateVersions: new Map()
+      aggregateVersions: getAggregateVersions()
     }
   });
 

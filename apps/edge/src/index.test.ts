@@ -12,7 +12,11 @@ import {
 } from "@iyi/kernel";
 import type { SyncSubmitRequest } from "@iyi/api-contracts";
 
-function createSyncRequest(eventSuffix = "001", idempotencySuffix = eventSuffix): SyncSubmitRequest {
+function createSyncRequest(
+  eventSuffix = "001",
+  idempotencySuffix = eventSuffix,
+  expectedAggregateVersion = 0
+): SyncSubmitRequest {
   const tenantId = asTenantId("tenant_cooper_tsmith");
   const terminalId = asTerminalId("terminal_altamira");
   const deviceId = asDeviceId("device_android_001");
@@ -51,7 +55,8 @@ function createSyncRequest(eventSuffix = "001", idempotencySuffix = eventSuffix)
           validationState: "operational",
           confidenceLevel: "approximate",
           payload: {
-            name: "Simulated stockpile"
+            name: "Simulated stockpile",
+            expectedAggregateVersion
           }
         }
       ]
@@ -59,13 +64,17 @@ function createSyncRequest(eventSuffix = "001", idempotencySuffix = eventSuffix)
   };
 }
 
-function submitSyncEvent(eventSuffix = "001", idempotencySuffix = eventSuffix): void {
+function submitSyncEvent(
+  eventSuffix = "001",
+  idempotencySuffix = eventSuffix,
+  expectedAggregateVersion = 0
+): void {
   routeEdgeRequest({
     method: "POST",
     pathname: "/sync/batches",
     requestId: `request_submit_${eventSuffix}`,
     now: "2026-04-28T12:00:01.000Z",
-    body: createSyncRequest(eventSuffix, idempotencySuffix)
+    body: createSyncRequest(eventSuffix, idempotencySuffix, expectedAggregateVersion)
   });
 }
 
@@ -105,7 +114,7 @@ describe("@iyi/edge", () => {
     expect(body.data.routes.some((route) => route.path === "/sync/import")).toBe(true);
   });
 
-  it("reconciles, stores sync batches, and writes JSON file", () => {
+  it("reconciles, stores sync batches, writes JSON file, and exports aggregate versions", () => {
     const response = routeEdgeRequest({
       method: "POST",
       pathname: "/sync/batches",
@@ -129,6 +138,23 @@ describe("@iyi/edge", () => {
     expect(responseBody.ok).toBe(true);
     expect(responseBody.data.result.results[0]?.status).toBe("accepted");
     expect(existsSync(getEdgeStoreFilePath())).toBe(true);
+
+    const exportResponse = routeEdgeRequest({
+      method: "GET",
+      pathname: "/sync/export",
+      requestId: "request_export",
+      now: "2026-04-28T12:00:03.000Z"
+    });
+
+    const exportBody = JSON.parse(exportResponse.body) as {
+      data: {
+        store: {
+          aggregateVersions: Record<string, number>;
+        };
+      };
+    };
+
+    expect(exportBody.data.store.aggregateVersions["stockpile:stockpile_001"]).toBe(1);
   });
 
   it("detects duplicate sync events by event id", () => {
@@ -183,6 +209,36 @@ describe("@iyi/edge", () => {
     expect(body.data.result.results[0]?.status).toBe("duplicate");
   });
 
+  it("detects stale aggregate version conflicts", () => {
+    submitSyncEvent("001", "001", 0);
+
+    const conflictResponse = routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/batches",
+      requestId: "request_conflict",
+      now: "2026-04-28T12:00:02.000Z",
+      body: createSyncRequest("002", "002", 0)
+    });
+
+    const body = JSON.parse(conflictResponse.body) as {
+      ok: boolean;
+      data: {
+        result: {
+          results: readonly {
+            status: string;
+            conflict?: {
+              conflictType: string;
+            };
+          }[];
+        };
+      };
+    };
+
+    expect(body.ok).toBe(true);
+    expect(body.data.result.results[0]?.status).toBe("conflict");
+    expect(body.data.result.results[0]?.conflict?.conflictType).toBe("status_conflict");
+  });
+
   it("exports sync store", () => {
     submitSyncEvent("001");
 
@@ -203,6 +259,7 @@ describe("@iyi/edge", () => {
           events: readonly {
             eventId: string;
           }[];
+          aggregateVersions: Record<string, number>;
         };
       };
     };
@@ -213,6 +270,7 @@ describe("@iyi/edge", () => {
     expect(body.data.store.exportedAt).toBe("2026-04-28T12:00:03.000Z");
     expect(body.data.store.batches).toHaveLength(1);
     expect(body.data.store.events[0]?.eventId).toBe("event_001");
+    expect(body.data.store.aggregateVersions["stockpile:stockpile_001"]).toBe(1);
   });
 
   it("imports sync store and replaces current store", () => {
