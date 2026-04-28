@@ -1,11 +1,17 @@
 import { describe, expect, it } from "vitest";
 import {
+  auditLogTable,
   createMigrationDescriptor,
   createMigrationId,
   createTableConvention,
+  evidenceItemsTable,
+  getDrizzleTableIdentifiers,
   getOperationalRequiredColumns,
   initialTableConventions,
   qualifyTableName,
+  stockpilesTable,
+  syncEventsTable,
+  tenantsTable,
   validateSqlIdentifier,
   validateTableConvention
 } from "./index.js";
@@ -108,5 +114,25 @@ describe("@iyi/db", () => {
     const results = initialTableConventions.map(validateTableConvention);
 
     expect(results.every((result) => result.ok)).toBe(true);
+  });
+
+  it("exports Drizzle table objects", () => {
+    expect(tenantsTable).toBeTruthy();
+    expect(stockpilesTable).toBeTruthy();
+    expect(syncEventsTable).toBeTruthy();
+    expect(evidenceItemsTable).toBeTruthy();
+    expect(auditLogTable).toBeTruthy();
+  });
+
+  it("registers expected Drizzle table identifiers", () => {
+    const identifiers = getDrizzleTableIdentifiers();
+
+    expect(identifiers).toContain("core.tenants");
+    expect(identifiers).toContain("spatial.yards");
+    expect(identifiers).toContain("operations.stockpiles");
+    expect(identifiers).toContain("sync.sync_events");
+    expect(identifiers).toContain("media.evidence_items");
+    expect(identifiers).toContain("audit.audit_log");
+    expect(identifiers).toContain("analytics.kpi_snapshots");
   });
 });
