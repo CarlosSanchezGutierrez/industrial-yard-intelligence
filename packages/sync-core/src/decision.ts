@@ -1,8 +1,4 @@
-import type {
-  ConflictType,
-  SyncResultStatus,
-  TenantId
-} from "@iyi/kernel";
+import type { ConflictType, SyncResultStatus, TenantId } from "@iyi/kernel";
 import {
   validateSyncEventEnvelope,
   type SyncConflict,
@@ -17,7 +13,9 @@ export interface SyncCoreContext {
   readonly aggregateVersions?: ReadonlyMap<string, number>;
 }
 
-export interface SyncReconciliationInput<TPayload = Record<string, unknown>> {
+export interface SyncReconciliationInput<
+  TPayload extends Record<string, unknown> = Record<string, unknown>
+> {
   readonly event: SyncEventEnvelope<TPayload>;
   readonly context: SyncCoreContext;
   readonly acceptedAtEdge: string;
@@ -29,86 +27,45 @@ function createConflict(
   incomingEventId?: SyncEventEnvelope["eventId"],
   affectedAggregateId?: string
 ): SyncConflict {
-  const conflict: {
-    conflictType: ConflictType;
-    message: string;
-    incomingEventId?: SyncEventEnvelope["eventId"];
-    affectedAggregateId?: string;
-  } = {
+  return {
     conflictType,
-    message
+    message,
+    ...(incomingEventId !== undefined ? { incomingEventId } : {}),
+    ...(affectedAggregateId !== undefined ? { affectedAggregateId } : {})
   };
-
-  if (incomingEventId !== undefined) {
-    conflict.incomingEventId = incomingEventId;
-  }
-
-  if (affectedAggregateId !== undefined) {
-    conflict.affectedAggregateId = affectedAggregateId;
-  }
-
-  return conflict;
 }
 
-function createResult<TPayload>(
+function createResult<TPayload extends Record<string, unknown> = Record<string, unknown>>(
   event: SyncEventEnvelope<TPayload>,
   status: SyncResultStatus,
   acceptedAtEdge?: string,
   message?: string,
   conflict?: SyncConflict
 ): SyncEventResult {
-  const result: {
-    eventId: SyncEventEnvelope<TPayload>["eventId"];
-    tenantId: SyncEventEnvelope<TPayload>["tenantId"];
-    terminalId?: SyncEventEnvelope<TPayload>["terminalId"];
-    status: SyncResultStatus;
-    message?: string;
-    conflict?: SyncConflict;
-    acceptedAtEdge?: string;
-  } = {
+  return {
     eventId: event.eventId,
     tenantId: event.tenantId,
-    status
+    status,
+    ...(event.terminalId !== undefined ? { terminalId: event.terminalId } : {}),
+    ...(acceptedAtEdge !== undefined ? { acceptedAtEdge } : {}),
+    ...(message !== undefined ? { message } : {}),
+    ...(conflict !== undefined ? { conflict } : {})
   };
-
-  if (event.terminalId !== undefined) {
-    result.terminalId = event.terminalId;
-  }
-
-  if (acceptedAtEdge !== undefined) {
-    result.acceptedAtEdge = acceptedAtEdge;
-  }
-
-  if (message !== undefined) {
-    result.message = message;
-  }
-
-  if (conflict !== undefined) {
-    result.conflict = conflict;
-  }
-
-  return result;
 }
 
 function aggregateVersionKey(event: SyncEventEnvelope): string {
   return `${event.aggregateType}:${event.aggregateId}`;
 }
 
-function getExpectedAggregateVersion(payload: unknown): number | undefined {
-  if (typeof payload !== "object" || payload === null) {
-    return undefined;
-  }
-
-  if (!("expectedAggregateVersion" in payload)) {
-    return undefined;
-  }
-
-  const value = (payload as { expectedAggregateVersion?: unknown }).expectedAggregateVersion;
+function getExpectedAggregateVersion(payload: Record<string, unknown>): number | undefined {
+  const value = payload["expectedAggregateVersion"];
 
   return typeof value === "number" && Number.isInteger(value) ? value : undefined;
 }
 
-export function determineSyncEventStatus<TPayload>(
+export function determineSyncEventStatus<
+  TPayload extends Record<string, unknown> = Record<string, unknown>
+>(
   event: SyncEventEnvelope<TPayload>,
   context: SyncCoreContext
 ): {
@@ -170,9 +127,9 @@ export function determineSyncEventStatus<TPayload>(
   };
 }
 
-export function reconcileSyncEvent<TPayload>(
-  input: SyncReconciliationInput<TPayload>
-): SyncEventResult {
+export function reconcileSyncEvent<
+  TPayload extends Record<string, unknown> = Record<string, unknown>
+>(input: SyncReconciliationInput<TPayload>): SyncEventResult {
   const decision = determineSyncEventStatus(input.event, input.context);
 
   return createResult(

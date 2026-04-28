@@ -7,7 +7,9 @@ import {
 } from "@iyi/sync-protocol";
 import { reconcileSyncEvent, type SyncCoreContext } from "./decision.js";
 
-export interface ReconcileSyncBatchInput<TPayload = Record<string, unknown>> {
+export interface ReconcileSyncBatchInput<
+  TPayload extends Record<string, unknown> = Record<string, unknown>
+> {
   readonly batch: SyncBatch<TPayload>;
   readonly context: SyncCoreContext;
   readonly receivedAtEdge: string;
@@ -20,29 +22,18 @@ function createBatchResult(
   results: readonly SyncEventResult[],
   terminalId?: TerminalId
 ): SyncBatchResult {
-  const result: {
-    batchId: string;
-    tenantId: TenantId;
-    terminalId?: TerminalId;
-    receivedAtEdge: string;
-    results: readonly SyncEventResult[];
-  } = {
+  return {
     batchId,
     tenantId,
     receivedAtEdge,
-    results
+    results,
+    ...(terminalId !== undefined ? { terminalId } : {})
   };
-
-  if (terminalId !== undefined) {
-    result.terminalId = terminalId;
-  }
-
-  return result;
 }
 
-export function reconcileSyncBatch<TPayload>(
-  input: ReconcileSyncBatchInput<TPayload>
-): SyncBatchResult {
+export function reconcileSyncBatch<
+  TPayload extends Record<string, unknown> = Record<string, unknown>
+>(input: ReconcileSyncBatchInput<TPayload>): SyncBatchResult {
   const batchValidation = validateSyncBatch(input.batch);
 
   if (!batchValidation.ok) {
