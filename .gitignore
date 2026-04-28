@@ -144,3 +144,6 @@ vite.config.ts.timestamp-*
 
 # Claude local workspace files
 .claude/
+
+# Claude local workspace files
+.claude/

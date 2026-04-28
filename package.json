@@ -1,0 +1,31 @@
+﻿{
+  "name": "industrial-yard-intelligence",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Industrial Yard Intelligence Platform for offline spatial operations, materials, equipment, movements, evidence, and future professional measurement workflows.",
+  "packageManager": "pnpm@10.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "scripts": {
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "pnpm -r --if-present lint",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "test": "pnpm -r --if-present test"
+  },
+  "keywords": [
+    "industrial",
+    "gis",
+    "offline-first",
+    "local-first",
+    "yard-operations",
+    "edge-server",
+    "spatial-operations"
+  ],
+  "author": "Carlos Sanchez Gutierrez",
+  "license": "UNLICENSED",
+  "devDependencies": {}
+}
