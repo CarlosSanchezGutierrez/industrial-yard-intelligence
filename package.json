@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "industrial-yard-intelligence",
   "version": "0.0.0",
   "private": true,
@@ -27,5 +27,10 @@
   ],
   "author": "Carlos Sanchez Gutierrez",
   "license": "UNLICENSED",
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.5"
+  }
 }
