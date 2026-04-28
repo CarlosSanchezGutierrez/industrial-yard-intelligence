@@ -13,8 +13,12 @@ const allowedTransitions: Readonly<Record<ValidationState, readonly ValidationSt
 
 export type ValidationTransitionError = "invalid_validation_transition";
 
+function getAllowedTransitions(from: ValidationState): readonly ValidationState[] {
+  return allowedTransitions[from] ?? [];
+}
+
 export function canTransitionValidationState(from: ValidationState, to: ValidationState): boolean {
-  return allowedTransitions[from].includes(to);
+  return getAllowedTransitions(from).includes(to);
 }
 
 export function transitionValidationState(

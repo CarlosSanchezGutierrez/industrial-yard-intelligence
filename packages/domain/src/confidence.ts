@@ -11,12 +11,22 @@ const confidenceRank: Readonly<Record<ConfidenceLevel, number>> = {
 
 export type ConfidencePromotionError = "confidence_demotion" | "missing_validation_reason";
 
+function getConfidenceRank(level: ConfidenceLevel): number {
+  const rank = confidenceRank[level];
+
+  if (rank === undefined) {
+    throw new Error(`Unknown confidence level: ${level}`);
+  }
+
+  return rank;
+}
+
 export function compareConfidenceLevels(current: ConfidenceLevel, next: ConfidenceLevel): number {
-  return confidenceRank[next] - confidenceRank[current];
+  return getConfidenceRank(next) - getConfidenceRank(current);
 }
 
 export function canPromoteConfidenceLevel(current: ConfidenceLevel, next: ConfidenceLevel): boolean {
-  return confidenceRank[next] >= confidenceRank[current];
+  return getConfidenceRank(next) >= getConfidenceRank(current);
 }
 
 export function changeConfidenceLevel(
