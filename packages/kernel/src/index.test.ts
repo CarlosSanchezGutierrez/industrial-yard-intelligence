@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   asTenantId,
   confidenceLevels,
@@ -18,7 +18,8 @@ describe("@iyi/kernel", () => {
 
   it("exposes required validation states", () => {
     expect(validationStates).toContain("operational");
-    expect(validationStates).toContain("professionally_validated");
+    expect(validationStates).toContain("validated");
+    expect(validationStates).toContain("pending_review");
   });
 
   it("exposes required measurement sources", () => {
