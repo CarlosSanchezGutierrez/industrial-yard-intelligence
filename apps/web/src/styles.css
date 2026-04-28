@@ -565,3 +565,69 @@ h2 {
     min-height: 24rem;
   }
 }
+.sync-demo-panel {
+  margin-top: 1.25rem;
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  border-radius: 1rem;
+  background: rgba(59, 130, 246, 0.08);
+  padding: 0.95rem;
+}
+
+.sync-demo-panel h2 {
+  margin-bottom: 0.4rem;
+}
+
+.sync-demo-panel p {
+  margin: 0.35rem 0 0.75rem;
+  color: var(--iyi-color-text-muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.sync-demo-panel code {
+  color: #bfdbfe;
+}
+
+.sync-demo-button {
+  width: 100%;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 0.85rem;
+  background: rgba(245, 158, 11, 0.16);
+  color: #fde68a;
+  cursor: pointer;
+  font-weight: 900;
+  padding: 0.75rem 0.9rem;
+}
+
+.sync-demo-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.sync-result {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+  border-radius: 0.85rem;
+  padding: 0.75rem;
+}
+
+.sync-result strong {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sync-result span {
+  color: var(--iyi-color-text-muted);
+  font-size: 0.8rem;
+}
+
+.sync-result.success {
+  border: 1px solid rgba(16, 185, 129, 0.32);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.sync-result.failure {
+  border: 1px solid rgba(239, 68, 68, 0.32);
+  background: rgba(239, 68, 68, 0.1);
+}

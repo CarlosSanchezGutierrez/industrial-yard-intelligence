@@ -45,12 +45,21 @@ importers:
 
   apps/web:
     dependencies:
+      '@iyi/api-contracts':
+        specifier: workspace:*
+        version: link:../../packages/api-contracts
       '@iyi/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@iyi/kernel':
+        specifier: workspace:*
+        version: link:../../packages/kernel
       '@iyi/seed-data':
         specifier: workspace:*
         version: link:../../packages/seed-data
+      '@iyi/sync-protocol':
+        specifier: workspace:*
+        version: link:../../packages/sync-protocol
       react:
         specifier: latest
         version: 19.2.5

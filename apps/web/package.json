@@ -11,8 +11,11 @@
     "test": "echo \"No web tests yet\""
   },
   "dependencies": {
+    "@iyi/api-contracts": "workspace:*",
     "@iyi/design-tokens": "workspace:*",
+    "@iyi/kernel": "workspace:*",
     "@iyi/seed-data": "workspace:*",
+    "@iyi/sync-protocol": "workspace:*",
     "react": "latest",
     "react-dom": "latest"
   },

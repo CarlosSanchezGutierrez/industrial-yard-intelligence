@@ -2,7 +2,12 @@ import { industrialDarkTheme, themeToCssVariables } from "@iyi/design-tokens";
 import { cooperSmokeSeed, type SmokeStockpile, type SmokeTenantSeed } from "@iyi/seed-data";
 import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
-import { loadCooperSmokeSeed, type SmokeSeedSource } from "./data/edge-client.js";
+import {
+  loadCooperSmokeSeed,
+  submitDemoSyncBatch,
+  type SmokeSeedSource,
+  type SubmitSyncDemoResult
+} from "./data/edge-client.js";
 import "./styles.css";
 
 function applyThemeVariables(): CSSProperties {
@@ -38,6 +43,8 @@ function App() {
   const [seedSource, setSeedSource] = useState<SmokeSeedSource>("local_fallback");
   const [seedMessage, setSeedMessage] = useState("Usando seed local inicial.");
   const [isLoadingSeed, setIsLoadingSeed] = useState(true);
+  const [syncResult, setSyncResult] = useState<SubmitSyncDemoResult | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -57,6 +64,13 @@ function App() {
       isMounted = false;
     };
   }, []);
+
+  async function handleSubmitSyncDemo(): Promise<void> {
+    setIsSyncing(true);
+    const result = await submitDemoSyncBatch();
+    setSyncResult(result);
+    setIsSyncing(false);
+  }
 
   const smokeKpis = seed.kpis;
   const smokeStockpiles = seed.stockpiles;
@@ -195,6 +209,24 @@ function App() {
                 </div>
               </article>
             ))}
+          </div>
+
+          <div className="sync-demo-panel">
+            <p className="eyebrow">Sync demo</p>
+            <h2>Enviar evento simulado al edge</h2>
+            <p>
+              Construye un batch local y lo manda a <code>POST /sync/batches</code>.
+            </p>
+            <button className="sync-demo-button" disabled={isSyncing} onClick={handleSubmitSyncDemo}>
+              {isSyncing ? "Sincronizando..." : "Enviar sync batch"}
+            </button>
+
+            {syncResult ? (
+              <div className={`sync-result ${syncResult.ok ? "success" : "failure"}`}>
+                <strong>{syncResult.status}</strong>
+                <span>{syncResult.message}</span>
+              </div>
+            ) : null}
           </div>
 
           <div className="alerts">
