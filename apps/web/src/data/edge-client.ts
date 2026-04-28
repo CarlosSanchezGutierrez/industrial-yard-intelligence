@@ -27,6 +27,44 @@ export interface SubmitSyncDemoResult {
   readonly message: string;
 }
 
+export interface EdgeSyncSummary {
+  readonly totalBatches: number;
+  readonly totalEvents: number;
+  readonly accepted: number;
+  readonly conflicts: number;
+  readonly rejected: number;
+  readonly invalid: number;
+  readonly duplicates: number;
+  readonly pendingReview: number;
+  readonly superseded: number;
+}
+
+export interface EdgeSyncEvent {
+  readonly eventId: string;
+  readonly eventType: string;
+  readonly tenantId: string;
+  readonly terminalId?: string;
+  readonly userId: string;
+  readonly deviceId: string;
+  readonly aggregateType: string;
+  readonly aggregateId: string;
+  readonly validationState: string;
+  readonly confidenceLevel?: string;
+  readonly createdAtClient: string;
+  readonly receivedAtEdge: string;
+  readonly status: string;
+  readonly message?: string;
+  readonly conflictType?: string;
+}
+
+export interface EdgeSyncSnapshot {
+  readonly ok: boolean;
+  readonly source: "edge" | "unavailable";
+  readonly summary: EdgeSyncSummary | null;
+  readonly events: readonly EdgeSyncEvent[];
+  readonly message: string;
+}
+
 interface EdgeSeedResponse {
   readonly ok: boolean;
   readonly data?: {
@@ -50,6 +88,20 @@ interface EdgeSyncResponse {
   readonly error?: {
     readonly code: string;
     readonly message: string;
+  };
+}
+
+interface EdgeSummaryResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly summary?: EdgeSyncSummary;
+  };
+}
+
+interface EdgeEventsResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly events?: readonly EdgeSyncEvent[];
   };
 }
 
@@ -122,7 +174,8 @@ function createDemoSyncRequest(): SyncSubmitRequest {
   const terminalId = asTerminalId("terminal_altamira");
   const userId = asUserId("user_demo_operator");
   const deviceId = asDeviceId("device_web_demo");
-  const eventId = asEventId(`event_web_demo_${Date.now()}`);
+  const now = Date.now();
+  const eventId = asEventId(`event_web_demo_${now}`);
 
   return {
     context: {
@@ -132,14 +185,14 @@ function createDemoSyncRequest(): SyncSubmitRequest {
       deviceId
     },
     batch: {
-      batchId: `batch_web_demo_${Date.now()}`,
+      batchId: `batch_web_demo_${now}`,
       tenantId,
       terminalId,
       deviceId,
       createdAtClient: new Date().toISOString(),
       events: [
         {
-          syncEnvelopeId: asSyncEnvelopeId(`sync_web_demo_${Date.now()}`),
+          syncEnvelopeId: asSyncEnvelopeId(`sync_web_demo_${now}`),
           eventId,
           eventType: "WEB_DEMO_MOVEMENT_RECORDED",
           eventVersion: 1,
@@ -149,8 +202,8 @@ function createDemoSyncRequest(): SyncSubmitRequest {
           deviceId,
           sourceRuntime: "mobile",
           createdAtClient: new Date().toISOString(),
-          localSequence: Date.now(),
-          idempotencyKey: `tenant_cooper_tsmith:device_web_demo:${Date.now()}:${eventId}`,
+          localSequence: now,
+          idempotencyKey: `tenant_cooper_tsmith:device_web_demo:${now}:${eventId}`,
           aggregateType: "stockpile",
           aggregateId: asAggregateId("stockpile_pet_coke_001"),
           validationState: "operational",
@@ -205,6 +258,56 @@ export async function submitDemoSyncBatch(): Promise<SubmitSyncDemoResult> {
       source: "unavailable",
       status: "edge_unavailable",
       message: `Local edge server unavailable at ${edgeBaseUrl}. Start apps/edge to test sync.`
+    };
+  }
+}
+
+export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
+  const edgeBaseUrl = getEdgeBaseUrl();
+
+  try {
+    const [summaryResponse, eventsResponse] = await Promise.all([
+      fetch(`${edgeBaseUrl}/sync/summary`, {
+        method: "GET",
+        headers: {
+          accept: "application/json"
+        }
+      }),
+      fetch(`${edgeBaseUrl}/sync/events`, {
+        method: "GET",
+        headers: {
+          accept: "application/json"
+        }
+      })
+    ]);
+
+    if (!summaryResponse.ok || !eventsResponse.ok) {
+      return {
+        ok: false,
+        source: "unavailable",
+        summary: null,
+        events: [],
+        message: "Edge sync monitor endpoints are unavailable."
+      };
+    }
+
+    const summaryBody = (await summaryResponse.json()) as EdgeSummaryResponse;
+    const eventsBody = (await eventsResponse.json()) as EdgeEventsResponse;
+
+    return {
+      ok: summaryBody.ok && eventsBody.ok,
+      source: "edge",
+      summary: summaryBody.data?.summary ?? null,
+      events: eventsBody.data?.events ?? [],
+      message: "Loaded sync summary and event history from local edge."
+    };
+  } catch {
+    return {
+      ok: false,
+      source: "unavailable",
+      summary: null,
+      events: [],
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
     };
   }
 }

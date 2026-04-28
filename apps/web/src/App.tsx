@@ -4,7 +4,10 @@ import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import {
   loadCooperSmokeSeed,
+  loadEdgeSyncSnapshot,
   submitDemoSyncBatch,
+  type EdgeSyncEvent,
+  type EdgeSyncSummary,
   type SmokeSeedSource,
   type SubmitSyncDemoResult
 } from "./data/edge-client.js";
@@ -45,6 +48,16 @@ function App() {
   const [isLoadingSeed, setIsLoadingSeed] = useState(true);
   const [syncResult, setSyncResult] = useState<SubmitSyncDemoResult | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [edgeSummary, setEdgeSummary] = useState<EdgeSyncSummary | null>(null);
+  const [edgeEvents, setEdgeEvents] = useState<readonly EdgeSyncEvent[]>([]);
+  const [edgeMonitorMessage, setEdgeMonitorMessage] = useState("Esperando conexión al edge.");
+
+  async function refreshEdgeMonitor(): Promise<void> {
+    const snapshot = await loadEdgeSyncSnapshot();
+    setEdgeSummary(snapshot.summary);
+    setEdgeEvents(snapshot.events);
+    setEdgeMonitorMessage(snapshot.message);
+  }
 
   useEffect(() => {
     let isMounted = true;
@@ -60,6 +73,16 @@ function App() {
       setIsLoadingSeed(false);
     });
 
+    void loadEdgeSyncSnapshot().then((snapshot) => {
+      if (!isMounted) {
+        return;
+      }
+
+      setEdgeSummary(snapshot.summary);
+      setEdgeEvents(snapshot.events);
+      setEdgeMonitorMessage(snapshot.message);
+    });
+
     return () => {
       isMounted = false;
     };
@@ -69,6 +92,7 @@ function App() {
     setIsSyncing(true);
     const result = await submitDemoSyncBatch();
     setSyncResult(result);
+    await refreshEdgeMonitor();
     setIsSyncing(false);
   }
 
@@ -238,6 +262,60 @@ function App() {
             ))}
           </div>
         </aside>
+      </section>
+
+      <section className="edge-monitor-panel">
+        <div className="panel-header">
+          <div>
+            <p className="eyebrow">Edge Sync Monitor</p>
+            <h2>Historial local en memoria del edge</h2>
+          </div>
+          <button className="secondary-button" onClick={() => void refreshEdgeMonitor()}>
+            Actualizar
+          </button>
+        </div>
+
+        <p className="monitor-message">{edgeMonitorMessage}</p>
+
+        <div className="sync-summary-grid">
+          <article>
+            <span>Batches</span>
+            <strong>{edgeSummary?.totalBatches ?? 0}</strong>
+          </article>
+          <article>
+            <span>Eventos</span>
+            <strong>{edgeSummary?.totalEvents ?? 0}</strong>
+          </article>
+          <article>
+            <span>Aceptados</span>
+            <strong>{edgeSummary?.accepted ?? 0}</strong>
+          </article>
+          <article>
+            <span>Conflictos</span>
+            <strong>{edgeSummary?.conflicts ?? 0}</strong>
+          </article>
+        </div>
+
+        <div className="edge-events-list">
+          {edgeEvents.length === 0 ? (
+            <div className="empty-state">Sin eventos recibidos en esta sesión del edge.</div>
+          ) : (
+            edgeEvents.slice(0, 5).map((event) => (
+              <article className="edge-event-card" key={event.eventId}>
+                <div>
+                  <strong>{event.eventType}</strong>
+                  <span>
+                    {event.aggregateType} · {event.aggregateId}
+                  </span>
+                </div>
+                <div>
+                  <strong>{event.status}</strong>
+                  <span>{event.receivedAtEdge}</span>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
       </section>
 
       <section className="intel-grid">
