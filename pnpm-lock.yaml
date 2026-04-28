@@ -26,9 +26,18 @@ importers:
       '@iyi/api-contracts':
         specifier: workspace:*
         version: link:../../packages/api-contracts
+      '@iyi/kernel':
+        specifier: workspace:*
+        version: link:../../packages/kernel
       '@iyi/seed-data':
         specifier: workspace:*
         version: link:../../packages/seed-data
+      '@iyi/sync-core':
+        specifier: workspace:*
+        version: link:../../packages/sync-core
+      '@iyi/sync-protocol':
+        specifier: workspace:*
+        version: link:../../packages/sync-protocol
     devDependencies:
       tsx:
         specifier: latest

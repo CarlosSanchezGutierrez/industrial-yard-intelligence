@@ -8,7 +8,10 @@
   },
   "references": [
     { "path": "../../packages/api-contracts" },
-    { "path": "../../packages/seed-data" }
+    { "path": "../../packages/kernel" },
+    { "path": "../../packages/seed-data" },
+    { "path": "../../packages/sync-core" },
+    { "path": "../../packages/sync-protocol" }
   ],
   "include": ["src/**/*.ts"]
 }

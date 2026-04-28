@@ -15,7 +15,10 @@
   },
   "dependencies": {
     "@iyi/api-contracts": "workspace:*",
-    "@iyi/seed-data": "workspace:*"
+    "@iyi/kernel": "workspace:*",
+    "@iyi/seed-data": "workspace:*",
+    "@iyi/sync-core": "workspace:*",
+    "@iyi/sync-protocol": "workspace:*"
   },
   "devDependencies": {
     "tsx": "latest"
