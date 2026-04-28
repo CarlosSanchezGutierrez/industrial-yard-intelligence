@@ -29,6 +29,12 @@ importers:
 
   packages/kernel: {}
 
+  packages/media:
+    dependencies:
+      '@iyi/kernel':
+        specifier: workspace:*
+        version: link:../kernel
+
   packages/spatial:
     dependencies:
       '@iyi/kernel':
