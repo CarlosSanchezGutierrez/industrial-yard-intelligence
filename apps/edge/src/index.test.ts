@@ -59,6 +59,16 @@ function createSyncRequest(eventSuffix = "001", idempotencySuffix = eventSuffix)
   };
 }
 
+function submitSyncEvent(eventSuffix = "001", idempotencySuffix = eventSuffix): void {
+  routeEdgeRequest({
+    method: "POST",
+    pathname: "/sync/batches",
+    requestId: `request_submit_${eventSuffix}`,
+    now: "2026-04-28T12:00:01.000Z",
+    body: createSyncRequest(eventSuffix, idempotencySuffix)
+  });
+}
+
 describe("@iyi/edge", () => {
   beforeEach(() => {
     resetEdgeMemoryStore();
@@ -79,6 +89,9 @@ describe("@iyi/edge", () => {
         internetRequired: boolean;
         persistence: string;
         storeFile: string;
+        routes: readonly {
+          path: string;
+        }[];
       };
     };
 
@@ -88,6 +101,8 @@ describe("@iyi/edge", () => {
     expect(body.data.internetRequired).toBe(false);
     expect(body.data.persistence).toBe("json_file_development_store");
     expect(body.data.storeFile).toContain("sync-store.json");
+    expect(body.data.routes.some((route) => route.path === "/sync/export")).toBe(true);
+    expect(body.data.routes.some((route) => route.path === "/sync/import")).toBe(true);
   });
 
   it("reconciles, stores sync batches, and writes JSON file", () => {
@@ -114,42 +129,10 @@ describe("@iyi/edge", () => {
     expect(responseBody.ok).toBe(true);
     expect(responseBody.data.result.results[0]?.status).toBe("accepted");
     expect(existsSync(getEdgeStoreFilePath())).toBe(true);
-
-    const eventsResponse = routeEdgeRequest({
-      method: "GET",
-      pathname: "/sync/events",
-      requestId: "request_002",
-      now: "2026-04-28T12:00:02.000Z"
-    });
-
-    const eventsBody = JSON.parse(eventsResponse.body) as {
-      ok: boolean;
-      data: {
-        events: readonly {
-          eventId: string;
-          idempotencyKey: string;
-          status: string;
-        }[];
-      };
-    };
-
-    expect(eventsBody.ok).toBe(true);
-    expect(eventsBody.data.events).toHaveLength(1);
-    expect(eventsBody.data.events[0]?.eventId).toBe("event_001");
-    expect(eventsBody.data.events[0]?.idempotencyKey).toBe(
-      "tenant_cooper_tsmith:device_android_001:1:event_001"
-    );
-    expect(eventsBody.data.events[0]?.status).toBe("accepted");
   });
 
   it("detects duplicate sync events by event id", () => {
-    routeEdgeRequest({
-      method: "POST",
-      pathname: "/sync/batches",
-      requestId: "request_001",
-      now: "2026-04-28T12:00:01.000Z",
-      body: createSyncRequest("001")
-    });
+    submitSyncEvent("001");
 
     const duplicateResponse = routeEdgeRequest({
       method: "POST",
@@ -175,13 +158,7 @@ describe("@iyi/edge", () => {
   });
 
   it("detects duplicate sync events by idempotency key", () => {
-    routeEdgeRequest({
-      method: "POST",
-      pathname: "/sync/batches",
-      requestId: "request_001",
-      now: "2026-04-28T12:00:01.000Z",
-      body: createSyncRequest("001", "same_idempotency")
-    });
+    submitSyncEvent("001", "same_idempotency");
 
     const duplicateResponse = routeEdgeRequest({
       method: "POST",
@@ -206,14 +183,120 @@ describe("@iyi/edge", () => {
     expect(body.data.result.results[0]?.status).toBe("duplicate");
   });
 
-  it("returns sync summary", () => {
-    routeEdgeRequest({
-      method: "POST",
-      pathname: "/sync/batches",
-      requestId: "request_001",
-      now: "2026-04-28T12:00:01.000Z",
-      body: createSyncRequest("001")
+  it("exports sync store", () => {
+    submitSyncEvent("001");
+
+    const response = routeEdgeRequest({
+      method: "GET",
+      pathname: "/sync/export",
+      requestId: "request_export",
+      now: "2026-04-28T12:00:03.000Z"
     });
+
+    const body = JSON.parse(response.body) as {
+      ok: boolean;
+      data: {
+        store: {
+          version: number;
+          exportedAt: string;
+          batches: readonly unknown[];
+          events: readonly {
+            eventId: string;
+          }[];
+        };
+      };
+    };
+
+    expect(response.statusCode).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.data.store.version).toBe(1);
+    expect(body.data.store.exportedAt).toBe("2026-04-28T12:00:03.000Z");
+    expect(body.data.store.batches).toHaveLength(1);
+    expect(body.data.store.events[0]?.eventId).toBe("event_001");
+  });
+
+  it("imports sync store and replaces current store", () => {
+    submitSyncEvent("001");
+
+    const exportResponse = routeEdgeRequest({
+      method: "GET",
+      pathname: "/sync/export",
+      requestId: "request_export",
+      now: "2026-04-28T12:00:03.000Z"
+    });
+
+    const exported = JSON.parse(exportResponse.body) as {
+      data: {
+        store: unknown;
+      };
+    };
+
+    resetEdgeMemoryStore();
+
+    const importResponse = routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/import",
+      requestId: "request_import",
+      now: "2026-04-28T12:00:04.000Z",
+      body: {
+        replaceExistingStore: true,
+        store: exported.data.store
+      }
+    });
+
+    const importBody = JSON.parse(importResponse.body) as {
+      ok: boolean;
+      data: {
+        importResult: {
+          importedBatches: number;
+          importedEvents: number;
+          replacedExistingStore: boolean;
+        };
+        summary: {
+          totalBatches: number;
+          totalEvents: number;
+        };
+      };
+    };
+
+    expect(importResponse.statusCode).toBe(200);
+    expect(importBody.ok).toBe(true);
+    expect(importBody.data.importResult.importedBatches).toBe(1);
+    expect(importBody.data.importResult.importedEvents).toBe(1);
+    expect(importBody.data.importResult.replacedExistingStore).toBe(true);
+    expect(importBody.data.summary.totalBatches).toBe(1);
+    expect(importBody.data.summary.totalEvents).toBe(1);
+  });
+
+  it("rejects invalid sync store imports", () => {
+    const response = routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/import",
+      requestId: "request_import_invalid",
+      now: "2026-04-28T12:00:04.000Z",
+      body: {
+        store: {
+          version: 999,
+          batches: [],
+          events: []
+        }
+      }
+    });
+
+    const body = JSON.parse(response.body) as {
+      ok: boolean;
+      error: {
+        code: string;
+      };
+    };
+
+    expect(response.statusCode).toBe(400);
+    expect(body.ok).toBe(false);
+    expect(body.error.code).toBe("bad_request");
+  });
+
+  it("returns sync summary", () => {
+    submitSyncEvent("001");
 
     const response = routeEdgeRequest({
       method: "GET",

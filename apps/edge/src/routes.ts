@@ -9,12 +9,14 @@ import {
 import { cooperSmokeSeed } from "@iyi/seed-data";
 import { reconcileSyncBatch } from "@iyi/sync-core";
 import {
+  exportEdgeStore,
   getEdgeStoreFilePath,
   getKnownSyncEventIds,
   getKnownSyncIdempotencyKeys,
   getSyncBatchHistory,
   getSyncEventHistory,
   getSyncSummary,
+  importEdgeStore,
   recordSyncBatch
 } from "./store.js";
 
@@ -58,6 +60,22 @@ function isSyncSubmitRequest(value: unknown): value is SyncSubmitRequest {
   return isRecord(value["context"]) && isRecord(value["batch"]);
 }
 
+function getBooleanBodyValue(body: unknown, key: string, fallback: boolean): boolean {
+  if (!isRecord(body)) {
+    return fallback;
+  }
+
+  return typeof body[key] === "boolean" ? body[key] : fallback;
+}
+
+function getStoreImportPayload(body: unknown): unknown {
+  if (!isRecord(body)) {
+    return body;
+  }
+
+  return "store" in body ? body["store"] : body;
+}
+
 function createManifest(now: string) {
   return {
     service: "Industrial Yard Intelligence Edge",
@@ -92,6 +110,16 @@ function createManifest(now: string) {
         method: "GET",
         path: "/sync/summary",
         description: "JSON-backed sync summary."
+      },
+      {
+        method: "GET",
+        path: "/sync/export",
+        description: "Export JSON-backed sync store for offline backup or transfer."
+      },
+      {
+        method: "POST",
+        path: "/sync/import",
+        description: "Import JSON-backed sync store from offline backup or transfer."
       }
     ]
   };
@@ -128,6 +156,35 @@ function handleSyncBatch(request: EdgeRouteRequest): EdgeRouteResponse {
     200,
     createApiSuccess(createSyncSubmitResponse(result), request.requestId, request.now)
   );
+}
+
+function handleStoreImport(request: EdgeRouteRequest): EdgeRouteResponse {
+  try {
+    const replaceExistingStore = getBooleanBodyValue(request.body, "replaceExistingStore", true);
+    const storePayload = getStoreImportPayload(request.body);
+    const result = importEdgeStore(storePayload, replaceExistingStore);
+
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          importResult: result,
+          summary: getSyncSummary()
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  } catch {
+    return jsonResponse(
+      400,
+      createApiFailure(
+        createApiError("bad_request", "Invalid edge store import payload."),
+        request.requestId,
+        request.now
+      )
+    );
+  }
 }
 
 export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
@@ -200,6 +257,23 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
         request.now
       )
     );
+  }
+
+  if (request.method === "GET" && request.pathname === "/sync/export") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          store: exportEdgeStore(request.now)
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  }
+
+  if (request.method === "POST" && request.pathname === "/sync/import") {
+    return handleStoreImport(request);
   }
 
   return jsonResponse(

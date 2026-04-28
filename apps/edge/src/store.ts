@@ -56,10 +56,17 @@ export interface EdgeSyncSummary {
   readonly superseded: number;
 }
 
-interface EdgeStoreFile {
+export interface EdgeStoreFile {
   readonly version: 1;
+  readonly exportedAt?: string;
   readonly batches: StoredSyncBatch[];
   readonly events: StoredSyncEvent[];
+}
+
+export interface EdgeStoreImportResult {
+  readonly importedBatches: number;
+  readonly importedEvents: number;
+  readonly replacedExistingStore: boolean;
 }
 
 let cachedStore: EdgeStoreFile | null = null;
@@ -74,6 +81,55 @@ function createEmptyStore(): EdgeStoreFile {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
+}
+
+function normalizeStoredBatch(value: unknown): StoredSyncBatch | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  if (
+    typeof value["batchId"] !== "string" ||
+    typeof value["tenantId"] !== "string" ||
+    typeof value["deviceId"] !== "string" ||
+    typeof value["createdAtClient"] !== "string" ||
+    typeof value["receivedAtEdge"] !== "string"
+  ) {
+    return null;
+  }
+
+  return {
+    batchId: value["batchId"],
+    tenantId: value["tenantId"],
+    ...(typeof value["terminalId"] === "string" ? { terminalId: value["terminalId"] } : {}),
+    deviceId: value["deviceId"],
+    createdAtClient: value["createdAtClient"],
+    receivedAtEdge: value["receivedAtEdge"],
+    eventCount:
+      typeof value["eventCount"] === "number" && Number.isInteger(value["eventCount"])
+        ? value["eventCount"]
+        : 0,
+    acceptedCount:
+      typeof value["acceptedCount"] === "number" && Number.isInteger(value["acceptedCount"])
+        ? value["acceptedCount"]
+        : 0,
+    conflictCount:
+      typeof value["conflictCount"] === "number" && Number.isInteger(value["conflictCount"])
+        ? value["conflictCount"]
+        : 0,
+    rejectedCount:
+      typeof value["rejectedCount"] === "number" && Number.isInteger(value["rejectedCount"])
+        ? value["rejectedCount"]
+        : 0,
+    invalidCount:
+      typeof value["invalidCount"] === "number" && Number.isInteger(value["invalidCount"])
+        ? value["invalidCount"]
+        : 0,
+    duplicateCount:
+      typeof value["duplicateCount"] === "number" && Number.isInteger(value["duplicateCount"])
+        ? value["duplicateCount"]
+        : 0
+  };
 }
 
 function normalizeStoredEvent(value: unknown): StoredSyncEvent | null {
@@ -147,13 +203,18 @@ function normalizeStoreFile(value: unknown): EdgeStoreFile | null {
     return null;
   }
 
+  const batches = value["batches"]
+    .map((batch) => normalizeStoredBatch(batch))
+    .filter((batch): batch is StoredSyncBatch => batch !== null);
+
   const events = value["events"]
     .map((event) => normalizeStoredEvent(event))
     .filter((event): event is StoredSyncEvent => event !== null);
 
   return {
     version: 1,
-    batches: value["batches"] as StoredSyncBatch[],
+    ...(typeof value["exportedAt"] === "string" ? { exportedAt: value["exportedAt"] } : {}),
+    batches,
     events
   };
 }
@@ -309,6 +370,69 @@ export function getSyncSummary(): EdgeSyncSummary {
     duplicates: events.filter((event) => event.status === "duplicate").length,
     pendingReview: events.filter((event) => event.status === "pending_review").length,
     superseded: events.filter((event) => event.status === "superseded").length
+  };
+}
+
+export function exportEdgeStore(now: string): EdgeStoreFile {
+  const store = loadStore();
+
+  return {
+    version: 1,
+    exportedAt: now,
+    batches: [...store.batches],
+    events: [...store.events]
+  };
+}
+
+export function importEdgeStore(value: unknown, replaceExistingStore = true): EdgeStoreImportResult {
+  const imported = normalizeStoreFile(value);
+
+  if (imported === null) {
+    throw new Error("Invalid edge store import payload.");
+  }
+
+  if (replaceExistingStore) {
+    cachedStore = {
+      version: 1,
+      batches: [...imported.batches],
+      events: [...imported.events]
+    };
+
+    persistStore(cachedStore);
+
+    return {
+      importedBatches: imported.batches.length,
+      importedEvents: imported.events.length,
+      replacedExistingStore: true
+    };
+  }
+
+  const store = loadStore();
+  const existingBatchIds = new Set(store.batches.map((batch) => batch.batchId));
+  const existingEventIds = new Set(store.events.map((event) => event.eventId));
+  const existingIdempotencyKeys = new Set(store.events.map((event) => event.idempotencyKey));
+
+  for (const batch of imported.batches) {
+    if (!existingBatchIds.has(batch.batchId)) {
+      store.batches.push(batch);
+      existingBatchIds.add(batch.batchId);
+    }
+  }
+
+  for (const event of imported.events) {
+    if (!existingEventIds.has(event.eventId) && !existingIdempotencyKeys.has(event.idempotencyKey)) {
+      store.events.push(event);
+      existingEventIds.add(event.eventId);
+      existingIdempotencyKeys.add(event.idempotencyKey);
+    }
+  }
+
+  persistStore(store);
+
+  return {
+    importedBatches: imported.batches.length,
+    importedEvents: imported.events.length,
+    replacedExistingStore: false
   };
 }
 
