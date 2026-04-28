@@ -11,21 +11,32 @@ This package currently owns:
 - migration naming rules
 - Drizzle schema placeholders
 - Drizzle Kit generation config
+- generated SQL audit script
 
-It does **not** require Docker yet.
+It does not require Docker yet.
 
-It does **not** require a running PostgreSQL database yet.
+It does not require a running PostgreSQL database yet.
 
-It does **not** apply migrations yet.
+It does not apply migrations yet.
 
 ## Commands
 
 Generate SQL migrations from the TypeScript Drizzle schema:
 
-```powershell
-pnpm --filter @iyi/db db:generate
-pnpm --filter @iyi/db build
-pnpm --filter @iyi/db test
+    pnpm --filter @iyi/db db:generate
+
+Audit generated SQL migration files:
+
+    pnpm --filter @iyi/db db:audit-generated
+
+Build package:
+
+    pnpm --filter @iyi/db build
+
+Run tests:
+
+    pnpm --filter @iyi/db test
+
 ## Important
 
 Generated SQL is not automatically applied to a database.
