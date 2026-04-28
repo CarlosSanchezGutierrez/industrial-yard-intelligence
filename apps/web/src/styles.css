@@ -1,0 +1,357 @@
+:root {
+  font-family: var(--iyi-font-sans), system-ui, sans-serif;
+  color: var(--iyi-color-text);
+  background: var(--iyi-color-background);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(245, 158, 11, 0.16), transparent 28rem),
+    var(--iyi-color-background);
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.hero-panel,
+.map-panel,
+.side-panel,
+.kpi-card {
+  border: 1px solid var(--iyi-color-border);
+  background: rgba(15, 23, 42, 0.76);
+  box-shadow: var(--iyi-shadow-card);
+  border-radius: 1.5rem;
+}
+
+.hero-panel {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.4rem;
+  color: var(--iyi-color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 0.95;
+}
+
+h2 {
+  font-size: 1rem;
+}
+
+.hero-copy {
+  max-width: 58rem;
+  color: var(--iyi-color-text-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.status-card {
+  min-width: 16rem;
+  align-self: flex-start;
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 1rem;
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.status-card span:last-child {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--iyi-color-text-muted);
+  font-size: 0.82rem;
+}
+
+.status-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+  background: var(--iyi-color-success);
+  box-shadow: 0 0 22px var(--iyi-color-success);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.kpi-card {
+  padding: 1.2rem;
+}
+
+.kpi-card span,
+.kpi-card small {
+  display: block;
+  color: var(--iyi-color-text-muted);
+}
+
+.kpi-card strong {
+  display: block;
+  margin: 0.35rem 0;
+  font-size: 1.75rem;
+}
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(22rem, 0.75fr);
+  gap: 1.25rem;
+}
+
+.map-panel,
+.side-panel {
+  padding: 1.25rem;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.panel-header.compact {
+  margin-bottom: 0.75rem;
+}
+
+.badge {
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 999px;
+  color: var(--iyi-color-primary);
+  padding: 0.4rem 0.7rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.yard-map {
+  position: relative;
+  overflow: hidden;
+  height: min(62vh, 44rem);
+  min-height: 30rem;
+  border: 1px solid var(--iyi-color-border);
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    var(--iyi-map-land);
+  background-size: 2.5rem 2.5rem;
+}
+
+.water {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 27%;
+  background: linear-gradient(180deg, rgba(15, 59, 87, 0.95), rgba(15, 59, 87, 0.54));
+}
+
+.dock,
+.rail,
+.warehouse,
+.scale {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(226, 232, 240, 0.25);
+  color: var(--iyi-color-text);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.dock {
+  top: 24%;
+  width: 23%;
+  height: 7%;
+  background: rgba(148, 163, 184, 0.28);
+}
+
+.dock-one {
+  left: 17%;
+}
+
+.dock-two {
+  left: 43%;
+}
+
+.rail {
+  left: 5%;
+  right: 5%;
+  bottom: 9%;
+  height: 4%;
+  border-style: dashed;
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.warehouse {
+  right: 6%;
+  top: 34%;
+  width: 18%;
+  height: 15%;
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.scale {
+  right: 12%;
+  bottom: 18%;
+  width: 11%;
+  height: 8%;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.stockpile {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.stockpile:hover {
+  transform: translate(-50%, -50%) scale(1.04);
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.16);
+}
+
+.stockpile span {
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.stockpile-operational {
+  background: rgba(245, 158, 11, 0.52);
+}
+
+.stockpile-pending_review {
+  background: rgba(239, 68, 68, 0.54);
+}
+
+.stockpile-validated {
+  background: rgba(16, 185, 129, 0.54);
+}
+
+.equipment-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  min-width: 3.5rem;
+  height: 2rem;
+  border: 1px solid rgba(96, 165, 250, 0.55);
+  border-radius: 0.75rem;
+  background: rgba(30, 64, 175, 0.5);
+  color: #eff6ff;
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.stockpile-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.stockpile-card,
+.alert-item {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 1rem;
+  background: rgba(2, 6, 23, 0.22);
+}
+
+.stockpile-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem;
+}
+
+.stockpile-card strong,
+.stockpile-card span {
+  display: block;
+}
+
+.stockpile-card span,
+.stockpile-meta {
+  color: var(--iyi-color-text-muted);
+  font-size: 0.78rem;
+}
+
+.stockpile-meta {
+  text-align: right;
+}
+
+.alerts {
+  margin-top: 1.25rem;
+}
+
+.alert-item {
+  margin-top: 0.65rem;
+  padding: 0.8rem;
+  color: var(--iyi-color-text-muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 980px) {
+  .hero-panel,
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-panel {
+    flex-direction: column;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 1rem;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .yard-map {
+    min-height: 24rem;
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "@iyi/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Smoke UI web dashboard for Industrial Yard Intelligence.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.json --noEmit && vite build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "echo \"No web tests yet\""
+  },
+  "dependencies": {
+    "@iyi/design-tokens": "workspace:*",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest"
+  }
+}
