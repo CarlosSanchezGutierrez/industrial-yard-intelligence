@@ -1,16 +1,9 @@
 import { industrialDarkTheme, themeToCssVariables } from "@iyi/design-tokens";
-import { cooperSmokeSeed, type SmokeStockpile } from "@iyi/seed-data";
+import { cooperSmokeSeed, type SmokeStockpile, type SmokeTenantSeed } from "@iyi/seed-data";
 import type { CSSProperties } from "react";
+import { useEffect, useState } from "react";
+import { loadCooperSmokeSeed, type SmokeSeedSource } from "./data/edge-client.js";
 import "./styles.css";
-
-const smokeKpis = cooperSmokeSeed.kpis;
-const smokeStockpiles = cooperSmokeSeed.stockpiles;
-const smokeEquipment = cooperSmokeSeed.equipment;
-const simulatedAlerts = cooperSmokeSeed.alerts;
-const layers = cooperSmokeSeed.layers;
-const movements = cooperSmokeSeed.movements;
-const recommendations = cooperSmokeSeed.recommendations;
-const scenarios = cooperSmokeSeed.scenarios;
 
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
@@ -32,28 +25,72 @@ function getStatusLabel(status: SmokeStockpile["status"]): string {
   return "Operacional";
 }
 
+function getSourceLabel(source: SmokeSeedSource): string {
+  if (source === "edge") {
+    return "Edge conectado";
+  }
+
+  return "Fallback local";
+}
+
 function App() {
+  const [seed, setSeed] = useState<SmokeTenantSeed>(cooperSmokeSeed);
+  const [seedSource, setSeedSource] = useState<SmokeSeedSource>("local_fallback");
+  const [seedMessage, setSeedMessage] = useState("Usando seed local inicial.");
+  const [isLoadingSeed, setIsLoadingSeed] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    void loadCooperSmokeSeed().then((result) => {
+      if (!isMounted) {
+        return;
+      }
+
+      setSeed(result.seed);
+      setSeedSource(result.source);
+      setSeedMessage(result.message);
+      setIsLoadingSeed(false);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const smokeKpis = seed.kpis;
+  const smokeStockpiles = seed.stockpiles;
+  const smokeEquipment = seed.equipment;
+  const simulatedAlerts = seed.alerts;
+  const layers = seed.layers;
+  const movements = seed.movements;
+  const recommendations = seed.recommendations;
+  const scenarios = seed.scenarios;
+
   return (
     <main className="app-shell" style={applyThemeVariables()}>
       <nav className="top-nav">
         <div>
           <strong>Industrial Yard Intelligence</strong>
-          <span>{cooperSmokeSeed.terminalName}</span>
+          <span>{seed.terminalName}</span>
         </div>
         <div className="nav-actions">
-          <span className="sync-chip">Offline-ready</span>
+          <span className={`sync-chip ${seedSource === "edge" ? "" : "warning"}`}>
+            {isLoadingSeed ? "Cargando edge" : getSourceLabel(seedSource)}
+          </span>
           <span className="sync-chip muted">Edge local</span>
         </div>
       </nav>
 
       <section className="hero-panel">
         <div>
-          <p className="eyebrow">{cooperSmokeSeed.tenantName} · Simulación operativa</p>
+          <p className="eyebrow">{seed.tenantName} · Simulación operativa</p>
           <h1>Patio industrial vivo, auditable y configurable.</h1>
           <p className="hero-copy">
             Cockpit local-first para visualizar materiales, equipos, movimientos, evidencias,
             recomendaciones y escenarios antes de integrar medición profesional real.
           </p>
+          <p className="connection-note">{seedMessage}</p>
         </div>
 
         <div className="status-card">
@@ -80,9 +117,9 @@ function App() {
           <div className="panel-header">
             <div>
               <p className="eyebrow">Mapa-plano representativo</p>
-              <h2>{cooperSmokeSeed.terminalName} · Universo configurable</h2>
+              <h2>{seed.terminalName} · Universo configurable</h2>
             </div>
-            <span className="badge">{cooperSmokeSeed.classification}</span>
+            <span className="badge">{seed.classification}</span>
           </div>
 
           <div className="layer-bar">

@@ -85,6 +85,19 @@ button {
   color: var(--iyi-color-text-muted);
 }
 
+.sync-chip.warning {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.12);
+  color: #fde68a;
+}
+
+.connection-note {
+  max-width: 58rem;
+  margin: 0.75rem 0 0;
+  color: #fde68a;
+  font-size: 0.86rem;
+}
+
 .hero-panel {
   display: flex;
   justify-content: space-between;
