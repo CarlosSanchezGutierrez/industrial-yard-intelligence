@@ -1,4 +1,5 @@
 import { industrialDarkTheme, themeToCssVariables } from "@iyi/design-tokens";
+import type { CSSProperties } from "react";
 import {
   simulatedAlerts,
   smokeEquipment,
@@ -8,8 +9,8 @@ import {
 } from "./seed/smoke-data.js";
 import "./styles.css";
 
-function applyThemeVariables(): React.CSSProperties {
-  return themeToCssVariables(industrialDarkTheme) as React.CSSProperties;
+function applyThemeVariables(): CSSProperties {
+  return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
 
 function formatTons(value: number): string {
