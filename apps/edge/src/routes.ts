@@ -8,6 +8,12 @@ import {
 } from "@iyi/api-contracts";
 import { cooperSmokeSeed } from "@iyi/seed-data";
 import { reconcileSyncBatch } from "@iyi/sync-core";
+import {
+  getSyncBatchHistory,
+  getSyncEventHistory,
+  getSyncSummary,
+  recordSyncBatch
+} from "./store.js";
 
 export interface EdgeRouteRequest {
   readonly method: string;
@@ -56,6 +62,7 @@ function createManifest(now: string) {
     timestamp: now,
     mode: "local-first",
     internetRequired: false,
+    persistence: "in_memory_development_store",
     routes: [
       {
         method: "GET",
@@ -71,6 +78,16 @@ function createManifest(now: string) {
         method: "POST",
         path: "/sync/batches",
         description: "Stateless local sync batch reconciliation endpoint."
+      },
+      {
+        method: "GET",
+        path: "/sync/events",
+        description: "In-memory sync event history for the current edge process."
+      },
+      {
+        method: "GET",
+        path: "/sync/summary",
+        description: "In-memory sync summary for the current edge process."
       }
     ]
   };
@@ -95,11 +112,13 @@ function handleSyncBatch(request: EdgeRouteRequest): EdgeRouteResponse {
     receivedAtEdge: request.now,
     context: {
       expectedTenantId: syncRequest.context.tenantId,
-      knownEventIds: new Set(),
+      knownEventIds: new Set(getSyncEventHistory().map((event) => event.eventId)),
       knownIdempotencyKeys: new Set(),
       aggregateVersions: new Map()
     }
   });
+
+  recordSyncBatch(syncRequest.batch, result);
 
   return jsonResponse(
     200,
@@ -154,6 +173,33 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
 
   if (request.method === "POST" && request.pathname === "/sync/batches") {
     return handleSyncBatch(request);
+  }
+
+  if (request.method === "GET" && request.pathname === "/sync/events") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          events: getSyncEventHistory(),
+          batches: getSyncBatchHistory()
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  }
+
+  if (request.method === "GET" && request.pathname === "/sync/summary") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          summary: getSyncSummary()
+        },
+        request.requestId,
+        request.now
+      )
+    );
   }
 
   return jsonResponse(

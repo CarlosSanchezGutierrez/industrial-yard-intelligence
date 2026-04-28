@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { routeEdgeRequest } from "./index.js";
+import { beforeEach, describe, expect, it } from "vitest";
+import { resetEdgeMemoryStore, routeEdgeRequest } from "./index.js";
 import {
   asAggregateId,
   asDeviceId,
@@ -11,7 +11,58 @@ import {
 } from "@iyi/kernel";
 import type { SyncSubmitRequest } from "@iyi/api-contracts";
 
+function createSyncRequest(eventSuffix = "001"): SyncSubmitRequest {
+  const tenantId = asTenantId("tenant_cooper_tsmith");
+  const terminalId = asTerminalId("terminal_altamira");
+  const deviceId = asDeviceId("device_android_001");
+  const userId = asUserId("user_operator_001");
+  const eventId = asEventId(`event_${eventSuffix}`);
+
+  return {
+    context: {
+      tenantId,
+      terminalId,
+      userId,
+      deviceId
+    },
+    batch: {
+      batchId: `batch_${eventSuffix}`,
+      tenantId,
+      terminalId,
+      deviceId,
+      createdAtClient: "2026-04-28T12:00:00.000Z",
+      events: [
+        {
+          syncEnvelopeId: asSyncEnvelopeId(`sync_${eventSuffix}`),
+          eventId,
+          eventType: "STOCKPILE_CREATED",
+          eventVersion: 1,
+          tenantId,
+          terminalId,
+          userId,
+          deviceId,
+          sourceRuntime: "mobile",
+          createdAtClient: "2026-04-28T12:00:00.000Z",
+          localSequence: 1,
+          idempotencyKey: `tenant_cooper_tsmith:device_android_001:1:event_${eventSuffix}`,
+          aggregateType: "stockpile",
+          aggregateId: asAggregateId("stockpile_001"),
+          validationState: "operational",
+          confidenceLevel: "approximate",
+          payload: {
+            name: "Simulated stockpile"
+          }
+        }
+      ]
+    }
+  };
+}
+
 describe("@iyi/edge", () => {
+  beforeEach(() => {
+    resetEdgeMemoryStore();
+  });
+
   it("returns an edge manifest at root", () => {
     const response = routeEdgeRequest({
       method: "GET",
@@ -25,6 +76,7 @@ describe("@iyi/edge", () => {
       data: {
         service: string;
         internetRequired: boolean;
+        persistence: string;
       };
     };
 
@@ -32,6 +84,7 @@ describe("@iyi/edge", () => {
     expect(body.ok).toBe(true);
     expect(body.data.service).toBe("Industrial Yard Intelligence Edge");
     expect(body.data.internetRequired).toBe(false);
+    expect(body.data.persistence).toBe("in_memory_development_store");
   });
 
   it("returns health responses", () => {
@@ -80,58 +133,13 @@ describe("@iyi/edge", () => {
     expect(body.data.seed.classification).toBe("SIMULATED_DATA");
   });
 
-  it("reconciles sync batches", () => {
-    const tenantId = asTenantId("tenant_cooper_tsmith");
-    const terminalId = asTerminalId("terminal_altamira");
-    const deviceId = asDeviceId("device_android_001");
-    const userId = asUserId("user_operator_001");
-    const eventId = asEventId("event_001");
-
-    const body: SyncSubmitRequest = {
-      context: {
-        tenantId,
-        terminalId,
-        userId,
-        deviceId
-      },
-      batch: {
-        batchId: "batch_001",
-        tenantId,
-        terminalId,
-        deviceId,
-        createdAtClient: "2026-04-28T12:00:00.000Z",
-        events: [
-          {
-            syncEnvelopeId: asSyncEnvelopeId("sync_001"),
-            eventId,
-            eventType: "STOCKPILE_CREATED",
-            eventVersion: 1,
-            tenantId,
-            terminalId,
-            userId,
-            deviceId,
-            sourceRuntime: "mobile",
-            createdAtClient: "2026-04-28T12:00:00.000Z",
-            localSequence: 1,
-            idempotencyKey: "tenant_cooper_tsmith:device_android_001:1:event_001",
-            aggregateType: "stockpile",
-            aggregateId: asAggregateId("stockpile_001"),
-            validationState: "operational",
-            confidenceLevel: "approximate",
-            payload: {
-              name: "Simulated stockpile"
-            }
-          }
-        ]
-      }
-    };
-
+  it("reconciles and stores sync batches", () => {
     const response = routeEdgeRequest({
       method: "POST",
       pathname: "/sync/batches",
       requestId: "request_001",
       now: "2026-04-28T12:00:01.000Z",
-      body
+      body: createSyncRequest("001")
     });
 
     const responseBody = JSON.parse(response.body) as {
@@ -148,6 +156,62 @@ describe("@iyi/edge", () => {
     expect(response.statusCode).toBe(200);
     expect(responseBody.ok).toBe(true);
     expect(responseBody.data.result.results[0]?.status).toBe("accepted");
+
+    const eventsResponse = routeEdgeRequest({
+      method: "GET",
+      pathname: "/sync/events",
+      requestId: "request_002",
+      now: "2026-04-28T12:00:02.000Z"
+    });
+
+    const eventsBody = JSON.parse(eventsResponse.body) as {
+      ok: boolean;
+      data: {
+        events: readonly {
+          eventId: string;
+          status: string;
+        }[];
+      };
+    };
+
+    expect(eventsBody.ok).toBe(true);
+    expect(eventsBody.data.events).toHaveLength(1);
+    expect(eventsBody.data.events[0]?.eventId).toBe("event_001");
+    expect(eventsBody.data.events[0]?.status).toBe("accepted");
+  });
+
+  it("returns sync summary", () => {
+    routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/batches",
+      requestId: "request_001",
+      now: "2026-04-28T12:00:01.000Z",
+      body: createSyncRequest("001")
+    });
+
+    const response = routeEdgeRequest({
+      method: "GET",
+      pathname: "/sync/summary",
+      requestId: "request_002",
+      now: "2026-04-28T12:00:02.000Z"
+    });
+
+    const body = JSON.parse(response.body) as {
+      ok: boolean;
+      data: {
+        summary: {
+          totalBatches: number;
+          totalEvents: number;
+          accepted: number;
+        };
+      };
+    };
+
+    expect(response.statusCode).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.data.summary.totalBatches).toBe(1);
+    expect(body.data.summary.totalEvents).toBe(1);
+    expect(body.data.summary.accepted).toBe(1);
   });
 
   it("returns not found for unknown routes", () => {
