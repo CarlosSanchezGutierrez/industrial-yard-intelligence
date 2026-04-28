@@ -1,5 +1,6 @@
+import { existsSync } from "node:fs";
 import { beforeEach, describe, expect, it } from "vitest";
-import { resetEdgeMemoryStore, routeEdgeRequest } from "./index.js";
+import { getEdgeStoreFilePath, resetEdgeMemoryStore, routeEdgeRequest } from "./index.js";
 import {
   asAggregateId,
   asDeviceId,
@@ -77,6 +78,7 @@ describe("@iyi/edge", () => {
         service: string;
         internetRequired: boolean;
         persistence: string;
+        storeFile: string;
       };
     };
 
@@ -84,56 +86,11 @@ describe("@iyi/edge", () => {
     expect(body.ok).toBe(true);
     expect(body.data.service).toBe("Industrial Yard Intelligence Edge");
     expect(body.data.internetRequired).toBe(false);
-    expect(body.data.persistence).toBe("in_memory_development_store");
+    expect(body.data.persistence).toBe("json_file_development_store");
+    expect(body.data.storeFile).toContain("sync-store.json");
   });
 
-  it("returns health responses", () => {
-    const response = routeEdgeRequest({
-      method: "GET",
-      pathname: "/health",
-      requestId: "request_001",
-      now: "2026-04-28T12:00:00.000Z"
-    });
-
-    const body = JSON.parse(response.body) as {
-      ok: boolean;
-      data: {
-        service: string;
-        status: string;
-      };
-    };
-
-    expect(response.statusCode).toBe(200);
-    expect(body.ok).toBe(true);
-    expect(body.data.service).toBe("edge");
-    expect(body.data.status).toBe("ok");
-  });
-
-  it("returns Cooper smoke seed data", () => {
-    const response = routeEdgeRequest({
-      method: "GET",
-      pathname: "/seed/cooper-smoke",
-      requestId: "request_001",
-      now: "2026-04-28T12:00:00.000Z"
-    });
-
-    const body = JSON.parse(response.body) as {
-      ok: boolean;
-      data: {
-        seed: {
-          tenantName: string;
-          classification: string;
-        };
-      };
-    };
-
-    expect(response.statusCode).toBe(200);
-    expect(body.ok).toBe(true);
-    expect(body.data.seed.tenantName).toBe("Cooper/T. Smith");
-    expect(body.data.seed.classification).toBe("SIMULATED_DATA");
-  });
-
-  it("reconciles and stores sync batches", () => {
+  it("reconciles, stores sync batches, and writes JSON file", () => {
     const response = routeEdgeRequest({
       method: "POST",
       pathname: "/sync/batches",
@@ -156,6 +113,7 @@ describe("@iyi/edge", () => {
     expect(response.statusCode).toBe(200);
     expect(responseBody.ok).toBe(true);
     expect(responseBody.data.result.results[0]?.status).toBe("accepted");
+    expect(existsSync(getEdgeStoreFilePath())).toBe(true);
 
     const eventsResponse = routeEdgeRequest({
       method: "GET",

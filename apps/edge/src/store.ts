@@ -1,3 +1,5 @@
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import type {
   SyncBatch,
   SyncBatchResult,
@@ -52,15 +54,76 @@ export interface EdgeSyncSummary {
   readonly superseded: number;
 }
 
-interface EdgeMemoryStore {
+interface EdgeStoreFile {
+  readonly version: 1;
   readonly batches: StoredSyncBatch[];
   readonly events: StoredSyncEvent[];
 }
 
-const edgeMemoryStore: EdgeMemoryStore = {
-  batches: [],
-  events: []
-};
+let cachedStore: EdgeStoreFile | null = null;
+
+function createEmptyStore(): EdgeStoreFile {
+  return {
+    version: 1,
+    batches: [],
+    events: []
+  };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isEdgeStoreFile(value: unknown): value is EdgeStoreFile {
+  return (
+    isRecord(value) &&
+    value["version"] === 1 &&
+    Array.isArray(value["batches"]) &&
+    Array.isArray(value["events"])
+  );
+}
+
+export function getEdgeDataDirectory(): string {
+  return process.env["IYI_EDGE_DATA_DIR"] ?? join(process.cwd(), ".edge-data");
+}
+
+export function getEdgeStoreFilePath(): string {
+  return join(getEdgeDataDirectory(), "sync-store.json");
+}
+
+function loadStore(): EdgeStoreFile {
+  if (cachedStore !== null) {
+    return cachedStore;
+  }
+
+  const storeFilePath = getEdgeStoreFilePath();
+
+  if (!existsSync(storeFilePath)) {
+    cachedStore = createEmptyStore();
+    return cachedStore;
+  }
+
+  const raw = readFileSync(storeFilePath, "utf8");
+  const parsed: unknown = JSON.parse(raw);
+
+  if (!isEdgeStoreFile(parsed)) {
+    throw new Error(`Invalid edge store file format: ${storeFilePath}`);
+  }
+
+  cachedStore = {
+    version: 1,
+    batches: [...parsed.batches],
+    events: [...parsed.events]
+  };
+
+  return cachedStore;
+}
+
+function persistStore(store: EdgeStoreFile): void {
+  const storeFilePath = getEdgeStoreFilePath();
+  mkdirSync(dirname(storeFilePath), { recursive: true });
+  writeFileSync(storeFilePath, `${JSON.stringify(store, null, 2)}\n`, "utf8");
+}
 
 function countResultsByStatus(
   results: readonly SyncEventResult[],
@@ -115,32 +178,43 @@ function toStoredSyncBatch(batch: SyncBatch, result: SyncBatchResult): StoredSyn
 }
 
 export function recordSyncBatch(batch: SyncBatch, result: SyncBatchResult): void {
-  edgeMemoryStore.batches.push(toStoredSyncBatch(batch, result));
+  const store = loadStore();
+
+  store.batches.push(toStoredSyncBatch(batch, result));
 
   for (const event of batch.events) {
-    const eventResult = result.results.find((candidate) => candidate.eventId === event.eventId);
+    const eventResult = result.results.find(
+      (candidate) => String(candidate.eventId) === String(event.eventId)
+    );
 
     if (eventResult === undefined) {
       continue;
     }
 
-    edgeMemoryStore.events.push(toStoredSyncEvent(event, eventResult, result.receivedAtEdge));
+    store.events.push(toStoredSyncEvent(event, eventResult, result.receivedAtEdge));
   }
+
+  persistStore(store);
 }
 
 export function getSyncEventHistory(): readonly StoredSyncEvent[] {
-  return [...edgeMemoryStore.events].reverse();
+  const store = loadStore();
+
+  return [...store.events].reverse();
 }
 
 export function getSyncBatchHistory(): readonly StoredSyncBatch[] {
-  return [...edgeMemoryStore.batches].reverse();
+  const store = loadStore();
+
+  return [...store.batches].reverse();
 }
 
 export function getSyncSummary(): EdgeSyncSummary {
-  const events = edgeMemoryStore.events;
+  const store = loadStore();
+  const events = store.events;
 
   return {
-    totalBatches: edgeMemoryStore.batches.length,
+    totalBatches: store.batches.length,
     totalEvents: events.length,
     accepted: events.filter((event) => event.status === "accepted").length,
     conflicts: events.filter((event) => event.status === "conflict").length,
@@ -153,6 +227,11 @@ export function getSyncSummary(): EdgeSyncSummary {
 }
 
 export function resetEdgeMemoryStore(): void {
-  edgeMemoryStore.batches.length = 0;
-  edgeMemoryStore.events.length = 0;
+  cachedStore = createEmptyStore();
+
+  const storeFilePath = getEdgeStoreFilePath();
+
+  if (existsSync(storeFilePath)) {
+    rmSync(storeFilePath, { force: true });
+  }
 }

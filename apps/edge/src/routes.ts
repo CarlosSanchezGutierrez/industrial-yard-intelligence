@@ -9,6 +9,7 @@ import {
 import { cooperSmokeSeed } from "@iyi/seed-data";
 import { reconcileSyncBatch } from "@iyi/sync-core";
 import {
+  getEdgeStoreFilePath,
   getSyncBatchHistory,
   getSyncEventHistory,
   getSyncSummary,
@@ -62,7 +63,8 @@ function createManifest(now: string) {
     timestamp: now,
     mode: "local-first",
     internetRequired: false,
-    persistence: "in_memory_development_store",
+    persistence: "json_file_development_store",
+    storeFile: getEdgeStoreFilePath(),
     routes: [
       {
         method: "GET",
@@ -77,17 +79,17 @@ function createManifest(now: string) {
       {
         method: "POST",
         path: "/sync/batches",
-        description: "Stateless local sync batch reconciliation endpoint."
+        description: "Local sync batch reconciliation endpoint."
       },
       {
         method: "GET",
         path: "/sync/events",
-        description: "In-memory sync event history for the current edge process."
+        description: "JSON-backed sync event history."
       },
       {
         method: "GET",
         path: "/sync/summary",
-        description: "In-memory sync summary for the current edge process."
+        description: "JSON-backed sync summary."
       }
     ]
   };
@@ -122,11 +124,7 @@ function handleSyncBatch(request: EdgeRouteRequest): EdgeRouteResponse {
 
   return jsonResponse(
     200,
-    createApiSuccess(
-      createSyncSubmitResponse(result),
-      request.requestId,
-      request.now
-    )
+    createApiSuccess(createSyncSubmitResponse(result), request.requestId, request.now)
   );
 }
 
