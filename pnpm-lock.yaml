@@ -29,6 +29,12 @@ importers:
 
   packages/kernel: {}
 
+  packages/spatial:
+    dependencies:
+      '@iyi/kernel':
+        specifier: workspace:*
+        version: link:../kernel
+
 packages:
 
   '@emnapi/core@1.10.0':
