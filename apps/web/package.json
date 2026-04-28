@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@iyi/design-tokens": "workspace:*",
+    "@iyi/seed-data": "workspace:*",
     "react": "latest",
     "react-dom": "latest"
   },

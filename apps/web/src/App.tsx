@@ -1,13 +1,12 @@
 import { industrialDarkTheme, themeToCssVariables } from "@iyi/design-tokens";
+import { cooperSmokeSeed, type SmokeStockpile } from "@iyi/seed-data";
 import type { CSSProperties } from "react";
-import {
-  simulatedAlerts,
-  smokeEquipment,
-  smokeKpis,
-  smokeStockpiles,
-  type SmokeStockpile
-} from "./seed/smoke-data.js";
 import "./styles.css";
+
+const smokeKpis = cooperSmokeSeed.kpis;
+const smokeStockpiles = cooperSmokeSeed.stockpiles;
+const smokeEquipment = cooperSmokeSeed.equipment;
+const simulatedAlerts = cooperSmokeSeed.alerts;
 
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
@@ -34,7 +33,7 @@ function App() {
     <main className="app-shell" style={applyThemeVariables()}>
       <section className="hero-panel">
         <div>
-          <p className="eyebrow">Cooper/T. Smith · Simulación operativa</p>
+          <p className="eyebrow">{cooperSmokeSeed.tenantName} · Simulación operativa</p>
           <h1>Industrial Yard Intelligence</h1>
           <p className="hero-copy">
             Vista humo local-first para patios industriales: materiales, equipos, evidencias,
@@ -66,9 +65,9 @@ function App() {
           <div className="panel-header">
             <div>
               <p className="eyebrow">Mapa-plano representativo</p>
-              <h2>Terminal Altamira · Universo configurable</h2>
+              <h2>{cooperSmokeSeed.terminalName} · Universo configurable</h2>
             </div>
-            <span className="badge">SIMULATED_DATA</span>
+            <span className="badge">{cooperSmokeSeed.classification}</span>
           </div>
 
           <div className="yard-map" aria-label="Mapa representativo de patio industrial">

@@ -26,6 +26,9 @@ importers:
       '@iyi/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@iyi/seed-data':
+        specifier: workspace:*
+        version: link:../../packages/seed-data
       react:
         specifier: latest
         version: 19.2.5
@@ -70,6 +73,8 @@ importers:
       '@iyi/kernel':
         specifier: workspace:*
         version: link:../kernel
+
+  packages/seed-data: {}
 
   packages/spatial:
     dependencies:
