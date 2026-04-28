@@ -726,3 +726,38 @@ h2 {
     text-align: left;
   }
 }
+
+.offline-transfer-panel {
+  margin-top: 1.25rem;
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  border-radius: 1rem;
+  background: rgba(16, 185, 129, 0.08);
+  padding: 0.95rem;
+}
+
+.offline-transfer-panel h2 {
+  margin-bottom: 0.4rem;
+}
+
+.offline-transfer-panel p {
+  margin: 0.35rem 0 0.75rem;
+  color: var(--iyi-color-text-muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.offline-transfer-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .offline-transfer-actions {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,8 +1,10 @@
 import { industrialDarkTheme, themeToCssVariables } from "@iyi/design-tokens";
 import { cooperSmokeSeed, type SmokeStockpile, type SmokeTenantSeed } from "@iyi/seed-data";
-import type { CSSProperties } from "react";
-import { useEffect, useState } from "react";
+import type { CSSProperties, ChangeEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  exportEdgeSyncStore,
+  importEdgeSyncStore,
   loadCooperSmokeSeed,
   loadEdgeSyncSnapshot,
   submitDemoSyncBatch,
@@ -41,7 +43,22 @@ function getSourceLabel(source: SmokeSeedSource): string {
   return "Fallback local";
 }
 
+function downloadJsonFile(fileName: string, value: unknown): void {
+  const blob = new Blob([`${JSON.stringify(value, null, 2)}\n`], {
+    type: "application/json"
+  });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+
+  anchor.href = url;
+  anchor.download = fileName;
+  anchor.click();
+
+  URL.revokeObjectURL(url);
+}
+
 function App() {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [seed, setSeed] = useState<SmokeTenantSeed>(cooperSmokeSeed);
   const [seedSource, setSeedSource] = useState<SmokeSeedSource>("local_fallback");
   const [seedMessage, setSeedMessage] = useState("Usando seed local inicial.");
@@ -51,6 +68,8 @@ function App() {
   const [edgeSummary, setEdgeSummary] = useState<EdgeSyncSummary | null>(null);
   const [edgeEvents, setEdgeEvents] = useState<readonly EdgeSyncEvent[]>([]);
   const [edgeMonitorMessage, setEdgeMonitorMessage] = useState("Esperando conexión al edge.");
+  const [transferMessage, setTransferMessage] = useState("Exporta o restaura el historial local del edge como JSON.");
+  const [isTransferring, setIsTransferring] = useState(false);
 
   async function refreshEdgeMonitor(): Promise<void> {
     const snapshot = await loadEdgeSyncSnapshot();
@@ -94,6 +113,46 @@ function App() {
     setSyncResult(result);
     await refreshEdgeMonitor();
     setIsSyncing(false);
+  }
+
+  async function handleExportStore(): Promise<void> {
+    setIsTransferring(true);
+    const result = await exportEdgeSyncStore();
+
+    if (result.ok && result.store !== null) {
+      downloadJsonFile(`iyi-edge-sync-store-${Date.now()}.json`, result.store);
+    }
+
+    setTransferMessage(result.message);
+    setIsTransferring(false);
+  }
+
+  function handleImportClick(): void {
+    fileInputRef.current?.click();
+  }
+
+  async function handleImportFile(event: ChangeEvent<HTMLInputElement>): Promise<void> {
+    const file = event.target.files?.[0];
+
+    if (file === undefined) {
+      return;
+    }
+
+    setIsTransferring(true);
+
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text) as unknown;
+      const result = await importEdgeSyncStore(parsed, true);
+
+      setTransferMessage(result.message);
+      await refreshEdgeMonitor();
+    } catch {
+      setTransferMessage("No se pudo leer o importar el archivo JSON seleccionado.");
+    } finally {
+      event.target.value = "";
+      setIsTransferring(false);
+    }
   }
 
   const smokeKpis = seed.kpis;
@@ -253,6 +312,29 @@ function App() {
             ) : null}
           </div>
 
+          <div className="offline-transfer-panel">
+            <p className="eyebrow">Offline transfer</p>
+            <h2>Exportar / importar edge store</h2>
+            <p>{transferMessage}</p>
+
+            <div className="offline-transfer-actions">
+              <button className="secondary-button" disabled={isTransferring} onClick={handleExportStore}>
+                Exportar JSON
+              </button>
+              <button className="secondary-button" disabled={isTransferring} onClick={handleImportClick}>
+                Importar JSON
+              </button>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              accept="application/json,.json"
+              className="hidden-file-input"
+              type="file"
+              onChange={(event) => void handleImportFile(event)}
+            />
+          </div>
+
           <div className="alerts">
             <p className="eyebrow">Alertas y notas</p>
             {simulatedAlerts.map((alert) => (
@@ -268,7 +350,7 @@ function App() {
         <div className="panel-header">
           <div>
             <p className="eyebrow">Edge Sync Monitor</p>
-            <h2>Historial local en memoria del edge</h2>
+            <h2>Historial local persistido del edge</h2>
           </div>
           <button className="secondary-button" onClick={() => void refreshEdgeMonitor()}>
             Actualizar
@@ -291,8 +373,8 @@ function App() {
             <strong>{edgeSummary?.accepted ?? 0}</strong>
           </article>
           <article>
-            <span>Conflictos</span>
-            <strong>{edgeSummary?.conflicts ?? 0}</strong>
+            <span>Duplicados</span>
+            <strong>{edgeSummary?.duplicates ?? 0}</strong>
           </article>
         </div>
 
@@ -301,7 +383,7 @@ function App() {
             <div className="empty-state">Sin eventos recibidos en esta sesión del edge.</div>
           ) : (
             edgeEvents.slice(0, 5).map((event) => (
-              <article className="edge-event-card" key={event.eventId}>
+              <article className="edge-event-card" key={`${event.eventId}-${event.receivedAtEdge}`}>
                 <div>
                   <strong>{event.eventType}</strong>
                   <span>

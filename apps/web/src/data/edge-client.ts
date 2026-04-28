@@ -41,6 +41,7 @@ export interface EdgeSyncSummary {
 
 export interface EdgeSyncEvent {
   readonly eventId: string;
+  readonly idempotencyKey?: string;
   readonly eventType: string;
   readonly tenantId: string;
   readonly terminalId?: string;
@@ -62,6 +63,29 @@ export interface EdgeSyncSnapshot {
   readonly source: "edge" | "unavailable";
   readonly summary: EdgeSyncSummary | null;
   readonly events: readonly EdgeSyncEvent[];
+  readonly message: string;
+}
+
+export interface EdgeStoreFile {
+  readonly version: 1;
+  readonly exportedAt?: string;
+  readonly batches: readonly unknown[];
+  readonly events: readonly unknown[];
+}
+
+export interface EdgeStoreExportResult {
+  readonly ok: boolean;
+  readonly source: "edge" | "unavailable";
+  readonly store: EdgeStoreFile | null;
+  readonly message: string;
+}
+
+export interface EdgeStoreImportResult {
+  readonly ok: boolean;
+  readonly source: "edge" | "unavailable";
+  readonly importedBatches: number;
+  readonly importedEvents: number;
+  readonly replacedExistingStore: boolean;
   readonly message: string;
 }
 
@@ -105,6 +129,33 @@ interface EdgeEventsResponse {
   };
 }
 
+interface EdgeExportResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly store?: EdgeStoreFile;
+  };
+  readonly error?: {
+    readonly code: string;
+    readonly message: string;
+  };
+}
+
+interface EdgeImportResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly importResult?: {
+      readonly importedBatches: number;
+      readonly importedEvents: number;
+      readonly replacedExistingStore: boolean;
+    };
+    readonly summary?: EdgeSyncSummary;
+  };
+  readonly error?: {
+    readonly code: string;
+    readonly message: string;
+  };
+}
+
 function getEdgeBaseUrl(): string {
   return import.meta.env["VITE_EDGE_BASE_URL"] ?? defaultEdgeBaseUrl;
 }
@@ -123,6 +174,16 @@ function isSmokeTenantSeed(value: unknown): value is SmokeTenantSeed {
     Array.isArray(candidate.stockpiles) &&
     Array.isArray(candidate.equipment)
   );
+}
+
+function isEdgeStoreFile(value: unknown): value is EdgeStoreFile {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const candidate = value as Partial<EdgeStoreFile>;
+
+  return candidate.version === 1 && Array.isArray(candidate.batches) && Array.isArray(candidate.events);
 }
 
 export async function loadCooperSmokeSeed(): Promise<LoadSmokeSeedResult> {
@@ -307,6 +368,118 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
       source: "unavailable",
       summary: null,
       events: [],
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
+    };
+  }
+}
+
+export async function exportEdgeSyncStore(): Promise<EdgeStoreExportResult> {
+  const edgeBaseUrl = getEdgeBaseUrl();
+
+  try {
+    const response = await fetch(`${edgeBaseUrl}/sync/export`, {
+      method: "GET",
+      headers: {
+        accept: "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        source: "edge",
+        store: null,
+        message: `Edge export endpoint responded with HTTP ${response.status}.`
+      };
+    }
+
+    const body = (await response.json()) as EdgeExportResponse;
+    const store = body.data?.store;
+
+    if (!body.ok || !isEdgeStoreFile(store)) {
+      return {
+        ok: false,
+        source: "edge",
+        store: null,
+        message: "Edge export response did not contain a valid store payload."
+      };
+    }
+
+    return {
+      ok: true,
+      source: "edge",
+      store,
+      message: `Exported ${store.batches.length} batches and ${store.events.length} events from local edge.`
+    };
+  } catch {
+    return {
+      ok: false,
+      source: "unavailable",
+      store: null,
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
+    };
+  }
+}
+
+export async function importEdgeSyncStore(
+  store: unknown,
+  replaceExistingStore = true
+): Promise<EdgeStoreImportResult> {
+  const edgeBaseUrl = getEdgeBaseUrl();
+
+  try {
+    const response = await fetch(`${edgeBaseUrl}/sync/import`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        replaceExistingStore,
+        store
+      })
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        source: "edge",
+        importedBatches: 0,
+        importedEvents: 0,
+        replacedExistingStore: replaceExistingStore,
+        message: `Edge import endpoint responded with HTTP ${response.status}.`
+      };
+    }
+
+    const body = (await response.json()) as EdgeImportResponse;
+    const importResult = body.data?.importResult;
+
+    if (!body.ok || importResult === undefined) {
+      return {
+        ok: false,
+        source: "edge",
+        importedBatches: 0,
+        importedEvents: 0,
+        replacedExistingStore: replaceExistingStore,
+        message: body.error?.message ?? "Edge import response did not contain import result."
+      };
+    }
+
+    return {
+      ok: true,
+      source: "edge",
+      importedBatches: importResult.importedBatches,
+      importedEvents: importResult.importedEvents,
+      replacedExistingStore: importResult.replacedExistingStore,
+      message: `Imported ${importResult.importedBatches} batches and ${importResult.importedEvents} events into local edge.`
+    };
+  } catch {
+    return {
+      ok: false,
+      source: "unavailable",
+      importedBatches: 0,
+      importedEvents: 0,
+      replacedExistingStore: replaceExistingStore,
       message: `Local edge server unavailable at ${edgeBaseUrl}.`
     };
   }
