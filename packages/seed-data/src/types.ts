@@ -2,6 +2,16 @@ export type SeedDataClassification = "simulated" | "estimated" | "operational";
 
 export type StockpileStatus = "operational" | "pending_review" | "validated";
 
+export type MovementType =
+  | "VESSEL_DISCHARGE"
+  | "STOCKPILE_CREATED"
+  | "STOCKPILE_MOVED"
+  | "EQUIPMENT_ASSIGNED"
+  | "MEASUREMENT_ADDED"
+  | "VALIDATION_REQUESTED";
+
+export type RecommendationSeverity = "low" | "medium" | "high";
+
 export interface SmokeStockpile {
   readonly id: string;
   readonly name: string;
@@ -32,6 +42,38 @@ export interface SmokeKpi {
   readonly classification: SeedDataClassification;
 }
 
+export interface SmokeLayer {
+  readonly id: string;
+  readonly label: string;
+  readonly enabled: boolean;
+  readonly classification: SeedDataClassification;
+}
+
+export interface SmokeMovement {
+  readonly id: string;
+  readonly type: MovementType;
+  readonly title: string;
+  readonly description: string;
+  readonly timestamp: string;
+  readonly actor: string;
+  readonly status: "accepted" | "pending_review" | "conflict";
+}
+
+export interface SmokeRecommendation {
+  readonly id: string;
+  readonly title: string;
+  readonly reason: string;
+  readonly severity: RecommendationSeverity;
+  readonly score: number;
+}
+
+export interface SmokeScenario {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly impact: string;
+}
+
 export interface SmokeTenantSeed {
   readonly tenantName: string;
   readonly terminalName: string;
@@ -39,5 +81,9 @@ export interface SmokeTenantSeed {
   readonly kpis: readonly SmokeKpi[];
   readonly stockpiles: readonly SmokeStockpile[];
   readonly equipment: readonly SmokeEquipment[];
+  readonly layers: readonly SmokeLayer[];
+  readonly movements: readonly SmokeMovement[];
+  readonly recommendations: readonly SmokeRecommendation[];
+  readonly scenarios: readonly SmokeScenario[];
   readonly alerts: readonly string[];
 }

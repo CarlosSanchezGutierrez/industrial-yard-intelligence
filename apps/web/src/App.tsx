@@ -7,6 +7,10 @@ const smokeKpis = cooperSmokeSeed.kpis;
 const smokeStockpiles = cooperSmokeSeed.stockpiles;
 const smokeEquipment = cooperSmokeSeed.equipment;
 const simulatedAlerts = cooperSmokeSeed.alerts;
+const layers = cooperSmokeSeed.layers;
+const movements = cooperSmokeSeed.movements;
+const recommendations = cooperSmokeSeed.recommendations;
+const scenarios = cooperSmokeSeed.scenarios;
 
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
@@ -31,21 +35,32 @@ function getStatusLabel(status: SmokeStockpile["status"]): string {
 function App() {
   return (
     <main className="app-shell" style={applyThemeVariables()}>
+      <nav className="top-nav">
+        <div>
+          <strong>Industrial Yard Intelligence</strong>
+          <span>{cooperSmokeSeed.terminalName}</span>
+        </div>
+        <div className="nav-actions">
+          <span className="sync-chip">Offline-ready</span>
+          <span className="sync-chip muted">Edge local</span>
+        </div>
+      </nav>
+
       <section className="hero-panel">
         <div>
           <p className="eyebrow">{cooperSmokeSeed.tenantName} · Simulación operativa</p>
-          <h1>Industrial Yard Intelligence</h1>
+          <h1>Patio industrial vivo, auditable y configurable.</h1>
           <p className="hero-copy">
-            Vista humo local-first para patios industriales: materiales, equipos, evidencias,
-            eventos y preparación para medición profesional futura.
+            Cockpit local-first para visualizar materiales, equipos, movimientos, evidencias,
+            recomendaciones y escenarios antes de integrar medición profesional real.
           </p>
         </div>
 
         <div className="status-card">
           <span className="status-dot" />
           <div>
-            <strong>Edge local ready</strong>
-            <span>Diseñado para operar sin internet</span>
+            <strong>Operación sin internet</strong>
+            <span>Preparado para sincronización móvil ↔ edge</span>
           </div>
         </div>
       </section>
@@ -70,13 +85,23 @@ function App() {
             <span className="badge">{cooperSmokeSeed.classification}</span>
           </div>
 
+          <div className="layer-bar">
+            {layers.map((layer) => (
+              <span className={`layer-pill ${layer.enabled ? "enabled" : "disabled"}`} key={layer.id}>
+                {layer.label}
+              </span>
+            ))}
+          </div>
+
           <div className="yard-map" aria-label="Mapa representativo de patio industrial">
+            <div className="orthomosaic-texture" />
             <div className="water" />
             <div className="dock dock-one">Muelle 1</div>
             <div className="dock dock-two">Muelle 2</div>
             <div className="rail">Espuela de Ferrocarril</div>
             <div className="warehouse">Bodega</div>
             <div className="scale">Básculas</div>
+            <div className="belt-system">Sistema de Bandas</div>
 
             {smokeStockpiles.map((stockpile) => (
               <button
@@ -144,6 +169,75 @@ function App() {
             ))}
           </div>
         </aside>
+      </section>
+
+      <section className="intel-grid">
+        <article className="timeline-panel">
+          <div className="panel-header compact">
+            <div>
+              <p className="eyebrow">Timeline operativo</p>
+              <h2>Últimos eventos</h2>
+            </div>
+          </div>
+
+          <div className="timeline-list">
+            {movements.map((movement) => (
+              <article className={`timeline-item timeline-${movement.status}`} key={movement.id}>
+                <span className="timeline-time">{movement.timestamp}</span>
+                <div>
+                  <strong>{movement.title}</strong>
+                  <p>{movement.description}</p>
+                  <small>
+                    {movement.type} · {movement.actor}
+                  </small>
+                </div>
+              </article>
+            ))}
+          </div>
+        </article>
+
+        <article className="recommendation-panel">
+          <div className="panel-header compact">
+            <div>
+              <p className="eyebrow">Motor de reglas</p>
+              <h2>Recomendaciones</h2>
+            </div>
+          </div>
+
+          <div className="recommendation-list">
+            {recommendations.map((recommendation) => (
+              <article
+                className={`recommendation-card recommendation-${recommendation.severity}`}
+                key={recommendation.id}
+              >
+                <div>
+                  <strong>{recommendation.title}</strong>
+                  <p>{recommendation.reason}</p>
+                </div>
+                <span>{recommendation.score}</span>
+              </article>
+            ))}
+          </div>
+        </article>
+
+        <article className="scenario-panel">
+          <div className="panel-header compact">
+            <div>
+              <p className="eyebrow">Simulación</p>
+              <h2>Escenarios editables</h2>
+            </div>
+          </div>
+
+          <div className="scenario-list">
+            {scenarios.map((scenario) => (
+              <article className="scenario-card" key={scenario.id}>
+                <strong>{scenario.name}</strong>
+                <p>{scenario.description}</p>
+                <span>{scenario.impact}</span>
+              </article>
+            ))}
+          </div>
+        </article>
       </section>
     </main>
   );

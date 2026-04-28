@@ -18,6 +18,20 @@ describe("@iyi/seed-data", () => {
     expect(names).toContain("MR2");
   });
 
+  it("contains operational layers", () => {
+    expect(cooperSmokeSeed.layers.some((layer) => layer.id === "stockpiles")).toBe(true);
+  });
+
+  it("contains scenario studio seed data", () => {
+    expect(cooperSmokeSeed.scenarios.length).toBeGreaterThan(0);
+  });
+
+  it("contains recommendations with scores", () => {
+    expect(cooperSmokeSeed.recommendations.some((recommendation) => recommendation.score > 80)).toBe(
+      true
+    );
+  });
+
   it("contains explicit simulation warnings", () => {
     expect(cooperSmokeSeed.alerts.some((alert) => alert.includes("representativos"))).toBe(true);
   });
