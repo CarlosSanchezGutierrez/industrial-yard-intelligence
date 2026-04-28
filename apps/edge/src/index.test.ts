@@ -12,7 +12,7 @@ import {
 } from "@iyi/kernel";
 import type { SyncSubmitRequest } from "@iyi/api-contracts";
 
-function createSyncRequest(eventSuffix = "001"): SyncSubmitRequest {
+function createSyncRequest(eventSuffix = "001", idempotencySuffix = eventSuffix): SyncSubmitRequest {
   const tenantId = asTenantId("tenant_cooper_tsmith");
   const terminalId = asTerminalId("terminal_altamira");
   const deviceId = asDeviceId("device_android_001");
@@ -45,7 +45,7 @@ function createSyncRequest(eventSuffix = "001"): SyncSubmitRequest {
           sourceRuntime: "mobile",
           createdAtClient: "2026-04-28T12:00:00.000Z",
           localSequence: 1,
-          idempotencyKey: `tenant_cooper_tsmith:device_android_001:1:event_${eventSuffix}`,
+          idempotencyKey: `tenant_cooper_tsmith:device_android_001:1:event_${idempotencySuffix}`,
           aggregateType: "stockpile",
           aggregateId: asAggregateId("stockpile_001"),
           validationState: "operational",
@@ -127,6 +127,7 @@ describe("@iyi/edge", () => {
       data: {
         events: readonly {
           eventId: string;
+          idempotencyKey: string;
           status: string;
         }[];
       };
@@ -135,7 +136,74 @@ describe("@iyi/edge", () => {
     expect(eventsBody.ok).toBe(true);
     expect(eventsBody.data.events).toHaveLength(1);
     expect(eventsBody.data.events[0]?.eventId).toBe("event_001");
+    expect(eventsBody.data.events[0]?.idempotencyKey).toBe(
+      "tenant_cooper_tsmith:device_android_001:1:event_001"
+    );
     expect(eventsBody.data.events[0]?.status).toBe("accepted");
+  });
+
+  it("detects duplicate sync events by event id", () => {
+    routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/batches",
+      requestId: "request_001",
+      now: "2026-04-28T12:00:01.000Z",
+      body: createSyncRequest("001")
+    });
+
+    const duplicateResponse = routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/batches",
+      requestId: "request_002",
+      now: "2026-04-28T12:00:02.000Z",
+      body: createSyncRequest("001")
+    });
+
+    const body = JSON.parse(duplicateResponse.body) as {
+      ok: boolean;
+      data: {
+        result: {
+          results: readonly {
+            status: string;
+          }[];
+        };
+      };
+    };
+
+    expect(body.ok).toBe(true);
+    expect(body.data.result.results[0]?.status).toBe("duplicate");
+  });
+
+  it("detects duplicate sync events by idempotency key", () => {
+    routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/batches",
+      requestId: "request_001",
+      now: "2026-04-28T12:00:01.000Z",
+      body: createSyncRequest("001", "same_idempotency")
+    });
+
+    const duplicateResponse = routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/batches",
+      requestId: "request_002",
+      now: "2026-04-28T12:00:02.000Z",
+      body: createSyncRequest("002", "same_idempotency")
+    });
+
+    const body = JSON.parse(duplicateResponse.body) as {
+      ok: boolean;
+      data: {
+        result: {
+          results: readonly {
+            status: string;
+          }[];
+        };
+      };
+    };
+
+    expect(body.ok).toBe(true);
+    expect(body.data.result.results[0]?.status).toBe("duplicate");
   });
 
   it("returns sync summary", () => {

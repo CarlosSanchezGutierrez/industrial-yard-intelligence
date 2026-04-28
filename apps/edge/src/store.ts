@@ -9,6 +9,8 @@ import type {
 
 export interface StoredSyncEvent {
   readonly eventId: string;
+  readonly idempotencyKey: string;
+  readonly localSequence: number;
   readonly eventType: string;
   readonly eventVersion: number;
   readonly tenantId: string;
@@ -74,13 +76,86 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
-function isEdgeStoreFile(value: unknown): value is EdgeStoreFile {
-  return (
-    isRecord(value) &&
-    value["version"] === 1 &&
-    Array.isArray(value["batches"]) &&
-    Array.isArray(value["events"])
-  );
+function normalizeStoredEvent(value: unknown): StoredSyncEvent | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  if (
+    typeof value["eventId"] !== "string" ||
+    typeof value["eventType"] !== "string" ||
+    typeof value["tenantId"] !== "string" ||
+    typeof value["userId"] !== "string" ||
+    typeof value["deviceId"] !== "string" ||
+    typeof value["aggregateType"] !== "string" ||
+    typeof value["aggregateId"] !== "string" ||
+    typeof value["createdAtClient"] !== "string" ||
+    typeof value["receivedAtEdge"] !== "string" ||
+    typeof value["status"] !== "string"
+  ) {
+    return null;
+  }
+
+  const localSequence =
+    typeof value["localSequence"] === "number" && Number.isInteger(value["localSequence"])
+      ? value["localSequence"]
+      : 0;
+
+  const eventVersion =
+    typeof value["eventVersion"] === "number" && Number.isInteger(value["eventVersion"])
+      ? value["eventVersion"]
+      : 1;
+
+  const idempotencyKey =
+    typeof value["idempotencyKey"] === "string" && value["idempotencyKey"].length > 0
+      ? value["idempotencyKey"]
+      : `${value["tenantId"]}:${value["deviceId"]}:${localSequence}:${value["eventId"]}`;
+
+  return {
+    eventId: value["eventId"],
+    idempotencyKey,
+    localSequence,
+    eventType: value["eventType"],
+    eventVersion,
+    tenantId: value["tenantId"],
+    ...(typeof value["terminalId"] === "string" ? { terminalId: value["terminalId"] } : {}),
+    userId: value["userId"],
+    deviceId: value["deviceId"],
+    sourceRuntime:
+      typeof value["sourceRuntime"] === "string" ? value["sourceRuntime"] : "unknown",
+    aggregateType: value["aggregateType"],
+    aggregateId: value["aggregateId"],
+    validationState:
+      typeof value["validationState"] === "string" ? value["validationState"] : "operational",
+    ...(typeof value["confidenceLevel"] === "string"
+      ? { confidenceLevel: value["confidenceLevel"] }
+      : {}),
+    createdAtClient: value["createdAtClient"],
+    receivedAtEdge: value["receivedAtEdge"],
+    status: value["status"],
+    ...(typeof value["message"] === "string" ? { message: value["message"] } : {}),
+    ...(typeof value["conflictType"] === "string" ? { conflictType: value["conflictType"] } : {})
+  };
+}
+
+function normalizeStoreFile(value: unknown): EdgeStoreFile | null {
+  if (!isRecord(value) || value["version"] !== 1) {
+    return null;
+  }
+
+  if (!Array.isArray(value["batches"]) || !Array.isArray(value["events"])) {
+    return null;
+  }
+
+  const events = value["events"]
+    .map((event) => normalizeStoredEvent(event))
+    .filter((event): event is StoredSyncEvent => event !== null);
+
+  return {
+    version: 1,
+    batches: value["batches"] as StoredSyncBatch[],
+    events
+  };
 }
 
 export function getEdgeDataDirectory(): string {
@@ -105,16 +180,13 @@ function loadStore(): EdgeStoreFile {
 
   const raw = readFileSync(storeFilePath, "utf8");
   const parsed: unknown = JSON.parse(raw);
+  const normalized = normalizeStoreFile(parsed);
 
-  if (!isEdgeStoreFile(parsed)) {
+  if (normalized === null) {
     throw new Error(`Invalid edge store file format: ${storeFilePath}`);
   }
 
-  cachedStore = {
-    version: 1,
-    batches: [...parsed.batches],
-    events: [...parsed.events]
-  };
+  cachedStore = normalized;
 
   return cachedStore;
 }
@@ -139,6 +211,8 @@ function toStoredSyncEvent(
 ): StoredSyncEvent {
   return {
     eventId: String(event.eventId),
+    idempotencyKey: event.idempotencyKey,
+    localSequence: event.localSequence,
     eventType: event.eventType,
     eventVersion: event.eventVersion,
     tenantId: String(event.tenantId),
@@ -207,6 +281,18 @@ export function getSyncBatchHistory(): readonly StoredSyncBatch[] {
   const store = loadStore();
 
   return [...store.batches].reverse();
+}
+
+export function getKnownSyncEventIds(): ReadonlySet<string> {
+  const store = loadStore();
+
+  return new Set(store.events.map((event) => event.eventId));
+}
+
+export function getKnownSyncIdempotencyKeys(): ReadonlySet<string> {
+  const store = loadStore();
+
+  return new Set(store.events.map((event) => event.idempotencyKey));
 }
 
 export function getSyncSummary(): EdgeSyncSummary {
