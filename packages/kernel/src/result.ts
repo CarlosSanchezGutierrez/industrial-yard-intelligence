@@ -1,4 +1,4 @@
-﻿export type Result<TValue, TError extends string = string> =
+export type Result<TValue, TError extends string = string> =
   | {
       readonly ok: true;
       readonly value: TValue;

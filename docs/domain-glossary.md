@@ -1,4 +1,4 @@
-﻿# Domain Glossary
+# Domain Glossary
 
 ## Organization
 

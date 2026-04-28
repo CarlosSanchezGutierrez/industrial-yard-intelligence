@@ -1,4 +1,4 @@
-﻿export const validationStates = [
+export const validationStates = [
   "draft",
   "operational",
   "pending_review",

@@ -1,4 +1,4 @@
-﻿import { assertNonEmptyString, type Brand } from "./brand.js";
+import { assertNonEmptyString, type Brand } from "./brand.js";
 
 export type OrganizationId = Brand<string, "OrganizationId">;
 export type TenantId = Brand<string, "TenantId">;

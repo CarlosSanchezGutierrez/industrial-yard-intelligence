@@ -1,4 +1,4 @@
-﻿# ADR-0003 - Tenant Isolation Strategy
+# ADR-0003 - Tenant Isolation Strategy
 
 **Status:** Proposed  
 **Date:** 2026-04-28  

@@ -1,4 +1,4 @@
-﻿export * from "./brand.js";
+export * from "./brand.js";
 export * from "./ids.js";
 export * from "./states.js";
 export * from "./measurement.js";

@@ -1,4 +1,4 @@
-﻿# Architecture Principles
+# Architecture Principles
 
 ## Target Architecture
 

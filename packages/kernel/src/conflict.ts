@@ -1,4 +1,4 @@
-﻿export const conflictTypes = [
+export const conflictTypes = [
   "geometry_conflict",
   "status_conflict",
   "quantity_conflict",

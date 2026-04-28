@@ -1,4 +1,4 @@
-﻿export const measurementSourceTypes = [
+export const measurementSourceTypes = [
   "manual_drawing",
   "mobile_gps",
   "georeferenced_image",

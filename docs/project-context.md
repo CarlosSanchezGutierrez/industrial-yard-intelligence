@@ -1,4 +1,4 @@
-﻿# Project Context
+# Project Context
 
 ## Temporary Project Name
 

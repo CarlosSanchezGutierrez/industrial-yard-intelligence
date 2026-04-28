@@ -1,4 +1,4 @@
-﻿# ADR-0004 - Tooling / TypeScript / Package Manager
+# ADR-0004 - Tooling / TypeScript / Package Manager
 
 **Status:** Proposed  
 **Date:** 2026-04-28  

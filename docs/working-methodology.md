@@ -1,4 +1,4 @@
-﻿# Working Methodology
+# Working Methodology
 
 ## Core Rule
 

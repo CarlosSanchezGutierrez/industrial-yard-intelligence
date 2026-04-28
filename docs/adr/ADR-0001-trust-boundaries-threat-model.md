@@ -1,4 +1,4 @@
-﻿# ADR-0001 — Trust Boundaries & Baseline Threat Model
+# ADR-0001 — Trust Boundaries & Baseline Threat Model
 
 **Status:** Proposed  
 **Date:** 2026-04-28  

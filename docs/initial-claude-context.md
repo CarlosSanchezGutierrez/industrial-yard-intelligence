@@ -1,4 +1,4 @@
-﻿# Initial Claude Code Context
+# Initial Claude Code Context
 
 Use this file as persistent context for AI-assisted development sessions.
 

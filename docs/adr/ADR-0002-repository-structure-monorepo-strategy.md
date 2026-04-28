@@ -1,4 +1,4 @@
-﻿# ADR-0002 — Repository Structure & Monorepo Strategy
+# ADR-0002 — Repository Structure & Monorepo Strategy
 
 **Status:** Proposed  
 **Date:** 2026-04-28  

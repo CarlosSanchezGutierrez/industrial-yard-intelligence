@@ -1,4 +1,4 @@
-﻿# ADR-0005 - Sync Protocol / IDs / Clocks / Outbox
+# ADR-0005 - Sync Protocol / IDs / Clocks / Outbox
 
 **Status:** Proposed  
 **Date:** 2026-04-28  
