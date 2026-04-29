@@ -61,13 +61,15 @@ function countArrayRecords(value: unknown): number {
         return 0;
     }
 
-    return Object.values(value as Record<string, unknown>).reduce((total, nestedValue) => {
-        if (Array.isArray(nestedValue)) {
-            return total + nestedValue.length;
-        }
+    let total = 0;
 
-        return total;
-    }, 0);
+    for (const nestedValue of Object.values(value as Record<string, unknown>)) {
+        if (Array.isArray(nestedValue)) {
+            total += nestedValue.length;
+        }
+    }
+
+    return total;
 }
 
 function inferPayloadRecordCount(payload: unknown): number {
