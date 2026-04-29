@@ -35,3 +35,10 @@ If this passes, the live local stack supports the Phase 2 cockpit demo flow.
 Status:
 
 PHASE_2_DEMO_RUNTIME_READY
+## Static status
+
+Before runtime validation, run:
+
+pnpm phase2:status -- -CheckOnly
+
+This confirms the cockpit polish layer is structurally complete before hitting live endpoints.

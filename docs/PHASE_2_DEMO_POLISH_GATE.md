@@ -51,3 +51,10 @@ After static validation and web build pass, start the local stack and run:
 pnpm phase2:runtime
 
 This validates the runtime endpoints represented by the cockpit panels.
+## Status check
+
+Run:
+
+pnpm phase2:status -- -CheckOnly
+
+This validates the Phase 2 status document, static gate, runtime smoke document and mounted cockpit panels.

@@ -201,3 +201,16 @@ Document:
 docs/PHASE_2_DEMO_RUNTIME_SMOKE.md
 
 This validates the live runtime routes used by the Phase 2 cockpit panels.
+## Phase 2 status
+
+Run:
+
+pnpm phase2:status
+
+Status document:
+
+docs/PHASE_2_DEMO_POLISH_STATUS.md
+
+Current status:
+
+PHASE_2_DEMO_POLISH_STATIC_READY

@@ -244,3 +244,12 @@ pnpm phase2:runtime
 Document:
 
 docs/PHASE_2_DEMO_RUNTIME_SMOKE.md
+## Phase 2 demo polish status
+
+Run:
+
+pnpm phase2:status
+
+Document:
+
+docs/PHASE_2_DEMO_POLISH_STATUS.md
