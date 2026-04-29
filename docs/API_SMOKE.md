@@ -29,3 +29,15 @@ Required assertions:
 - audit mutation list includes entries
 - runtime smoke mutations create stockpile.created audit entries
 - runtime smoke mutations create stockpile.status_updated audit entries
+## Stockpile audit history runtime check
+
+The API smoke test validates:
+
+GET /audit/stockpiles/:id
+
+Required assertions:
+
+- stockpile id is discovered from audit mutation entries
+- stockpile history response includes matching stockpileId
+- stockpile history response includes entries
+- every returned history entry belongs to the selected stockpile

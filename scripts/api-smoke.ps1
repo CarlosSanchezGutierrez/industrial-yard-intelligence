@@ -464,3 +464,127 @@ if (-not $hasStockpileCreatedAudit) {
 if (-not $hasStockpileStatusUpdatedAudit) {
     throw "Audit mutations should include stockpile.status_updated."
 }
+
+Write-Host "==> Cloud API stockpile audit history"
+
+function Get-IyiApiStockpileAuditSmokeBaseUrl {
+    $candidateVariableNames = @(
+        "ApiBaseUrl",
+        "BaseUrl",
+        "IyiApiBaseUrl",
+        "CloudApiBaseUrl"
+    )
+
+    foreach ($candidateVariableName in $candidateVariableNames) {
+        $candidateVariable = Get-Variable -Name $candidateVariableName -Scope Script -ErrorAction SilentlyContinue
+
+        if ($null -ne $candidateVariable -and -not [string]::IsNullOrWhiteSpace([string] $candidateVariable.Value)) {
+            return ([string] $candidateVariable.Value).TrimEnd("/")
+        }
+    }
+
+    $candidateEnvironmentNames = @(
+        "IYI_API_BASE_URL",
+        "VITE_IYI_API_BASE_URL",
+        "API_BASE_URL"
+    )
+
+    foreach ($candidateEnvironmentName in $candidateEnvironmentNames) {
+        $candidateEnvironmentValue = [System.Environment]::GetEnvironmentVariable($candidateEnvironmentName)
+
+        if (-not [string]::IsNullOrWhiteSpace($candidateEnvironmentValue)) {
+            return $candidateEnvironmentValue.TrimEnd("/")
+        }
+    }
+
+    return "http://localhost:8788"
+}
+
+$stockpileAuditBaseUrl = Get-IyiApiStockpileAuditSmokeBaseUrl
+
+$stockpileAuditMutationsResponse = Invoke-RestMethod `
+    -Method GET `
+    -Uri "$stockpileAuditBaseUrl/audit/mutations" `
+    -Headers @{
+        "x-request-id" = "api-smoke-stockpile-audit-history-source"
+    }
+
+if ($null -eq $stockpileAuditMutationsResponse) {
+    throw "Audit mutations response was empty while preparing stockpile audit history check."
+}
+
+$stockpileAuditMutationsPayload = $stockpileAuditMutationsResponse
+
+if ($stockpileAuditMutationsResponse.PSObject.Properties.Name -contains "data") {
+    $stockpileAuditMutationsPayload = $stockpileAuditMutationsResponse.data
+}
+
+if ($null -eq $stockpileAuditMutationsPayload.entries) {
+    throw "Audit mutations response did not include entries while preparing stockpile audit history check."
+}
+
+$stockpileAuditEntries = @($stockpileAuditMutationsPayload.entries)
+
+if ($stockpileAuditEntries.Count -lt 1) {
+    throw "Audit mutations did not include entries for stockpile audit history check."
+}
+
+$stockpileAuditTargetId = $null
+
+foreach ($auditEntry in $stockpileAuditEntries) {
+    if ($null -eq $auditEntry.mutation) {
+        continue
+    }
+
+    if ($null -ne $auditEntry.mutation.stockpileId -and -not [string]::IsNullOrWhiteSpace([string] $auditEntry.mutation.stockpileId)) {
+        $stockpileAuditTargetId = [string] $auditEntry.mutation.stockpileId
+        break
+    }
+}
+
+if ([string]::IsNullOrWhiteSpace($stockpileAuditTargetId)) {
+    throw "Could not find a stockpileId in audit mutations for stockpile audit history check."
+}
+
+$encodedStockpileAuditTargetId = [System.Uri]::EscapeDataString($stockpileAuditTargetId)
+
+$stockpileAuditHistoryResponse = Invoke-RestMethod `
+    -Method GET `
+    -Uri "$stockpileAuditBaseUrl/audit/stockpiles/$encodedStockpileAuditTargetId" `
+    -Headers @{
+        "x-request-id" = "api-smoke-stockpile-audit-history"
+    }
+
+if ($null -eq $stockpileAuditHistoryResponse) {
+    throw "Stockpile audit history response was empty."
+}
+
+$stockpileAuditHistoryPayload = $stockpileAuditHistoryResponse
+
+if ($stockpileAuditHistoryResponse.PSObject.Properties.Name -contains "data") {
+    $stockpileAuditHistoryPayload = $stockpileAuditHistoryResponse.data
+}
+
+if ($stockpileAuditHistoryPayload.stockpileId -ne $stockpileAuditTargetId) {
+    throw "Stockpile audit history response stockpileId mismatch."
+}
+
+if ($null -eq $stockpileAuditHistoryPayload.entries) {
+    throw "Stockpile audit history response did not include entries."
+}
+
+$stockpileAuditHistoryEntries = @($stockpileAuditHistoryPayload.entries)
+
+if ($stockpileAuditHistoryEntries.Count -lt 1) {
+    throw "Stockpile audit history expected at least one entry."
+}
+
+foreach ($historyEntry in $stockpileAuditHistoryEntries) {
+    if ($null -eq $historyEntry.mutation) {
+        throw "Stockpile audit history entry did not include mutation."
+    }
+
+    if ($historyEntry.mutation.stockpileId -ne $stockpileAuditTargetId) {
+        throw "Stockpile audit history included entry for a different stockpile."
+    }
+}

@@ -57,3 +57,8 @@ GET /audit/stockpiles/:id
 Returns audit mutation entries associated with one stockpile.
 
 This endpoint supports entity-level traceability for supervisors and future evidence review screens.
+## Smoke runtime coverage
+
+`scripts/api-smoke.ps1` validates mutation audit query endpoints, including stockpile-specific audit history through:
+
+GET /audit/stockpiles/:id
