@@ -42,3 +42,8 @@ Runtime route:
 GET /sync/packages/db-projection
 
 The wrapper calls the existing edge DB projection snapshot route internally and converts the returned snapshot into a Cloud Edge sync package.
+## Synchronous route contract
+
+The edge router remains synchronous.
+
+`wrapEdgeCloudSyncExportRoute` must not return a Promise because the existing edge tests and HTTP server expect `EdgeRouteResponse` directly.

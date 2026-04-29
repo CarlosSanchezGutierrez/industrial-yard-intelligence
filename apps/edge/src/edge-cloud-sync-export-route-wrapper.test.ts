@@ -35,12 +35,15 @@ function getData(response: unknown): unknown {
 }
 
 describe("wrapEdgeCloudSyncExportRoute", () => {
-    it("returns sync package for GET /sync/packages/db-projection using core /db/snapshot", async () => {
-        const route = wrapEdgeCloudSyncExportRoute(async (request: { readonly pathname: string }) => {
+    it("returns sync package for GET /sync/packages/db-projection using core /db/snapshot", () => {
+        const route = wrapEdgeCloudSyncExportRoute((request: { readonly pathname: string }) => {
             if (request.pathname === "/db/snapshot") {
                 return {
                     statusCode: 200,
-                    body: {
+                    headers: {
+                        "content-type": "application/json; charset=utf-8",
+                    },
+                    body: JSON.stringify({
                         ok: true,
                         data: {
                             snapshot: {
@@ -66,19 +69,22 @@ describe("wrapEdgeCloudSyncExportRoute", () => {
                                 ],
                             },
                         },
-                    },
+                    }),
                 };
             }
 
             return {
                 statusCode: 404,
-                body: {
-                    ok: false,
+                headers: {
+                    "content-type": "application/json; charset=utf-8",
                 },
+                body: JSON.stringify({
+                    ok: false,
+                }),
             };
         });
 
-        const response = await route({
+        const response = route({
             method: "GET",
             pathname: "/sync/packages/db-projection",
             now: new Date("2026-01-01T00:00:00.000Z"),
@@ -112,18 +118,21 @@ describe("wrapEdgeCloudSyncExportRoute", () => {
         expect(data.package.manifest.payloadRecordCount).toBe(4);
     });
 
-    it("passes through non-sync-export routes", async () => {
-        const route = wrapEdgeCloudSyncExportRoute(async () => ({
+    it("passes through non-sync-export routes synchronously", () => {
+        const route = wrapEdgeCloudSyncExportRoute(() => ({
             statusCode: 200,
-            body: {
+            headers: {
+                "content-type": "application/json; charset=utf-8",
+            },
+            body: JSON.stringify({
                 ok: true,
                 data: {
                     passedThrough: true,
                 },
-            },
+            }),
         }));
 
-        const response = await route({
+        const response = route({
             method: "GET",
             pathname: "/health",
         });
@@ -134,15 +143,18 @@ describe("wrapEdgeCloudSyncExportRoute", () => {
         });
     });
 
-    it("returns failure when snapshot cannot be loaded", async () => {
-        const route = wrapEdgeCloudSyncExportRoute(async () => ({
+    it("returns failure when snapshot cannot be loaded", () => {
+        const route = wrapEdgeCloudSyncExportRoute(() => ({
             statusCode: 404,
-            body: {
-                ok: false,
+            headers: {
+                "content-type": "application/json; charset=utf-8",
             },
+            body: JSON.stringify({
+                ok: false,
+            }),
         }));
 
-        const response = await route({
+        const response = route({
             method: "GET",
             pathname: "/sync/packages/db-projection",
         });

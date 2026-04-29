@@ -5,7 +5,7 @@ import {
 import type { EdgeDbProjectionSyncSnapshot } from "./db-projection-sync-package.js";
 
 type UnknownRequestRecord = Record<string, unknown>;
-type RouteCore<TRequest, TResponse> = (request: TRequest) => TResponse | Promise<TResponse>;
+type RouteCore<TRequest, TResponse> = (request: TRequest) => TResponse;
 
 const defaultTenantId = "tenant_cooper_t_smith";
 const defaultTerminalId = "terminal_altamira";
@@ -37,7 +37,23 @@ function getRequestMethod(request: UnknownRequestRecord): string | undefined {
 }
 
 function getRequestPathname(request: UnknownRequestRecord): string {
-    return getString(request, ["pathname", "path", "url"]) ?? "";
+    const rawPathname = getString(request, ["pathname", "path", "url"]) ?? "";
+
+    if (rawPathname.startsWith("http://") || rawPathname.startsWith("https://")) {
+        try {
+            return new URL(rawPathname).pathname;
+        } catch {
+            return rawPathname;
+        }
+    }
+
+    const queryIndex = rawPathname.indexOf("?");
+
+    if (queryIndex >= 0) {
+        return rawPathname.slice(0, queryIndex);
+    }
+
+    return rawPathname;
 }
 
 function getRequestNow(request: UnknownRequestRecord): Date {
@@ -67,7 +83,7 @@ function getRequestSearchParams(request: UnknownRequestRecord): URLSearchParams 
         return new URLSearchParams(query.startsWith("?") ? query.slice(1) : query);
     }
 
-    const url = getString(request, ["url"]);
+    const url = getString(request, ["url", "path", "pathname"]);
 
     if (url) {
         try {
@@ -172,27 +188,31 @@ function toSnapshot(value: unknown): EdgeDbProjectionSyncSnapshot | null {
     return data as EdgeDbProjectionSyncSnapshot;
 }
 
-function createFailureResponse(message: string): unknown {
+function createJsonResponse(statusCode: number, body: unknown): unknown {
     return {
-        statusCode: 500,
-        body: {
-            ok: false,
-            error: {
-                code: "edge_sync_export_failed",
-                message,
-            },
+        statusCode,
+        headers: {
+            "content-type": "application/json; charset=utf-8",
         },
+        body: JSON.stringify(body),
     };
 }
 
-function createSuccessResponse(data: EdgeCloudSyncExportPayloadContract): unknown {
-    return {
-        statusCode: 200,
-        body: {
-            ok: true,
-            data,
+function createFailureResponse(message: string): unknown {
+    return createJsonResponse(500, {
+        ok: false,
+        error: {
+            code: "edge_sync_export_failed",
+            message,
         },
-    };
+    });
+}
+
+function createSuccessResponse(data: EdgeCloudSyncExportPayloadContract): unknown {
+    return createJsonResponse(200, {
+        ok: true,
+        data,
+    });
 }
 
 function isDbProjectionSyncExportRequest(request: UnknownRequestRecord): boolean {
@@ -204,19 +224,19 @@ function isDbProjectionSyncExportRequest(request: UnknownRequestRecord): boolean
 
 export function wrapEdgeCloudSyncExportRoute<TRequest, TResponse>(
     coreRoute: RouteCore<TRequest, TResponse>,
-): (request: TRequest) => Promise<Awaited<TResponse>> {
-    return async (request: TRequest): Promise<Awaited<TResponse>> => {
+): (request: TRequest) => TResponse {
+    return (request: TRequest): TResponse => {
         const requestRecord = isRecord(request) ? (request as UnknownRequestRecord) : {};
 
         if (!isDbProjectionSyncExportRequest(requestRecord)) {
-            return coreRoute(request) as Promise<Awaited<TResponse>>;
+            return coreRoute(request);
         }
 
-        const snapshotResponse = await coreRoute(createSnapshotRequest(request));
+        const snapshotResponse = coreRoute(createSnapshotRequest(request));
         const snapshot = toSnapshot(snapshotResponse);
 
         if (!isSuccessfulResponse(snapshotResponse) || !snapshot) {
-            return createFailureResponse("Could not load edge DB projection snapshot.") as Awaited<TResponse>;
+            return createFailureResponse("Could not load edge DB projection snapshot.") as TResponse;
         }
 
         const searchParams = getRequestSearchParams(requestRecord);
@@ -230,7 +250,7 @@ export function wrapEdgeCloudSyncExportRoute<TRequest, TResponse>(
             searchParams.get("cloudNodeId") ?? getString(requestRecord, ["cloudNodeId"]) ?? defaultCloudNodeId;
 
         const response = createEdgeCloudSyncExportResponse({
-            ...(packageId !== undefined ? { packageId } : {}),
+            ...(packageId !== null && packageId !== undefined ? { packageId } : {}),
             createdAt: getRequestNow(requestRecord),
             tenantId,
             terminalId,
@@ -239,6 +259,6 @@ export function wrapEdgeCloudSyncExportRoute<TRequest, TResponse>(
             snapshot,
         });
 
-        return createSuccessResponse(response.body.data) as Awaited<TResponse>;
+        return createSuccessResponse(response.body.data) as TResponse;
     };
 }
