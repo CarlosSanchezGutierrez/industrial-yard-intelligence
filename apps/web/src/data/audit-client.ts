@@ -2,6 +2,7 @@ import type {
     CloudApiAuditMutationEntryContract,
     CloudApiAuditMutationListPayloadContract,
     CloudApiAuditMutationSummaryPayloadContract,
+    CloudApiAuditStockpileHistoryPayloadContract,
 } from "@iyi/api-contracts";
 
 export interface CloudApiAuditDashboardSnapshot {
@@ -83,6 +84,24 @@ function assertAuditMutationSummaryPayload(
     return payload;
 }
 
+function assertAuditStockpileHistoryPayload(
+    payload: CloudApiAuditStockpileHistoryPayloadContract,
+): CloudApiAuditStockpileHistoryPayloadContract {
+    if (typeof payload.stockpileId !== "string") {
+        throw new Error("Stockpile audit history payload did not include stockpileId.");
+    }
+
+    if (!Array.isArray(payload.entries)) {
+        throw new Error("Stockpile audit history payload did not include entries.");
+    }
+
+    if (!payload.entries.every(assertAuditEntry)) {
+        throw new Error("Stockpile audit history payload included invalid entries.");
+    }
+
+    return payload;
+}
+
 async function loadCloudApiJson<TPayload>(
     path: string,
     baseUrl = getCloudApiBaseUrl(),
@@ -123,6 +142,19 @@ export async function loadCloudApiAuditMutations(
     );
 
     return assertAuditMutationListPayload(payload);
+}
+
+export async function loadCloudApiAuditStockpileHistory(
+    stockpileId: string,
+    baseUrl = getCloudApiBaseUrl(),
+): Promise<CloudApiAuditStockpileHistoryPayloadContract> {
+    const encodedStockpileId = encodeURIComponent(stockpileId);
+    const payload = await loadCloudApiJson<CloudApiAuditStockpileHistoryPayloadContract>(
+        `/audit/stockpiles/${encodedStockpileId}`,
+        baseUrl,
+    );
+
+    return assertAuditStockpileHistoryPayload(payload);
 }
 
 export async function loadCloudApiAuditDashboardSnapshot(

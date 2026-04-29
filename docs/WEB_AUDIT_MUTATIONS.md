@@ -13,3 +13,10 @@ The panel displays:
 - latest audit entries
 
 This is the first cockpit visibility layer for traceability and accountability in the Cloud API.
+## Stockpile audit history
+
+The cockpit now reads entity-level audit history from:
+
+GET /audit/stockpiles/:id
+
+The audit panel lets supervisors select a stockpile and inspect its stockpile-specific mutation timeline.
