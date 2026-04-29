@@ -94,3 +94,10 @@ Main services:
 - API: http://localhost:8788
 - Edge: http://localhost:8787
 - Web: Vite dev server
+## Architecture readiness
+
+Run the architecture skeleton checklist with:
+
+pnpm architecture:check
+
+This validates required v1 files, route markers, smoke scripts and docs.

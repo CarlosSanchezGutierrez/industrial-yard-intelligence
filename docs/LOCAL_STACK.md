@@ -65,3 +65,10 @@ After starting the local stack, validate the Edge-to-Cloud sync skeleton with:
 pnpm sync:smoke
 
 This calls the edge export route and validates the exported package against the Cloud API sync preview and disabled apply-mode ingest endpoints.
+## Architecture readiness check
+
+Validate the v1 skeleton with:
+
+pnpm architecture:check
+
+This should pass together with build, test, typecheck and local CI before declaring the skeleton closed.
