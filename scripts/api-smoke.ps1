@@ -346,3 +346,121 @@ $archivedTransitions = @($stockpileLifecyclePayload.allowedTransitionsByStatus.a
 if ($archivedTransitions.Count -ne 0) {
     throw "Stockpile lifecycle archived status should not allow outgoing transitions."
 }
+
+Write-Host "==> Cloud API mutation audit"
+
+function Get-IyiApiAuditSmokeBaseUrl {
+    $candidateVariableNames = @(
+        "ApiBaseUrl",
+        "BaseUrl",
+        "IyiApiBaseUrl",
+        "CloudApiBaseUrl"
+    )
+
+    foreach ($candidateVariableName in $candidateVariableNames) {
+        $candidateVariable = Get-Variable -Name $candidateVariableName -Scope Script -ErrorAction SilentlyContinue
+
+        if ($null -ne $candidateVariable -and -not [string]::IsNullOrWhiteSpace([string] $candidateVariable.Value)) {
+            return ([string] $candidateVariable.Value).TrimEnd("/")
+        }
+    }
+
+    $candidateEnvironmentNames = @(
+        "IYI_API_BASE_URL",
+        "VITE_IYI_API_BASE_URL",
+        "API_BASE_URL"
+    )
+
+    foreach ($candidateEnvironmentName in $candidateEnvironmentNames) {
+        $candidateEnvironmentValue = [System.Environment]::GetEnvironmentVariable($candidateEnvironmentName)
+
+        if (-not [string]::IsNullOrWhiteSpace($candidateEnvironmentValue)) {
+            return $candidateEnvironmentValue.TrimEnd("/")
+        }
+    }
+
+    return "http://localhost:8788"
+}
+
+$auditSmokeBaseUrl = Get-IyiApiAuditSmokeBaseUrl
+
+$auditSummaryResponse = Invoke-RestMethod `
+    -Method GET `
+    -Uri "$auditSmokeBaseUrl/audit/summary" `
+    -Headers @{
+        "x-request-id" = "api-smoke-audit-summary"
+    }
+
+if ($null -eq $auditSummaryResponse) {
+    throw "Audit summary response was empty."
+}
+
+$auditSummaryPayload = $auditSummaryResponse
+
+if ($auditSummaryResponse.PSObject.Properties.Name -contains "data") {
+    $auditSummaryPayload = $auditSummaryResponse.data
+}
+
+if ($null -eq $auditSummaryPayload.auditEntryCount) {
+    throw "Audit summary did not include auditEntryCount."
+}
+
+if ($null -eq $auditSummaryPayload.mutationCountsByType) {
+    throw "Audit summary did not include mutationCountsByType."
+}
+
+if ([int] $auditSummaryPayload.auditEntryCount -lt 1) {
+    throw "Audit summary expected at least one mutation entry after smoke mutations."
+}
+
+$auditMutationsResponse = Invoke-RestMethod `
+    -Method GET `
+    -Uri "$auditSmokeBaseUrl/audit/mutations" `
+    -Headers @{
+        "x-request-id" = "api-smoke-audit-mutations"
+    }
+
+if ($null -eq $auditMutationsResponse) {
+    throw "Audit mutations response was empty."
+}
+
+$auditMutationsPayload = $auditMutationsResponse
+
+if ($auditMutationsResponse.PSObject.Properties.Name -contains "data") {
+    $auditMutationsPayload = $auditMutationsResponse.data
+}
+
+if ($null -eq $auditMutationsPayload.entries) {
+    throw "Audit mutations response did not include entries."
+}
+
+$auditEntries = @($auditMutationsPayload.entries)
+
+if ($auditEntries.Count -lt 1) {
+    throw "Audit mutations expected at least one entry after smoke mutations."
+}
+
+$hasStockpileCreatedAudit = $false
+$hasStockpileStatusUpdatedAudit = $false
+
+foreach ($auditEntry in $auditEntries) {
+    if ($null -eq $auditEntry.mutation) {
+        continue
+    }
+
+    if ($auditEntry.mutation.type -eq "stockpile.created") {
+        $hasStockpileCreatedAudit = $true
+    }
+
+    if ($auditEntry.mutation.type -eq "stockpile.status_updated") {
+        $hasStockpileStatusUpdatedAudit = $true
+    }
+}
+
+if (-not $hasStockpileCreatedAudit) {
+    throw "Audit mutations should include stockpile.created."
+}
+
+if (-not $hasStockpileStatusUpdatedAudit) {
+    throw "Audit mutations should include stockpile.status_updated."
+}
