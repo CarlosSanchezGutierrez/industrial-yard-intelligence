@@ -40,8 +40,6 @@ import {
   saveEdgeDbSnapshot,
   type EdgeDbProjectionSummary
 } from "./data/edge-client.js";
-import "./styles.css";
-
 import { StockpileLifecyclePanel } from "./components/StockpileLifecyclePanel.js";
 import { AuditMutationPanel } from "./components/AuditMutationPanel.js";
 import { CloudEdgeSyncPanel } from "./components/CloudEdgeSyncPanel.js";
@@ -57,21 +55,12 @@ import { SyncDemoStoryPanel } from "./components/SyncDemoStoryPanel.js";
 import { YardOperationsMapPanel } from "./components/YardOperationsMapPanel.js";
 import { CockpitSectionNavigationPanel } from "./components/CockpitSectionNavigationPanel.js";
 import { PremiumCockpitHero } from "./components/PremiumCockpitHero.js";
-import "./styles/premium-cockpit.css";
 import { PremiumCockpitCommandDeck } from "./components/PremiumCockpitCommandDeck.js";
 import { PremiumGpsPreviewPanel } from "./components/PremiumGpsPreviewPanel.js";
-import "./styles/premium-experience.css";
 import { PremiumCockpitTabs } from "./components/PremiumCockpitTabs.js";
-import "./styles/premium-tabs.css";
 import { PremiumUxFrame } from "./components/PremiumUxFrame.js";
-import "./styles/premium-ux-depth.css";
-import "./styles/premium-dark-product.css";
-import "./styles/dark-product-final.css";
-import { NamikiProductShell } from "./components/NamikiProductShell.js";
-import "./styles/namiki-product-shell.css";
-import "./styles/zz-namiki-black-operations.css";
-import "./styles/zzz-namiki-operational-hub.css";
-import "./styles/zzzz-namiki-professional-console.css";
+import { NamikiProductShell } from "./components/NamikiProductShell.js";
+import "./styles/namiki-console-system.css";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }

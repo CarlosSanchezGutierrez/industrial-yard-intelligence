@@ -292,3 +292,18 @@ Features:
 - reset
 - demo readiness
 - demo report
+## P0 visual foundation cleanup applied
+
+Action taken:
+
+- Removed old CSS imports from `apps/web/src/App.tsx`.
+- Added one canonical visual system:
+  - `apps/web/src/styles/namiki-console-system.css`
+- Kept `NamikiProductShell` as the only visible product surface.
+- Hid legacy top-level sections from the normal product view.
+- Forced black/dark backgrounds at root, body, main and shell levels.
+- Added final overrides for old white/gray Tailwind-like utility classes inside reused components.
+
+Reason:
+
+The audit found multiple CSS layers and white/background risks. The product should not keep stacking old premium CSS files because they fight each other and create the white/gray canvas effect.
