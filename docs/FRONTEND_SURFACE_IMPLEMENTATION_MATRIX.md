@@ -362,3 +362,19 @@ Files:
 - `apps/web/src/components/NamikiExperienceShell.tsx`
 - `apps/web/src/styles/namiki-polish-p0-5.css`
 - `docs/NAMIKI_UX_POLISH_P0_5.md`
+## P0.6 real GPS workspace applied
+
+Action taken:
+
+- Added real browser geolocation workspace.
+- Added current coordinate display.
+- Added accuracy display.
+- Added current marker.
+- Added saved GPS field points.
+- Added conceptual perimeter preview.
+
+Files:
+
+- `apps/web/src/components/RealGpsWorkspace.tsx`
+- `apps/web/src/styles/namiki-polish-p0-6-gps.css`
+- `docs/NAMIKI_UX_POLISH_P0_6.md`
