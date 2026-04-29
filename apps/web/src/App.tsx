@@ -67,6 +67,8 @@ import { PremiumUxFrame } from "./components/PremiumUxFrame.js";
 import "./styles/premium-ux-depth.css";
 import "./styles/premium-dark-product.css";
 import "./styles/dark-product-final.css";
+import { NamikiProductShell } from "./components/NamikiProductShell.js";
+import "./styles/namiki-product-shell.css";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
@@ -454,6 +456,7 @@ function App() {
   }
   return (
     <main className="app-shell" style={applyThemeVariables()}>
+            <NamikiProductShell />
             <PremiumCockpitHero />
             <PremiumCockpitTabs />
             <PremiumUxFrame />
