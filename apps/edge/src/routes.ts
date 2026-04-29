@@ -713,7 +713,7 @@ function createDemoPackage(now: string): DemoPackageContract {
   const report = createDemoExecutiveReport(now);
   const backup = createOfflineBackup(now);
 
-  return {
+  const packagePayload: Omit<DemoPackageContract, "integrity"> = {
     version: 1,
     packageId: `demo_package_${normalizeDemoSuffix(now)}`,
     customer: "Cooper/T. Smith",
@@ -729,6 +729,11 @@ function createDemoPackage(now: string): DemoPackageContract {
     },
     report,
     backup
+  };
+
+  return {
+    ...packagePayload,
+    integrity: createDemoPackageIntegrity(packagePayload)
   };
 }
 function handleRunGuidedDemo(request: EdgeRouteRequest): EdgeRouteResponse {
