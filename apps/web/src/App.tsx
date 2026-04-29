@@ -9,6 +9,7 @@ import {
   loadEdgeSyncSnapshot,
   registerDemoEvidence,
   resolveSyncConflict,
+  runGuidedDemoScenario,
   submitDemoSyncBatch,
   type EdgeAuditEntry,
   type EdgeAuditSummary,
@@ -97,6 +98,10 @@ function App() {
   const [isLoadingSeed, setIsLoadingSeed] = useState(true);
   const [syncResult, setSyncResult] = useState<SubmitSyncDemoResult | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [guidedDemoMessage, setGuidedDemoMessage] = useState(
+    "Ejecuta el flujo completo: sync aceptado, conflicto, evidencia y refresh de monitores."
+  );
+  const [isRunningGuidedDemo, setIsRunningGuidedDemo] = useState(false);
   const [edgeSummary, setEdgeSummary] = useState<EdgeSyncSummary | null>(null);
   const [edgeEvents, setEdgeEvents] = useState<readonly EdgeSyncEvent[]>([]);
   const [conflictResolutions, setConflictResolutions] = useState<readonly EdgeConflictResolution[]>([]);
@@ -166,6 +171,14 @@ function App() {
     setSyncResult(result);
     await refreshEdgeMonitor();
     setIsSyncing(false);
+  }
+
+  async function handleRunGuidedDemo(): Promise<void> {
+    setIsRunningGuidedDemo(true);
+    const result = await runGuidedDemoScenario();
+    setGuidedDemoMessage(result.message);
+    await refreshEdgeMonitor();
+    setIsRunningGuidedDemo(false);
   }
 
   async function handleResolveConflict(eventId: string): Promise<void> {
@@ -385,6 +398,18 @@ function App() {
             ) : null}
           </div>
 
+          <div className="guided-demo-panel">
+            <p className="eyebrow">Guided demo</p>
+            <h2>Ejecutar flujo completo</h2>
+            <p>{guidedDemoMessage}</p>
+            <button
+              className="guided-demo-button"
+              disabled={isRunningGuidedDemo}
+              onClick={() => void handleRunGuidedDemo()}
+            >
+              {isRunningGuidedDemo ? "Ejecutando demo..." : "Ejecutar demo guiada"}
+            </button>
+          </div>
           <div className="offline-transfer-panel">
             <p className="eyebrow">Offline transfer</p>
             <h2>Exportar / importar edge backup</h2>

@@ -1138,3 +1138,38 @@ h2 {
     grid-template-columns: 1fr;
   }
 }
+
+.guided-demo-panel {
+  margin-top: 1.25rem;
+  border: 1px solid rgba(250, 204, 21, 0.24);
+  border-radius: 1rem;
+  background: rgba(250, 204, 21, 0.08);
+  padding: 0.95rem;
+}
+
+.guided-demo-panel h2 {
+  margin-bottom: 0.4rem;
+}
+
+.guided-demo-panel p {
+  margin: 0.35rem 0 0.75rem;
+  color: var(--iyi-color-text-muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.guided-demo-button {
+  width: 100%;
+  border: 1px solid rgba(250, 204, 21, 0.34);
+  border-radius: 0.9rem;
+  background: rgba(250, 204, 21, 0.16);
+  color: #fef3c7;
+  cursor: pointer;
+  font-weight: 900;
+  padding: 0.75rem 0.9rem;
+}
+
+.guided-demo-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

@@ -130,6 +130,11 @@ export interface RegisterEvidenceResult {
   readonly message: string;
 }
 
+export interface RunGuidedDemoResult {
+  readonly ok: boolean;
+  readonly message: string;
+}
+
 export interface EdgeSyncSnapshot {
   readonly ok: boolean;
   readonly source: "edge" | "unavailable";
@@ -384,7 +389,11 @@ function createDemoSyncRequest(): SyncSubmitRequest {
   const userId = asUserId("user_demo_operator");
   const deviceId = asDeviceId("device_web_demo");
   const now = Date.now();
-  const eventId = asEventId(`event_web_demo_${now}`);
+  const randomPart =
+    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID()
+      : `${now}`;
+  const eventId = asEventId(`event_web_demo_${now}_${randomPart}`);
 
   return {
     context: {
@@ -412,7 +421,7 @@ function createDemoSyncRequest(): SyncSubmitRequest {
           sourceRuntime: "mobile",
           createdAtClient: new Date().toISOString(),
           localSequence: now,
-          idempotencyKey: `tenant_cooper_tsmith:device_web_demo:${now}:${eventId}`,
+          idempotencyKey: `tenant_cooper_tsmith:device_web_demo:${now}:${randomPart}:${eventId}`,
           aggregateType: "stockpile",
           aggregateId: asAggregateId("stockpile_pet_coke_001"),
           validationState: "operational",
@@ -531,6 +540,30 @@ export async function registerDemoEvidence(): Promise<RegisterEvidenceResult> {
   }
 }
 
+function delay(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, milliseconds);
+  });
+}
+
+export async function runGuidedDemoScenario(): Promise<RunGuidedDemoResult> {
+  const firstSync = await submitDemoSyncBatch();
+  await delay(20);
+
+  const secondSync = await submitDemoSyncBatch();
+  await delay(20);
+
+  const evidence = await registerDemoEvidence();
+
+  const ok = firstSync.ok && secondSync.ok && evidence.ok;
+
+  return {
+    ok,
+    message: ok
+      ? `Guided demo ran: first sync=${firstSync.status}, second sync=${secondSync.status}, evidence registered.`
+      : `Guided demo partial result: first sync=${firstSync.status}, second sync=${secondSync.status}, evidence=${evidence.ok ? "ok" : "failed"}.`
+  };
+}
 export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
   const edgeBaseUrl = getEdgeBaseUrl();
 
