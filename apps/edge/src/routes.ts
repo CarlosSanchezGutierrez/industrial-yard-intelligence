@@ -1193,6 +1193,48 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
       )
     );
   }
+  if (request.method === "GET" && request.pathname === "/db/summary") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          summary: getEdgeDbSummary(request.now)
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  }
+
+  if (request.method === "GET" && request.pathname === "/db/snapshot") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          snapshot: getEdgeDbSnapshot(request.now)
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  }
+
+  if (request.method === "POST" && request.pathname === "/db/snapshot/save") {
+    const snapshot = saveEdgeDbSnapshot(request.now);
+
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          saved: true,
+          storeFile: getEdgeDbStoreFilePath(),
+          snapshot
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  }
   return jsonResponse(
     404,
     createApiFailure(

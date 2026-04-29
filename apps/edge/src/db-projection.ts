@@ -229,32 +229,29 @@ function createSyncEventRecords(now: string): readonly DbSyncEventRecord[] {
   return getSyncEventHistory().map((event, index) => {
     const source = event as unknown as RecordLike;
     const eventId = stringValue(source["eventId"], `sync_event_${index + 1}`);
+    const terminalId = nullableString(source["terminalId"]);
+    const conflictType = nullableString(source["conflictType"]);
+    const confidenceLevel = nullableString(source["confidenceLevel"]);
 
     return {
       id: eventId,
       tenantId: stringValue(source["tenantId"], "tenant_cooper_tsmith"),
-      ...(nullableString(source["terminalId"]) !== undefined
-        ? { terminalId: nullableString(source["terminalId"]) }
-        : {}),
       eventType: stringValue(source["eventType"], "UNKNOWN_EVENT"),
       aggregateType: stringValue(source["aggregateType"], "unknown"),
       aggregateId: stringValue(source["aggregateId"], "unknown"),
       status: normalizeSyncStatus(source["status"]),
-      ...(nullableString(source["conflictType"]) !== undefined
-        ? { conflictType: nullableString(source["conflictType"]) }
-        : {}),
       idempotencyKey: stringValue(source["idempotencyKey"], eventId),
       sourceRuntime: stringValue(source["sourceRuntime"], "edge"),
       userId: stringValue(source["userId"], "user_demo_operator"),
       deviceId: stringValue(source["deviceId"], "device_web_demo"),
       validationState: stringValue(source["validationState"], "operational"),
-      ...(nullableString(source["confidenceLevel"]) !== undefined
-        ? { confidenceLevel: nullableString(source["confidenceLevel"]) }
-        : {}),
       payload: toDbJsonValue(source["payload"] ?? source),
       createdAtClient: stringValue(source["createdAtClient"], now),
       receivedAtEdge: stringValue(source["receivedAtEdge"], now),
-      createdAt: now
+      createdAt: now,
+      ...(terminalId !== undefined ? { terminalId } : {}),
+      ...(conflictType !== undefined ? { conflictType } : {}),
+      ...(confidenceLevel !== undefined ? { confidenceLevel } : {})
     };
   });
 }
@@ -281,13 +278,11 @@ function createConflictResolutionRecords(now: string): readonly DbConflictResolu
 function createAuditEntryRecords(now: string): readonly DbAuditEntryRecord[] {
   return getAuditEntries().map((entry, index) => {
     const source = entry as unknown as RecordLike;
+    const terminalId = nullableString(source["terminalId"]);
 
     return {
       id: stringValue(source["auditEventId"], `audit_${index + 1}`),
       tenantId: stringValue(source["tenantId"], "tenant_cooper_tsmith"),
-      ...(nullableString(source["terminalId"]) !== undefined
-        ? { terminalId: nullableString(source["terminalId"]) }
-        : {}),
       actionType: stringValue(source["actionType"], "UNKNOWN_ACTION"),
       affectedEntityType: stringValue(source["affectedEntityType"], "unknown"),
       affectedEntityId: stringValue(source["affectedEntityId"], "unknown"),
@@ -299,7 +294,8 @@ function createAuditEntryRecords(now: string): readonly DbAuditEntryRecord[] {
       integrityHash: stringValue(source["integrityHash"], "0".repeat(64)),
       hashAlgorithm: "sha256",
       payload: toDbJsonValue(source),
-      createdAt: stringValue(source["createdAt"], now)
+      createdAt: stringValue(source["createdAt"], now),
+      ...(terminalId !== undefined ? { terminalId } : {})
     };
   });
 }
@@ -310,24 +306,19 @@ function createEvidenceItemRecords(now: string): readonly DbEvidenceItemRecord[]
     const metadata = isRecord(itemSource["metadata"]) ? itemSource["metadata"] : {};
     const integrity = isRecord(metadata["integrity"]) ? metadata["integrity"] : {};
     const contentText = typeof itemSource["contentText"] === "string" ? itemSource["contentText"] : undefined;
+    const terminalId = nullableString(metadata["terminalId"]);
+    const fileName = nullableString(metadata["fileName"]);
+    const mimeType = nullableString(metadata["mimeType"]);
+    const relatedEntityId = nullableString(metadata["relatedEntityId"]);
+    const relatedEventId = nullableString(metadata["relatedEventId"]);
+    const contentPreview = contentText !== undefined ? contentText.slice(0, 500) : undefined;
 
     return {
       id: stringValue(metadata["evidenceId"], `evidence_${index + 1}`),
       tenantId: stringValue(metadata["tenantId"], "tenant_cooper_tsmith"),
-      ...(nullableString(metadata["terminalId"]) !== undefined
-        ? { terminalId: nullableString(metadata["terminalId"]) }
-        : {}),
       evidenceKind: stringValue(metadata["evidenceKind"], "other"),
       storageProvider: stringValue(metadata["storageProvider"], "edge_filesystem"),
       storageKey: stringValue(metadata["storageKey"], `evidence/unknown/${index + 1}`),
-      ...(nullableString(metadata["fileName"]) !== undefined ? { fileName: nullableString(metadata["fileName"]) } : {}),
-      ...(nullableString(metadata["mimeType"]) !== undefined ? { mimeType: nullableString(metadata["mimeType"]) } : {}),
-      ...(nullableString(metadata["relatedEntityId"]) !== undefined
-        ? { relatedEntityId: nullableString(metadata["relatedEntityId"]) }
-        : {}),
-      ...(nullableString(metadata["relatedEventId"]) !== undefined
-        ? { relatedEventId: nullableString(metadata["relatedEventId"]) }
-        : {}),
       ownerUserId: stringValue(metadata["ownerUserId"], "user_operator_001"),
       ownerDeviceId: stringValue(metadata["ownerDeviceId"], "device_web_demo"),
       sourceRuntime: stringValue(metadata["sourceRuntime"], "edge"),
@@ -335,9 +326,14 @@ function createEvidenceItemRecords(now: string): readonly DbEvidenceItemRecord[]
       hashValue: stringValue(integrity["hashValue"], "0".repeat(64)),
       byteSize: numberValue(integrity["byteSize"], 0),
       immutable: metadata["immutable"] === true,
-      ...(contentText !== undefined ? { contentPreview: contentText.slice(0, 500) } : {}),
       registeredAt: stringValue(itemSource["registeredAt"], now),
-      createdAt: stringValue(metadata["createdAt"], now)
+      createdAt: stringValue(metadata["createdAt"], now),
+      ...(terminalId !== undefined ? { terminalId } : {}),
+      ...(fileName !== undefined ? { fileName } : {}),
+      ...(mimeType !== undefined ? { mimeType } : {}),
+      ...(relatedEntityId !== undefined ? { relatedEntityId } : {}),
+      ...(relatedEventId !== undefined ? { relatedEventId } : {}),
+      ...(contentPreview !== undefined ? { contentPreview } : {})
     };
   });
 }
