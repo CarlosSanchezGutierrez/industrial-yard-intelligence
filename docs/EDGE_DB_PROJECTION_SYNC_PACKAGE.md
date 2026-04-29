@@ -27,3 +27,12 @@ It creates a package object compatible with `@iyi/api-contracts`:
 ## Next step
 
 Expose an edge endpoint that returns a package generated from the current DB projection snapshot.
+## Export handler
+
+The isolated export handler is documented in:
+
+`docs/EDGE_CLOUD_SYNC_EXPORT_HANDLER.md`
+
+It prepares the route-level response for future:
+
+GET /sync/packages/db-projection

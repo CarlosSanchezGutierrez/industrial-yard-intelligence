@@ -6,3 +6,4 @@ export * from "./evidence-store.js";
 export * from "./db-projection.js";
 export * from "./cloud-edge-sync-package.js";
 export * from "./db-projection-sync-package.js";
+export * from "./edge-cloud-sync-export-handler.js";

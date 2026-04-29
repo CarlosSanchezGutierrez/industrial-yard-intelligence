@@ -75,3 +75,8 @@ It prepares `db_projection_snapshot` packages for future edge-to-cloud sync.
 The edge DB projection package adapter is documented in:
 
 `docs/EDGE_DB_PROJECTION_SYNC_PACKAGE.md`
+## Edge sync export handler
+
+The isolated edge sync export handler is documented in:
+
+`docs/EDGE_CLOUD_SYNC_EXPORT_HANDLER.md`
