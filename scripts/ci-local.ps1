@@ -171,6 +171,13 @@ Invoke-Step "Check no runtime artifacts tracked" {
     Assert-NoRuntimeArtifactsTracked
 }
 
+Invoke-Step "Build domain" {
+    pnpm --filter @iyi/domain build
+}
+
+Invoke-Step "Test domain" {
+    pnpm --filter @iyi/domain test
+}
 Invoke-Step "Build db" {
     pnpm --filter @iyi/db build
 }
