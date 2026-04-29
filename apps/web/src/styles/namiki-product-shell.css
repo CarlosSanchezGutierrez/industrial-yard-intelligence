@@ -2,18 +2,18 @@
     color-scheme: dark;
     --namiki-bg: #020617;
     --namiki-bg-2: #07111f;
-    --namiki-panel: rgba(15, 23, 42, 0.92);
-    --namiki-panel-2: rgba(30, 41, 59, 0.72);
+    --namiki-panel: rgba(15, 23, 42, 0.94);
+    --namiki-panel-2: rgba(30, 41, 59, 0.82);
     --namiki-line: rgba(148, 163, 184, 0.18);
-    --namiki-line-strong: rgba(56, 189, 248, 0.32);
+    --namiki-line-strong: rgba(56, 189, 248, 0.34);
     --namiki-text: #ffffff;
     --namiki-muted: #dbeafe;
     --namiki-soft: #94a3b8;
     --namiki-blue: #38bdf8;
     --namiki-green: #34d399;
     --namiki-amber: #fbbf24;
-    --namiki-radius: 1.5rem;
-    --namiki-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+    --namiki-radius: 1.45rem;
+    --namiki-shadow: 0 28px 80px rgba(0, 0, 0, 0.44);
 }
 
 html,
@@ -27,9 +27,9 @@ body {
     margin: 0;
     color: var(--namiki-text) !important;
     background:
-        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.16), transparent 34rem),
-        radial-gradient(circle at 90% 4%, rgba(52, 211, 153, 0.12), transparent 34rem),
-        linear-gradient(180deg, #020617 0%, #07111f 52%, #020617 100%) !important;
+        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.14), transparent 34rem),
+        radial-gradient(circle at 92% 4%, rgba(52, 211, 153, 0.1), transparent 34rem),
+        linear-gradient(180deg, #020617 0%, #07111f 48%, #020617 100%) !important;
 }
 
 * {
@@ -37,15 +37,15 @@ body {
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
 }
 
-body[data-iyi-product-shell="on"] > #root > main > section:not(.namiki-product-shell) {
-    display: none !important;
-}
-
-body[data-iyi-product-shell="on"] > #root > main {
+body > #root > main {
     width: min(100%, 1480px) !important;
     margin: 0 auto !important;
     padding: clamp(0.85rem, 1.7vw, 1.5rem) !important;
     background: transparent !important;
+}
+
+body > #root > main > section:not(.namiki-product-shell) {
+    display: none !important;
 }
 
 .namiki-product-shell {
@@ -61,19 +61,21 @@ body[data-iyi-product-shell="on"] > #root > main {
 .namiki-topbar,
 .namiki-current-page,
 .namiki-menu,
-.namiki-page-surface,
 .namiki-hero-panel,
 .namiki-side-panel,
+.namiki-wide-panel,
 .namiki-stat-card,
 .namiki-product-card,
 .namiki-material-card,
-.namiki-map-card,
+.namiki-map-preview,
+.namiki-product-drawer,
 .namiki-warning-card {
     border: 1px solid var(--namiki-line);
+    color: var(--namiki-text);
     background:
-        radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.08), transparent 18rem),
-        linear-gradient(135deg, rgba(15, 23, 42, 0.94), rgba(2, 6, 23, 0.86));
-    box-shadow: 0 18px 54px rgba(0, 0, 0, 0.3);
+        radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.075), transparent 18rem),
+        linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.9)) !important;
+    box-shadow: 0 18px 54px rgba(0, 0, 0, 0.32);
     backdrop-filter: blur(18px);
 }
 
@@ -93,46 +95,56 @@ body[data-iyi-product-shell="on"] > #root > main {
 }
 
 .namiki-brand > span {
-    width: 0.8rem;
-    height: 0.8rem;
+    width: 0.82rem;
+    height: 0.82rem;
     border-radius: 999px;
     background: var(--namiki-green);
     box-shadow: 0 0 0 0.42rem rgba(52, 211, 153, 0.12);
 }
 
+.namiki-brand strong,
+.namiki-menu span,
+.namiki-current-page h2,
+.namiki-page-header h1,
+.namiki-side-panel h2,
+.namiki-product-card h3,
+.namiki-material-card h3,
+.namiki-stat-card strong,
+.namiki-product-drawer summary strong {
+    color: var(--namiki-text) !important;
+}
+
 .namiki-brand strong {
     display: block;
-    color: var(--namiki-text);
-    font-size: 0.96rem;
+    font-size: 0.98rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
 }
 
 .namiki-brand p,
-.namiki-current-page p,
 .namiki-current-page span,
 .namiki-menu small,
 .namiki-product-card p,
 .namiki-stat-card span,
 .namiki-material-card p,
-.namiki-warning-card p,
-.namiki-page-header span {
+.namiki-page-header span,
+.namiki-product-drawer summary span {
     color: var(--namiki-soft) !important;
 }
 
 .namiki-brand p {
     margin: 0.1rem 0 0;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
 }
 
 .namiki-menu-button,
 .namiki-action-row button,
-.namiki-menu button {
+.namiki-menu button,
+.namiki-product-drawer summary em {
     border: 1px solid rgba(56, 189, 248, 0.24) !important;
     border-radius: 999px !important;
     color: var(--namiki-text) !important;
     background:
-        linear-gradient(135deg, rgba(3, 105, 161, 0.9), rgba(15, 23, 42, 0.94)) !important;
+        linear-gradient(135deg, rgba(3, 105, 161, 0.92), rgba(15, 23, 42, 0.96)) !important;
     box-shadow: none !important;
     cursor: pointer;
     font-weight: 650 !important;
@@ -160,7 +172,7 @@ body[data-iyi-product-shell="on"] > #root > main {
     min-height: 5rem;
     padding: 0.9rem;
     text-align: left;
-    border-radius: 1.15rem !important;
+    border-radius: 1.1rem !important;
     background:
         linear-gradient(135deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.88)) !important;
 }
@@ -174,7 +186,6 @@ body[data-iyi-product-shell="on"] > #root > main {
 
 .namiki-menu span {
     display: block;
-    color: var(--namiki-text) !important;
     font-size: 1rem;
     font-weight: 700;
 }
@@ -203,7 +214,6 @@ body[data-iyi-product-shell="on"] > #root > main {
 
 .namiki-current-page h2 {
     margin: 0.35rem 0 0;
-    color: var(--namiki-text);
     font-size: clamp(1.3rem, 2.4vw, 2.6rem);
     line-height: 1;
     letter-spacing: -0.04em;
@@ -216,61 +226,57 @@ body[data-iyi-product-shell="on"] > #root > main {
     line-height: 1.45;
 }
 
-.namiki-page-surface {
-    padding: 0 !important;
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-}
-
+.namiki-page-surface,
 .namiki-page-grid,
 .namiki-map-layout {
     display: grid;
     gap: 1rem;
+    width: 100%;
+    background: transparent !important;
 }
 
 @media (min-width: 1050px) {
     .namiki-page-grid {
-        grid-template-columns: minmax(0, 1.2fr) minmax(24rem, 0.8fr);
-        align-items: stretch;
-    }
-
-    .namiki-map-layout {
-        grid-template-columns: minmax(0, 0.9fr) minmax(30rem, 1.1fr);
-        align-items: stretch;
+        grid-template-columns: minmax(0, 1.15fr) minmax(23rem, 0.85fr);
+        align-items: start;
     }
 }
 
 .namiki-hero-panel,
 .namiki-side-panel,
-.namiki-map-card {
+.namiki-wide-panel {
     padding: clamp(1.1rem, 2vw, 1.6rem);
     border-radius: var(--namiki-radius);
+}
+
+.namiki-wide-panel {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 0.85rem;
 }
 
 .namiki-page-header h1 {
     margin: 0.6rem 0 0;
     max-width: 54rem;
-    color: var(--namiki-text);
-    font-size: clamp(2.2rem, 5vw, 5rem);
+    font-size: clamp(2rem, 4.4vw, 4.6rem);
     font-weight: 700;
-    line-height: 0.95;
-    letter-spacing: -0.05em;
+    line-height: 0.96;
+    letter-spacing: -0.045em;
 }
 
 .namiki-page-header span {
     display: block;
     margin-top: 0.85rem;
     max-width: 42rem;
-    font-size: clamp(1rem, 1.35vw, 1.18rem);
-    line-height: 1.55;
+    font-size: clamp(1rem, 1.25vw, 1.12rem);
+    line-height: 1.5;
 }
 
 .namiki-action-row {
     display: flex;
     flex-wrap: wrap;
     gap: 0.7rem;
-    margin-top: 1.4rem;
+    margin-top: 1.35rem;
 }
 
 .namiki-action-row button {
@@ -278,70 +284,59 @@ body[data-iyi-product-shell="on"] > #root > main {
     padding: 0 1.1rem;
 }
 
-.namiki-side-panel h2,
-.namiki-warning-card h3 {
+.namiki-side-panel h2 {
     margin: 0 0 1rem;
-    color: var(--namiki-text);
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     font-weight: 700;
 }
 
+.namiki-card-stack,
 .namiki-stat-grid,
-.namiki-material-grid,
-.namiki-step-grid,
-.namiki-timeline {
+.namiki-material-grid {
     display: grid;
     gap: 0.85rem;
 }
 
 @media (min-width: 820px) {
-    .namiki-stat-grid,
-    .namiki-step-grid {
+    .namiki-stat-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
-.namiki-stat-card,
 .namiki-product-card,
-.namiki-material-card,
-.namiki-warning-card {
+.namiki-stat-card,
+.namiki-material-card {
     padding: 1rem;
-    border-radius: 1.25rem;
+    border-radius: 1.2rem;
 }
 
-.namiki-stat-card p,
 .namiki-product-card h3,
 .namiki-material-card h3 {
     margin: 0;
-    color: var(--namiki-text);
+    font-size: 1.08rem;
+    font-weight: 700;
+}
+
+.namiki-product-card p,
+.namiki-stat-card span {
+    display: block;
+    margin-top: 0.42rem;
+    font-size: 0.92rem;
+    line-height: 1.45;
 }
 
 .namiki-stat-card p {
+    margin: 0;
     color: var(--namiki-soft) !important;
     font-size: 0.86rem;
 }
 
 .namiki-stat-card strong {
     display: block;
-    margin-top: 0.5rem;
-    color: var(--namiki-text);
-    font-size: 2rem;
+    margin-top: 0.55rem;
+    font-size: 1.8rem;
     font-weight: 750;
-    letter-spacing: -0.04em;
-}
-
-.namiki-stat-card span,
-.namiki-product-card p {
-    display: block;
-    margin-top: 0.35rem;
-    font-size: 0.9rem;
-    line-height: 1.45;
-}
-
-.namiki-product-card h3,
-.namiki-material-card h3 {
-    font-size: 1.08rem;
-    font-weight: 700;
+    letter-spacing: -0.035em;
 }
 
 .namiki-material-card {
@@ -368,21 +363,22 @@ body[data-iyi-product-shell="on"] > #root > main {
     font-weight: 700;
 }
 
-.namiki-map-card {
-    min-height: 30rem;
+.namiki-material-card p:last-child {
+    grid-column: 1 / -1;
+    margin: 0;
 }
 
-.namiki-map-grid {
+.namiki-map-preview {
     position: relative;
     min-height: 30rem;
+    margin-top: 1.2rem;
     overflow: hidden;
-    border: 1px solid rgba(125, 211, 252, 0.2);
-    border-radius: 1.25rem;
+    border-radius: 1.2rem;
     background:
         linear-gradient(to right, rgba(125, 211, 252, 0.08) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(125, 211, 252, 0.08) 1px, transparent 1px),
-        radial-gradient(circle at center, rgba(14, 165, 233, 0.18), rgba(2, 6, 23, 0.94));
-    background-size: 34px 34px, 34px 34px, auto;
+        radial-gradient(circle at center, rgba(14, 165, 233, 0.18), rgba(2, 6, 23, 0.94)) !important;
+    background-size: 34px 34px, 34px 34px, auto !important;
 }
 
 .namiki-map-zone,
@@ -427,8 +423,106 @@ body[data-iyi-product-shell="on"] > #root > main {
     box-shadow: 0 0 0 1rem rgba(56, 189, 248, 0.12);
 }
 
+.namiki-product-drawer {
+    padding: 0;
+    overflow: hidden;
+    border-radius: 1.2rem;
+}
+
+.namiki-product-drawer summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+.namiki-product-drawer summary::-webkit-details-marker {
+    display: none;
+}
+
+.namiki-product-drawer summary strong {
+    display: block;
+    font-size: 1rem;
+}
+
+.namiki-product-drawer summary span {
+    display: block;
+    margin-top: 0.28rem;
+    font-size: 0.88rem;
+    line-height: 1.35;
+}
+
+.namiki-product-drawer summary em {
+    min-width: 5rem;
+    padding: 0.52rem 0.8rem;
+    text-align: center;
+    font-style: normal;
+    font-size: 0.82rem;
+}
+
+.namiki-drawer-content {
+    padding: 1rem;
+    border-top: 1px solid var(--namiki-line);
+    background: #020617 !important;
+}
+
+.namiki-drawer-content section,
+.namiki-drawer-content div,
+.namiki-drawer-content article {
+    color: var(--namiki-text) !important;
+}
+
+.namiki-product-shell [class*="bg-white"],
+.namiki-product-shell [class*="bg-slate-50"],
+.namiki-product-shell [class*="bg-slate-100"],
+.namiki-product-shell [class*="bg-blue-50"],
+.namiki-product-shell [class*="bg-blue-100"],
+.namiki-product-shell [class*="bg-emerald-50"],
+.namiki-product-shell [class*="bg-emerald-100"],
+.namiki-product-shell [class*="bg-amber-50"],
+.namiki-product-shell [class*="bg-amber-100"],
+.namiki-product-shell [class*="bg-violet-50"],
+.namiki-product-shell [class*="bg-violet-100"] {
+    background:
+        linear-gradient(135deg, rgba(30, 41, 59, 0.86), rgba(15, 23, 42, 0.78)) !important;
+}
+
+.namiki-product-shell [class*="text-slate-950"],
+.namiki-product-shell [class*="text-slate-900"],
+.namiki-product-shell [class*="text-blue-950"],
+.namiki-product-shell [class*="text-emerald-950"],
+.namiki-product-shell [class*="text-amber-950"],
+.namiki-product-shell [class*="text-violet-950"] {
+    color: var(--namiki-text) !important;
+}
+
+.namiki-product-shell [class*="text-slate-600"],
+.namiki-product-shell [class*="text-slate-500"],
+.namiki-product-shell [class*="text-blue-700"],
+.namiki-product-shell [class*="text-emerald-700"],
+.namiki-product-shell [class*="text-amber-700"],
+.namiki-product-shell [class*="text-violet-700"] {
+    color: var(--namiki-soft) !important;
+}
+
+.namiki-product-shell [class*="border-slate-200"],
+.namiki-product-shell [class*="border-slate-300"],
+.namiki-product-shell [class*="border-blue-300"],
+.namiki-product-shell [class*="border-emerald-300"],
+.namiki-product-shell [class*="border-amber-300"],
+.namiki-product-shell [class*="border-violet-300"] {
+    border-color: var(--namiki-line) !important;
+}
+
+.namiki-product-shell button {
+    color: var(--namiki-text) !important;
+}
+
 @media (max-width: 760px) {
-    body[data-iyi-product-shell="on"] > #root > main {
+    body > #root > main {
         padding: 0.75rem !important;
     }
 
@@ -436,16 +530,20 @@ body[data-iyi-product-shell="on"] > #root > main {
     .namiki-current-page,
     .namiki-hero-panel,
     .namiki-side-panel,
-    .namiki-map-card {
-        border-radius: 1.15rem;
+    .namiki-wide-panel {
+        border-radius: 1.1rem;
     }
 
     .namiki-page-header h1 {
-        font-size: clamp(2rem, 11vw, 3.35rem);
+        font-size: clamp(2rem, 10vw, 3.2rem);
     }
 
-    .namiki-map-card,
-    .namiki-map-grid {
+    .namiki-map-preview {
         min-height: 24rem;
+    }
+
+    .namiki-product-drawer summary {
+        align-items: flex-start;
+        flex-direction: column;
     }
 }

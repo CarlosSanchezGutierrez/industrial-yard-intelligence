@@ -2,27 +2,37 @@
 
 ## Purpose
 
-This shell replaces the long technical cockpit view with a clean product interface.
+This shell organizes the existing architecture into a clean, dark product interface.
 
-## What changed
+## UX direction
 
-- Dark interface by default
-- No white panels
-- Normal app typography
-- Text in white/light tones
-- Dropdown menu instead of sticky oversized bar
-- Internal pages instead of scroll-jump sections
-- Simple language for operators and supervisors
-- Technical panels hidden from normal users
+- Everything dark by default.
+- White/light text only.
+- No white panels.
+- Dropdown menu instead of sticky oversized tabs.
+- Internal pages instead of long scroll navigation.
+- Existing technical work remains accessible inside expandable panels.
+- Language is operational, not software-heavy.
 
 ## Pages
 
 - Inicio
 - Materiales
-- Mapa
+- Mapa y GPS
 - Historial
 - Envíos
 - Sistema
+
+## Existing features preserved
+
+- Stockpile demo summary
+- Operator workflow progress
+- Yard operations map
+- GPS preview
+- Audit timeline
+- Sync story
+- Runtime connection status
+- Demo reset
 
 ## Main files
 
