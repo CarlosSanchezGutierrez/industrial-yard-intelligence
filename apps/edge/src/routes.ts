@@ -471,7 +471,7 @@ function createDemoReadinessReport(now: string) {
   ];
 
   const failedChecks = checks.filter((check) => !check.ok);
-  const status = failedChecks.length === 0 ? "ready" : hasOperationalData ? "attention" : "empty";
+  const status = !hasOperationalData ? "empty" : failedChecks.length === 0 ? "ready" : "attention";
 
   return {
     status,
