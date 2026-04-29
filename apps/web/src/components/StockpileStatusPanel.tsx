@@ -71,15 +71,17 @@ function toStockpileOption(value: unknown): StockpileOption | null {
         return null;
     }
 
+    const materialName = getString(value, ["materialName", "material", "commodity"]);
+    const zoneName = getString(value, ["zoneName", "yardZoneName", "zone"]);
+
     return {
         id,
         name: getString(value, ["name", "label", "code", "id"]) ?? id,
         status,
-        materialName: getString(value, ["materialName", "material", "commodity"]),
-        zoneName: getString(value, ["zoneName", "yardZoneName", "zone"]),
+        ...(materialName !== undefined ? { materialName } : {}),
+        ...(zoneName !== undefined ? { zoneName } : {}),
     };
 }
-
 function findStockpileOptions(value: unknown, depth = 0): StockpileOption[] {
     if (depth > 4) {
         return [];
