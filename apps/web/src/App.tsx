@@ -68,6 +68,7 @@ import "./styles/namiki-polish-p0-5.css";
 import "./styles/namiki-polish-p0-6-gps.css";
 import "./styles/namiki-polish-p0-7-gps-premium.css";
 import "./styles/namiki-polish-p0-8-real-map.css";
+import "./styles/namiki-polish-p0-9-gps-audit.css";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }

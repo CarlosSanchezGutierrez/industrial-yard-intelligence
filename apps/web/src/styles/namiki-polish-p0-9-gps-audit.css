@@ -1,0 +1,206 @@
+.nmk-gps-package-strip {
+    display: grid;
+    gap: 10px;
+}
+
+@media (min-width: 900px) {
+    .nmk-gps-package-strip {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+}
+
+.nmk-gps-package-strip article {
+    padding: 12px;
+    border: 1px solid var(--nmk-border);
+    border-radius: var(--nmk-radius);
+    background: var(--nmk-panel-2);
+}
+
+.nmk-gps-package-strip span {
+    display: block;
+    color: var(--nmk-soft);
+    font-size: 12px;
+}
+
+.nmk-gps-package-strip strong {
+    display: block;
+    margin-top: 6px;
+    color: var(--nmk-text);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.nmk-gps-audit-grid {
+    display: grid;
+    gap: 12px;
+}
+
+@media (min-width: 1180px) {
+    .nmk-gps-audit-grid {
+        grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+        align-items: start;
+    }
+}
+
+.nmk-gps-audit-panel,
+.nmk-gps-quality-panel {
+    padding: 14px;
+    border: 1px solid var(--nmk-border);
+    border-radius: var(--nmk-radius);
+    background: var(--nmk-panel-2);
+}
+
+.nmk-gps-audit-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin: -42px 0 12px;
+}
+
+.nmk-gps-audit-actions button {
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px solid rgba(56, 189, 248, 0.28);
+    border-radius: 999px;
+    color: var(--nmk-text);
+    background: #075985;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.nmk-gps-audit-actions button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.nmk-gps-audit-list {
+    display: grid;
+    gap: 8px;
+    max-height: 480px;
+    overflow: auto;
+    padding-right: 4px;
+}
+
+.nmk-audit-entry {
+    display: grid;
+    grid-template-columns: 130px minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid var(--nmk-border);
+    border-radius: var(--nmk-radius-sm);
+    background: #020617;
+}
+
+.nmk-audit-entry time {
+    color: var(--nmk-soft);
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.nmk-audit-entry strong {
+    display: block;
+    color: var(--nmk-text);
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.nmk-audit-entry p {
+    margin: 4px 0 0;
+    color: var(--nmk-soft);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.nmk-audit-entry span {
+    display: block;
+    margin-top: 6px;
+    color: var(--nmk-blue);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.nmk-audit-entry-success {
+    border-color: rgba(52, 211, 153, 0.24);
+}
+
+.nmk-audit-entry-warning {
+    border-color: rgba(251, 191, 36, 0.24);
+}
+
+.nmk-audit-entry-danger {
+    border-color: rgba(251, 113, 133, 0.24);
+}
+
+.nmk-quality-meter {
+    height: 12px;
+    overflow: hidden;
+    margin-top: 14px;
+    border-radius: 999px;
+    background: #020617;
+}
+
+.nmk-quality-meter span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--nmk-blue), var(--nmk-green));
+}
+
+.nmk-quality-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.nmk-quality-list article {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid var(--nmk-border);
+    border-radius: var(--nmk-radius-sm);
+    background: #020617;
+}
+
+.nmk-quality-list article.is-done {
+    border-color: rgba(52, 211, 153, 0.24);
+}
+
+.nmk-quality-list strong {
+    color: var(--nmk-text);
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.nmk-quality-list span {
+    color: var(--nmk-soft);
+    font-size: 12px;
+    text-align: right;
+}
+
+.nmk-gps-tool-actions button:nth-last-child(-n + 3) {
+    border-color: rgba(52, 211, 153, 0.28);
+    background: rgba(6, 78, 59, 0.72);
+}
+
+@media (max-width: 760px) {
+    .nmk-gps-audit-actions {
+        justify-content: flex-start;
+        margin: 10px 0 12px;
+    }
+
+    .nmk-audit-entry {
+        grid-template-columns: 1fr;
+    }
+
+    .nmk-quality-list article {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .nmk-quality-list span {
+        text-align: left;
+    }
+}

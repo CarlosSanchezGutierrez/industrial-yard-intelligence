@@ -15,8 +15,9 @@ import {
 import "leaflet/dist/leaflet.css";
 
 type GpsState = "idle" | "requesting" | "tracking" | "granted" | "denied" | "unsupported" | "error";
-
 type MapMode = "select-point" | "draw-perimeter";
+type CaptureStatus = "Borrador" | "Listo para enviar" | "Sincronizado";
+type AuditSeverity = "info" | "success" | "warning" | "danger";
 
 type ReverseAddress = {
     readonly house_number?: string;
@@ -74,8 +75,20 @@ type GeoPoint = {
     readonly fieldReference: string;
 };
 
-const savedPointsStorageKey = "namiki:gps:saved-points:v2";
-const perimeterStorageKey = "namiki:gps:perimeter:v2";
+type GpsAuditEntry = {
+    readonly id: string;
+    readonly title: string;
+    readonly detail: string;
+    readonly createdAt: string;
+    readonly material: string;
+    readonly pointId: string;
+    readonly severity: AuditSeverity;
+};
+
+const savedPointsStorageKey = "namiki:gps:saved-points:v3";
+const perimeterStorageKey = "namiki:gps:perimeter:v3";
+const auditStorageKey = "namiki:gps:audit:v1";
+const captureStatusStorageKey = "namiki:gps:capture-status:v1";
 
 const altamiraFallbackCenter: LatLngExpression = [22.4003, -97.9386];
 
@@ -267,6 +280,39 @@ function getErrorMessage(error: GeolocationPositionError) {
     return error.message || "No se pudo obtener ubicación.";
 }
 
+function normalizePoint(item: unknown): GeoPoint | null {
+    if (!item || typeof item !== "object") {
+        return null;
+    }
+
+    const candidate = item as Partial<GeoPoint>;
+
+    if (
+        typeof candidate.id !== "string" ||
+        typeof candidate.label !== "string" ||
+        typeof candidate.latitude !== "number" ||
+        typeof candidate.longitude !== "number" ||
+        typeof candidate.accuracy !== "number"
+    ) {
+        return null;
+    }
+
+    return {
+        id: candidate.id,
+        label: candidate.label,
+        material: typeof candidate.material === "string" ? candidate.material : "Sin material",
+        evidenceType: typeof candidate.evidenceType === "string" ? candidate.evidenceType : "Punto",
+        latitude: candidate.latitude,
+        longitude: candidate.longitude,
+        accuracy: candidate.accuracy,
+        capturedAt: typeof candidate.capturedAt === "string" ? candidate.capturedAt : "Sin fecha",
+        source: typeof candidate.source === "string" ? candidate.source : "GPS",
+        status: typeof candidate.status === "string" ? candidate.status : "Guardado",
+        address: candidate.address ?? emptyAddressSummary("Sin dirección guardada"),
+        fieldReference: typeof candidate.fieldReference === "string" ? candidate.fieldReference : "Sin referencia",
+    };
+}
+
 function safeParsePoints(value: string | null): readonly GeoPoint[] {
     if (!value) {
         return [];
@@ -279,24 +325,51 @@ function safeParsePoints(value: string | null): readonly GeoPoint[] {
             return [];
         }
 
-        return parsed.filter((item): item is GeoPoint => {
+        return parsed
+            .map((item) => normalizePoint(item))
+            .filter((item): item is GeoPoint => item !== null);
+    } catch {
+        return [];
+    }
+}
+
+function safeParseAudit(value: string | null): readonly GpsAuditEntry[] {
+    if (!value) {
+        return [];
+    }
+
+    try {
+        const parsed = JSON.parse(value) as unknown;
+
+        if (!Array.isArray(parsed)) {
+            return [];
+        }
+
+        return parsed.filter((item): item is GpsAuditEntry => {
             if (!item || typeof item !== "object") {
                 return false;
             }
 
-            const candidate = item as Partial<GeoPoint>;
+            const candidate = item as Partial<GpsAuditEntry>;
 
             return (
                 typeof candidate.id === "string" &&
-                typeof candidate.label === "string" &&
-                typeof candidate.latitude === "number" &&
-                typeof candidate.longitude === "number" &&
-                typeof candidate.accuracy === "number"
+                typeof candidate.title === "string" &&
+                typeof candidate.detail === "string" &&
+                typeof candidate.createdAt === "string"
             );
         });
     } catch {
         return [];
     }
+}
+
+function safeParseCaptureStatus(value: string | null): CaptureStatus {
+    if (value === "Listo para enviar" || value === "Sincronizado") {
+        return value;
+    }
+
+    return "Borrador";
 }
 
 function buildGeoJson(points: readonly GeoPoint[], perimeterPoints: readonly GeoPoint[], currentPoint: GeoPoint | null) {
@@ -311,6 +384,7 @@ function buildGeoJson(points: readonly GeoPoint[], perimeterPoints: readonly Geo
             capturedAt: point.capturedAt,
             address: point.address.full,
             fieldReference: point.fieldReference,
+            status: point.status,
         },
         geometry: {
             type: "Point",
@@ -331,6 +405,7 @@ function buildGeoJson(points: readonly GeoPoint[], perimeterPoints: readonly Geo
                       capturedAt: currentPoint.capturedAt,
                       address: currentPoint.address.full,
                       fieldReference: currentPoint.fieldReference,
+                      status: currentPoint.status,
                   },
                   geometry: {
                       type: "Point",
@@ -340,8 +415,10 @@ function buildGeoJson(points: readonly GeoPoint[], perimeterPoints: readonly Geo
           ]
         : [];
 
+    const firstPerimeterPoint = perimeterPoints[0];
+
     const perimeterFeature =
-        perimeterPoints.length >= 3
+        perimeterPoints.length >= 3 && firstPerimeterPoint
             ? [
                   {
                       type: "Feature",
@@ -355,7 +432,7 @@ function buildGeoJson(points: readonly GeoPoint[], perimeterPoints: readonly Geo
                           coordinates: [
                               [
                                   ...perimeterPoints.map((point) => [point.longitude, point.latitude]),
-                                  [perimeterPoints[0]!.longitude, perimeterPoints[0]!.latitude],
+                                  [firstPerimeterPoint.longitude, firstPerimeterPoint.latitude],
                               ],
                           ],
                       },
@@ -413,6 +490,8 @@ export function RealGpsWorkspace() {
     const [searchPoint, setSearchPoint] = useState<GeoPoint | null>(null);
     const [savedPoints, setSavedPoints] = useState<readonly GeoPoint[]>([]);
     const [perimeterPoints, setPerimeterPoints] = useState<readonly GeoPoint[]>([]);
+    const [auditEntries, setAuditEntries] = useState<readonly GpsAuditEntry[]>([]);
+    const [captureStatus, setCaptureStatus] = useState<CaptureStatus>("Borrador");
     const [pointLabel, setPointLabel] = useState<string>("Punto de evidencia");
     const [targetMaterial, setTargetMaterial] = useState<string>("Pet coke");
     const [evidenceType, setEvidenceType] = useState<string>("Punto de material");
@@ -434,7 +513,7 @@ export function RealGpsWorkspace() {
         return altamiraFallbackCenter;
     }, [currentPoint, searchPoint]);
 
-    const perimeterPositions = useMemo(
+    const perimeterPositions = useMemo<LatLngExpression[]>(
         () => perimeterPoints.map((point) => latLngForPoint(point)),
         [perimeterPoints],
     );
@@ -443,6 +522,20 @@ export function RealGpsWorkspace() {
         () => JSON.stringify(buildGeoJson(savedPoints, perimeterPoints, currentPoint), null, 2),
         [currentPoint, perimeterPoints, savedPoints],
     );
+
+    const captureQuality = useMemo(() => {
+        let score = 0;
+
+        if (currentPoint) score += 18;
+        if (currentPoint?.address.full && !currentPoint.address.full.includes("pendiente")) score += 16;
+        if (currentPoint?.accuracy && currentPoint.accuracy > 0 && currentPoint.accuracy <= 25) score += 16;
+        if (fieldReference.trim().length > 12 && !fieldReference.toLowerCase().includes("pendiente")) score += 12;
+        if (savedPoints.length > 0) score += 14;
+        if (perimeterPoints.length >= 3) score += 18;
+        if (auditEntries.length > 0) score += 6;
+
+        return Math.min(score, 100);
+    }, [auditEntries.length, currentPoint, fieldReference, perimeterPoints.length, savedPoints.length]);
 
     const stateLabel = useMemo(() => {
         if (gpsState === "requesting") return "Solicitando ubicación";
@@ -458,6 +551,8 @@ export function RealGpsWorkspace() {
     useEffect(() => {
         setSavedPoints(safeParsePoints(window.localStorage.getItem(savedPointsStorageKey)));
         setPerimeterPoints(safeParsePoints(window.localStorage.getItem(perimeterStorageKey)));
+        setAuditEntries(safeParseAudit(window.localStorage.getItem(auditStorageKey)));
+        setCaptureStatus(safeParseCaptureStatus(window.localStorage.getItem(captureStatusStorageKey)));
     }, []);
 
     useEffect(() => {
@@ -469,12 +564,34 @@ export function RealGpsWorkspace() {
     }, [perimeterPoints]);
 
     useEffect(() => {
+        window.localStorage.setItem(auditStorageKey, JSON.stringify(auditEntries));
+    }, [auditEntries]);
+
+    useEffect(() => {
+        window.localStorage.setItem(captureStatusStorageKey, captureStatus);
+    }, [captureStatus]);
+
+    useEffect(() => {
         return () => {
             if (watchIdRef.current !== null && "geolocation" in window.navigator) {
                 window.navigator.geolocation.clearWatch(watchIdRef.current);
             }
         };
     }, []);
+
+    function addAudit(title: string, detail: string, severity: AuditSeverity = "info", point?: GeoPoint | null) {
+        const nextEntry: GpsAuditEntry = {
+            id: `AUD-GPS-${Date.now()}-${Math.round(Math.random() * 1000)}`,
+            title,
+            detail,
+            createdAt: nowLabel(),
+            material: point?.material ?? targetMaterial,
+            pointId: point?.id ?? "—",
+            severity,
+        };
+
+        setAuditEntries((current) => [nextEntry, ...current].slice(0, 80));
+    }
 
     async function buildPoint(latitude: number, longitude: number, accuracy: number, label: string, status: string, source: string): Promise<GeoPoint> {
         setReverseStatus("Resolviendo dirección...");
@@ -501,10 +618,12 @@ export function RealGpsWorkspace() {
 
     function requestLocation() {
         setErrorMessage("");
+        addAudit("Solicitud de ubicación", "El operador solicitó ubicación GPS del dispositivo.", "info");
 
         if (!("geolocation" in window.navigator)) {
             setGpsState("unsupported");
             setErrorMessage("Este navegador no soporta geolocalización.");
+            addAudit("GPS no soportado", "El navegador no soporta geolocalización.", "danger");
             return;
         }
 
@@ -522,11 +641,14 @@ export function RealGpsWorkspace() {
                 ).then((nextPoint) => {
                     setCurrentPoint(nextPoint);
                     setGpsState("granted");
+                    setCaptureStatus("Borrador");
+                    addAudit("Ubicación obtenida", `Precisión aproximada: ${formatAccuracy(nextPoint.accuracy)}.`, "success", nextPoint);
                 });
             },
             (error) => {
                 setGpsState(error.code === error.PERMISSION_DENIED ? "denied" : "error");
                 setErrorMessage(getErrorMessage(error));
+                addAudit("Error al obtener GPS", getErrorMessage(error), "danger");
             },
             {
                 enableHighAccuracy: true,
@@ -538,10 +660,12 @@ export function RealGpsWorkspace() {
 
     function startTracking() {
         setErrorMessage("");
+        addAudit("Rastreo iniciado", "Se activó seguimiento de ubicación en vivo.", "info");
 
         if (!("geolocation" in window.navigator)) {
             setGpsState("unsupported");
             setErrorMessage("Este navegador no soporta geolocalización.");
+            addAudit("GPS no soportado", "El navegador no soporta geolocalización.", "danger");
             return;
         }
 
@@ -568,6 +692,7 @@ export function RealGpsWorkspace() {
             (error) => {
                 setGpsState(error.code === error.PERMISSION_DENIED ? "denied" : "error");
                 setErrorMessage(getErrorMessage(error));
+                addAudit("Error en rastreo", getErrorMessage(error), "danger");
             },
             {
                 enableHighAccuracy: true,
@@ -584,6 +709,7 @@ export function RealGpsWorkspace() {
         }
 
         setGpsState(currentPoint ? "granted" : "idle");
+        addAudit("Rastreo detenido", "Se detuvo el seguimiento en vivo.", "warning", currentPoint);
     }
 
     function saveCurrentPoint() {
@@ -604,6 +730,8 @@ export function RealGpsWorkspace() {
 
         setSavedPoints((current) => [pointToSave, ...current]);
         setPointLabel("Punto de evidencia");
+        setCaptureStatus("Borrador");
+        addAudit("Punto guardado", `${pointToSave.label} quedó asociado a ${pointToSave.material}.`, "success", pointToSave);
     }
 
     function addCurrentPointToPerimeter() {
@@ -623,6 +751,8 @@ export function RealGpsWorkspace() {
         };
 
         setPerimeterPoints((current) => [...current, perimeterPoint]);
+        setCaptureStatus("Borrador");
+        addAudit("Vértice agregado", `${perimeterPoint.label} agregado al perímetro visual.`, "success", perimeterPoint);
     }
 
     function handleMapClick(latitude: number, longitude: number) {
@@ -637,6 +767,8 @@ export function RealGpsWorkspace() {
             ).then((point) => {
                 setCurrentPoint(point);
                 setPerimeterPoints((current) => [...current, point]);
+                setCaptureStatus("Borrador");
+                addAudit("Vértice desde mapa", `${point.label} capturado por click en mapa.`, "success", point);
             });
 
             return;
@@ -651,26 +783,41 @@ export function RealGpsWorkspace() {
             "Mapa / selección manual",
         ).then((point) => {
             setCurrentPoint(point);
+            setCaptureStatus("Borrador");
+            addAudit("Punto seleccionado", "El operador seleccionó una ubicación directamente en el mapa.", "info", point);
         });
     }
 
     function clearPerimeter() {
         setPerimeterPoints([]);
+        setCaptureStatus("Borrador");
+        addAudit("Perímetro limpiado", "Se eliminaron los vértices del perímetro local.", "warning");
     }
 
     function clearSavedPoints() {
         setSavedPoints([]);
+        setCaptureStatus("Borrador");
+        addAudit("Puntos limpiados", "Se eliminaron los puntos guardados en el navegador.", "warning");
+    }
+
+    function clearAudit() {
+        setAuditEntries([]);
     }
 
     async function runAddressSearch() {
         setSearchResults([]);
         setErrorMessage("");
         setReverseStatus("Buscando dirección...");
+        addAudit("Búsqueda de dirección", `Consulta: ${searchQuery}`, "info");
 
         const results = await searchPlaces(searchQuery);
 
         setSearchResults(results);
         setReverseStatus(results.length > 0 ? "Resultados encontrados" : "Sin resultados");
+
+        if (results.length === 0) {
+            addAudit("Sin resultados", "La búsqueda de dirección no encontró coincidencias.", "warning");
+        }
     }
 
     function useSearchResult(result: SearchResult) {
@@ -681,10 +828,16 @@ export function RealGpsWorkspace() {
             return;
         }
 
-        const address = buildAddressSummary({
-            display_name: result.display_name,
-            address: result.address,
-        });
+        const resultPayload: ReverseGeocodeResult = result.address
+            ? {
+                  display_name: result.display_name,
+                  address: result.address,
+              }
+            : {
+                  display_name: result.display_name,
+              };
+
+        const address = buildAddressSummary(resultPayload);
 
         const point: GeoPoint = {
             id: `SEARCH-${Date.now()}`,
@@ -704,28 +857,55 @@ export function RealGpsWorkspace() {
         setSearchPoint(point);
         setCurrentPoint(point);
         setReverseStatus("Dirección seleccionada");
+        setCaptureStatus("Borrador");
+        addAudit("Dirección seleccionada", point.address.full, "success", point);
+    }
+
+    function gpsPackage() {
+        return {
+            packageId: `NAMIKI-GPS-${new Date().toISOString()}`,
+            status: captureStatus,
+            qualityScore: captureQuality,
+            currentPoint,
+            savedPoints,
+            perimeterPoints,
+            auditEntries,
+            geoJson: buildGeoJson(savedPoints, perimeterPoints, currentPoint),
+        };
     }
 
     async function copyGeoJson() {
-        const payload = JSON.stringify(buildGeoJson(savedPoints, perimeterPoints, currentPoint), null, 2);
+        const payload = JSON.stringify(gpsPackage(), null, 2);
 
         if (!window.navigator.clipboard) {
             setCopyStatus("Clipboard no disponible. Usa el bloque GeoJSON visible.");
+            addAudit("Exportación no copiada", "Clipboard no disponible en el navegador.", "warning");
             return;
         }
 
         await window.navigator.clipboard.writeText(payload);
-        setCopyStatus("GeoJSON copiado");
+        setCopyStatus("Paquete copiado");
+        addAudit("Paquete copiado", "Se copió el paquete GPS con puntos, perímetro, auditoría y GeoJSON.", "success", currentPoint);
+    }
+
+    function markReadyToSync() {
+        setCaptureStatus("Listo para enviar");
+        addAudit("Paquete listo para enviar", "La captura GPS quedó marcada para revisión/sincronización.", "success", currentPoint);
+    }
+
+    function simulateSync() {
+        setCaptureStatus("Sincronizado");
+        addAudit("Sincronización simulada", "El paquete GPS fue marcado como sincronizado localmente.", "success", currentPoint);
     }
 
     return (
-        <section className="nmk-gps-workspace nmk-gps-real-map">
+        <section className="nmk-gps-workspace nmk-gps-real-map nmk-gps-audit-mode">
             <div className="nmk-gps-header">
                 <div>
                     <p>GPS avanzado</p>
-                    <h2>Mapa real, dirección y perímetros</h2>
+                    <h2>Mapa, captura, auditoría y paquete de envío</h2>
                     <span>
-                        Usa GPS real, mapa con OpenStreetMap, búsqueda de lugar, dirección aproximada, puntos guardados y perímetros visuales.
+                        Captura ubicación real, busca direcciones, dibuja perímetros, guarda puntos, audita eventos y prepara un paquete exportable.
                     </span>
                 </div>
 
@@ -734,6 +914,29 @@ export function RealGpsWorkspace() {
                     <span>{reverseStatus}</span>
                 </div>
             </div>
+
+            <section className="nmk-gps-package-strip">
+                <article>
+                    <span>Estado del paquete</span>
+                    <strong>{captureStatus}</strong>
+                </article>
+                <article>
+                    <span>Calidad de captura</span>
+                    <strong>{captureQuality}%</strong>
+                </article>
+                <article>
+                    <span>Puntos</span>
+                    <strong>{savedPoints.length}</strong>
+                </article>
+                <article>
+                    <span>Vértices</span>
+                    <strong>{perimeterPoints.length}</strong>
+                </article>
+                <article>
+                    <span>Auditoría</span>
+                    <strong>{auditEntries.length}</strong>
+                </article>
+            </section>
 
             <section className="nmk-gps-real-layout">
                 <aside className="nmk-gps-control-panel nmk-gps-real-controls">
@@ -963,7 +1166,7 @@ export function RealGpsWorkspace() {
             <section className="nmk-gps-map-tools nmk-real-map-tools">
                 <div className="nmk-gps-section-title">
                     <p>Herramientas de mapa</p>
-                    <h3>Registro, perímetro y exportación</h3>
+                    <h3>Registro, perímetro, auditoría y exportación</h3>
                 </div>
 
                 <div className="nmk-gps-tool-actions">
@@ -976,8 +1179,14 @@ export function RealGpsWorkspace() {
                     <button disabled={savedPoints.length === 0} onClick={clearSavedPoints} type="button">
                         Limpiar puntos guardados
                     </button>
+                    <button onClick={markReadyToSync} type="button">
+                        Marcar listo para enviar
+                    </button>
+                    <button onClick={simulateSync} type="button">
+                        Simular sincronización
+                    </button>
                     <button onClick={() => void copyGeoJson()} type="button">
-                        Copiar GeoJSON
+                        Copiar paquete
                     </button>
                 </div>
 
@@ -991,13 +1200,86 @@ export function RealGpsWorkspace() {
                         <span>Polígono</span>
                     </article>
                     <article>
-                        <strong>{savedPoints.length}</strong>
-                        <span>Puntos guardados</span>
+                        <strong>{captureStatus}</strong>
+                        <span>Estado</span>
                     </article>
                     <article>
                         <strong>{copyStatus}</strong>
                         <span>Exportación</span>
                     </article>
+                </div>
+            </section>
+
+            <section className="nmk-gps-audit-grid">
+                <div className="nmk-gps-audit-panel">
+                    <div className="nmk-gps-section-title">
+                        <p>Auditoría GPS</p>
+                        <h3>Línea del tiempo de captura</h3>
+                    </div>
+
+                    <div className="nmk-gps-audit-actions">
+                        <button disabled={auditEntries.length === 0} onClick={clearAudit} type="button">
+                            Limpiar auditoría
+                        </button>
+                    </div>
+
+                    <div className="nmk-gps-audit-list">
+                        {auditEntries.length > 0 ? (
+                            auditEntries.map((entry) => (
+                                <article className={`nmk-audit-entry nmk-audit-entry-${entry.severity}`} key={entry.id}>
+                                    <time>{entry.createdAt}</time>
+                                    <div>
+                                        <strong>{entry.title}</strong>
+                                        <p>{entry.detail}</p>
+                                        <span>{entry.material} · {entry.pointId}</span>
+                                    </div>
+                                </article>
+                            ))
+                        ) : (
+                            <article className="nmk-audit-entry nmk-audit-entry-info">
+                                <time>—</time>
+                                <div>
+                                    <strong>Sin auditoría todavía</strong>
+                                    <p>Solicita ubicación, busca dirección, guarda punto o dibuja perímetro para generar eventos.</p>
+                                    <span>GPS · Captura</span>
+                                </div>
+                            </article>
+                        )}
+                    </div>
+                </div>
+
+                <div className="nmk-gps-quality-panel">
+                    <div className="nmk-gps-section-title">
+                        <p>Calidad</p>
+                        <h3>Checklist de captura</h3>
+                    </div>
+
+                    <div className="nmk-quality-meter">
+                        <span style={{ width: `${captureQuality}%` }} />
+                    </div>
+
+                    <div className="nmk-quality-list">
+                        <article className={currentPoint ? "is-done" : ""}>
+                            <strong>Ubicación actual</strong>
+                            <span>{currentPoint ? "Completado" : "Pendiente"}</span>
+                        </article>
+                        <article className={currentPoint?.address.full && !currentPoint.address.full.includes("pendiente") ? "is-done" : ""}>
+                            <strong>Dirección interpretada</strong>
+                            <span>{currentPoint?.address.source ?? "Pendiente"}</span>
+                        </article>
+                        <article className={savedPoints.length > 0 ? "is-done" : ""}>
+                            <strong>Punto guardado</strong>
+                            <span>{savedPoints.length} registros</span>
+                        </article>
+                        <article className={perimeterPoints.length >= 3 ? "is-done" : ""}>
+                            <strong>Perímetro</strong>
+                            <span>{perimeterPoints.length >= 3 ? "Polígono listo" : `${perimeterPoints.length}/3 mínimo`}</span>
+                        </article>
+                        <article className={captureStatus !== "Borrador" ? "is-done" : ""}>
+                            <strong>Paquete</strong>
+                            <span>{captureStatus}</span>
+                        </article>
+                    </div>
                 </div>
             </section>
 
@@ -1034,7 +1316,7 @@ export function RealGpsWorkspace() {
                 <div className="nmk-gps-next-actions">
                     <div className="nmk-gps-section-title">
                         <p>Objeto técnico preparado</p>
-                        <h3>GeoJSON exportable</h3>
+                        <h3>Paquete exportable</h3>
                     </div>
 
                     <pre className="nmk-gps-json">{geoJsonPreview}</pre>

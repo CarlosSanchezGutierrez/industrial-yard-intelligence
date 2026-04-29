@@ -413,3 +413,20 @@ Files:
 - `apps/web/src/components/RealGpsWorkspace.tsx`
 - `apps/web/src/styles/namiki-polish-p0-8-real-map.css`
 - `docs/NAMIKI_UX_POLISH_P0_8.md`
+## P0.9 GPS audit capture package applied
+
+Action taken:
+
+- Added GPS capture package status.
+- Added capture quality score.
+- Added GPS audit timeline.
+- Added localStorage audit persistence.
+- Added ready-to-send and simulated sync states.
+- Added package copy/export.
+- Added quality checklist.
+
+Files:
+
+- `apps/web/src/components/RealGpsWorkspace.tsx`
+- `apps/web/src/styles/namiki-polish-p0-9-gps-audit.css`
+- `docs/NAMIKI_UX_POLISH_P0_9.md`
