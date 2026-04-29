@@ -65,3 +65,17 @@ Added:
 Purpose:
 
 Show one cockpit area at a time instead of rendering a long technical scroll.
+## Deep premium UX pass
+
+Document:
+
+`docs/PHASE_2_5_DEEP_PREMIUM_UX.md`
+
+Added:
+
+- `PremiumUxFrame`
+- `premium-ux-depth.css`
+
+Purpose:
+
+Apply a deeper premium product feel across buttons, cards, forms, sections and responsive behavior.

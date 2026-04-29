@@ -307,3 +307,13 @@ Main files:
 
 - `apps/web/src/components/PremiumCockpitTabs.tsx`
 - `apps/web/src/styles/premium-tabs.css`
+## Phase 2.5 deep premium UX pass
+
+Document:
+
+`docs/PHASE_2_5_DEEP_PREMIUM_UX.md`
+
+Main files:
+
+- `apps/web/src/components/PremiumUxFrame.tsx`
+- `apps/web/src/styles/premium-ux-depth.css`
