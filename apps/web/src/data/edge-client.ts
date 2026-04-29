@@ -1,4 +1,6 @@
 import type {
+  DbProjectionSnapshotContract,
+  DbProjectionSummaryContract,
   DemoExecutiveReportContract,
   DemoPackageContract,
   DemoReadinessReportContract,
@@ -1265,19 +1267,9 @@ export async function importEdgeSyncStore(
     };
   }
 }
-export interface EdgeDbProjectionSummary {
-  readonly version: 1;
-  readonly exportedAt: string;
-  readonly storeFile: string;
-  readonly tableCounts: Record<string, number>;
-  readonly totalRows: number;
-}
+export type EdgeDbProjectionSummary = DbProjectionSummaryContract;
+export type EdgeDbSnapshot = DbProjectionSnapshotContract;
 
-export interface EdgeDbSnapshot {
-  readonly version: 1;
-  readonly exportedAt?: string;
-  readonly tables: Record<string, readonly unknown[]>;
-}
 
 export interface EdgeDbSummaryResult {
   readonly ok: boolean;

@@ -15,18 +15,17 @@ import {
   type JsonFileDbSnapshot
 } from "@iyi/db";
 import { cooperSmokeSeed } from "@iyi/seed-data";
+import type {
+  DbProjectionSnapshotContract,
+  DbProjectionSummaryContract,
+  DbProjectionTableNameContract
+} from "@iyi/api-contracts";
 import { getAuditEntries } from "./audit-store.js";
 import { getConflictResolutions } from "./conflict-resolutions.js";
 import { getEvidenceItems } from "./evidence-store.js";
 import { getSyncEventHistory } from "./store.js";
 
-export interface EdgeDbProjectionSummary {
-  readonly version: 1;
-  readonly exportedAt: string;
-  readonly storeFile: string;
-  readonly tableCounts: Record<string, number>;
-  readonly totalRows: number;
-}
+export type EdgeDbProjectionSummary = DbProjectionSummaryContract;
 
 interface RecordLike {
   readonly [key: string]: unknown;
@@ -338,7 +337,7 @@ function createEvidenceItemRecords(now: string): readonly DbEvidenceItemRecord[]
   });
 }
 
-export function getEdgeDbSnapshot(now = new Date().toISOString()): JsonFileDbSnapshot {
+export function getEdgeDbSnapshot(now = new Date().toISOString()): JsonFileDbSnapshot & DbProjectionSnapshotContract {
   const snapshot = createEmptyJsonFileDbSnapshot(now);
 
   return {
@@ -361,10 +360,10 @@ export function getEdgeDbSnapshot(now = new Date().toISOString()): JsonFileDbSna
 export function getEdgeDbSummary(now = new Date().toISOString()): EdgeDbProjectionSummary {
   const snapshot = getEdgeDbSnapshot(now);
   const entries = Object.entries(snapshot.tables);
-  const tableCounts: Record<string, number> = {};
+  const tableCounts = {} as Record<DbProjectionTableNameContract, number>;
 
   for (const [tableName, rows] of entries) {
-    tableCounts[tableName] = rows.length;
+    tableCounts[tableName as DbProjectionTableNameContract] = rows.length;
   }
 
   return {
