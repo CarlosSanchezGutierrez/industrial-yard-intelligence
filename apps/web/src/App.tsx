@@ -1,9 +1,3 @@
-import {
-  exportEdgeDbSnapshot,
-  loadEdgeDbSummary,
-  saveEdgeDbSnapshot,
-  type EdgeDbProjectionSummary
-} from "./data/edge-client";
 import { industrialDarkTheme, themeToCssVariables } from "@iyi/design-tokens";
 import { cooperSmokeSeed, type SmokeStockpile, type SmokeTenantSeed } from "@iyi/seed-data";
 import type { CSSProperties, ChangeEvent } from "react";
@@ -34,7 +28,11 @@ import {
   type EdgeSyncEvent,
   type EdgeSyncSummary,
   type SmokeSeedSource,
-  type SubmitSyncDemoResult
+  type SubmitSyncDemoResult,
+  exportEdgeDbSnapshot,
+  loadEdgeDbSummary,
+  saveEdgeDbSnapshot,
+  type EdgeDbProjectionSummary
 } from "./data/edge-client.js";
 import "./styles.css";
 
@@ -130,7 +128,11 @@ function App() {
   const [demoReadiness, setDemoReadiness] = useState<DemoReadinessReport | null>(null);
   const [demoReport, setDemoReport] = useState<EdgeDemoExecutiveReport | null>(null);
   const [demoReportMessage, setDemoReportMessage] = useState("Sin reporte ejecutivo cargado todavía.");
-  const [isExportingDemoPackage, setIsExportingDemoPackage] = useState(false);
+  const [edgeDbSummary, setEdgeDbSummary] = useState<EdgeDbProjectionSummary | null>(null);
+  const [edgeDbMessage, setEdgeDbMessage] = useState("Sin proyección DB cargada todavía.");
+  const [isLoadingEdgeDb, setIsLoadingEdgeDb] = useState(false);
+  const [isExportingEdgeDbSnapshot, setIsExportingEdgeDbSnapshot] = useState(false);
+  const [isSavingEdgeDbSnapshot, setIsSavingEdgeDbSnapshot] = useState(false);  const [isExportingDemoPackage, setIsExportingDemoPackage] = useState(false);
   const [isVerifyingDemoPackage, setIsVerifyingDemoPackage] = useState(false);
   const [isVerifyingUploadedPackage, setIsVerifyingUploadedPackage] = useState(false);
   const [isImportingDemoPackage, setIsImportingDemoPackage] = useState(false);
@@ -501,7 +503,7 @@ function App() {
             {Object.entries(edgeDbSummary.tableCounts).map(([tableName, rowCount]) => (
               <article key={tableName}>
                 <span>{tableName}</span>
-                <strong>{rowCount}</strong>
+                <strong>{Number(rowCount)}</strong>
               </article>
             ))}
           </div>
