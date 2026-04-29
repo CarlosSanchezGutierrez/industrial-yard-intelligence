@@ -1,37 +1,39 @@
 {
-  "name": "industrial-yard-intelligence",
-  "version": "0.0.0",
-  "private": true,
-  "description": "Industrial Yard Intelligence Platform for offline spatial operations, materials, equipment, movements, evidence, and future professional measurement workflows.",
-  "packageManager": "pnpm@10.0.0",
-  "type": "module",
-  "engines": {
-    "node": ">=24.0.0",
-    "pnpm": ">=10.0.0"
-  },
-  "scripts": {
-    "typecheck": "pnpm -r --if-present build && pnpm -r --if-present typecheck",
-    "lint": "pnpm -r --if-present lint",
-    "format": "prettier . --write",
-    "format:check": "prettier . --check",
-    "test": "pnpm -r --if-present build && pnpm -r --if-present test",
-    "build": "pnpm -r --if-present build"
-  },
-  "keywords": [
-    "industrial",
-    "gis",
-    "offline-first",
-    "local-first",
-    "yard-operations",
-    "edge-server",
-    "spatial-operations"
-  ],
-  "author": "Carlos Sanchez Gutierrez",
-  "license": "UNLICENSED",
-  "devDependencies": {
-    "@types/node": "^25.6.0",
-    "prettier": "^3.8.3",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.5"
-  }
+    "name":  "industrial-yard-intelligence",
+    "version":  "0.0.0",
+    "private":  true,
+    "description":  "Industrial Yard Intelligence Platform for offline spatial operations, materials, equipment, movements, evidence, and future professional measurement workflows.",
+    "packageManager":  "pnpm@10.0.0",
+    "type":  "module",
+    "engines":  {
+                    "node":  "\u003e=24.0.0",
+                    "pnpm":  "\u003e=10.0.0"
+                },
+    "scripts":  {
+                    "typecheck":  "pnpm -r --if-present build \u0026\u0026 pnpm -r --if-present typecheck",
+                    "lint":  "pnpm -r --if-present lint",
+                    "format":  "prettier . --write",
+                    "format:check":  "prettier . --check",
+                    "test":  "pnpm -r --if-present build \u0026\u0026 pnpm -r --if-present test",
+                    "build":  "pnpm -r --if-present build",
+                    "demo:smoke":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo-smoke.ps1",
+                    "demo:smoke:edge":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo-smoke.ps1 -EdgeBaseUrl http://localhost:8787"
+                },
+    "keywords":  [
+                     "industrial",
+                     "gis",
+                     "offline-first",
+                     "local-first",
+                     "yard-operations",
+                     "edge-server",
+                     "spatial-operations"
+                 ],
+    "author":  "Carlos Sanchez Gutierrez",
+    "license":  "UNLICENSED",
+    "devDependencies":  {
+                            "@types/node":  "^25.6.0",
+                            "prettier":  "^3.8.3",
+                            "typescript":  "^6.0.3",
+                            "vitest":  "^4.1.5"
+                        }
 }
