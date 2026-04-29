@@ -8,6 +8,7 @@ import {
   loadCooperSmokeSeed,
   loadEdgeSyncSnapshot,
   registerDemoEvidence,
+  resetEdgeDemoState,
   resolveSyncConflict,
   runGuidedDemoScenario,
   submitDemoSyncBatch,
@@ -102,6 +103,7 @@ function App() {
     "Ejecuta el flujo completo: sync aceptado, conflicto, evidencia y refresh de monitores."
   );
   const [isRunningGuidedDemo, setIsRunningGuidedDemo] = useState(false);
+  const [isResettingDemoState, setIsResettingDemoState] = useState(false);
   const [edgeSummary, setEdgeSummary] = useState<EdgeSyncSummary | null>(null);
   const [edgeEvents, setEdgeEvents] = useState<readonly EdgeSyncEvent[]>([]);
   const [conflictResolutions, setConflictResolutions] = useState<readonly EdgeConflictResolution[]>([]);
@@ -179,6 +181,16 @@ function App() {
     setGuidedDemoMessage(result.message);
     await refreshEdgeMonitor();
     setIsRunningGuidedDemo(false);
+  }
+
+  async function handleResetDemoState(): Promise<void> {
+    setIsResettingDemoState(true);
+    const result = await resetEdgeDemoState();
+    setGuidedDemoMessage(result.message);
+    setSyncResult(null);
+    setEvidenceMessage("Registra evidencia simulada para generar hash SHA-256.");
+    await refreshEdgeMonitor();
+    setIsResettingDemoState(false);
   }
 
   async function handleResolveConflict(eventId: string): Promise<void> {
@@ -402,13 +414,22 @@ function App() {
             <p className="eyebrow">Guided demo</p>
             <h2>Ejecutar flujo completo</h2>
             <p>{guidedDemoMessage}</p>
-            <button
-              className="guided-demo-button"
-              disabled={isRunningGuidedDemo}
-              onClick={() => void handleRunGuidedDemo()}
-            >
-              {isRunningGuidedDemo ? "Ejecutando demo..." : "Ejecutar demo guiada"}
-            </button>
+            <div className="guided-demo-actions">
+              <button
+                className="guided-demo-button"
+                disabled={isRunningGuidedDemo || isResettingDemoState}
+                onClick={() => void handleRunGuidedDemo()}
+              >
+                {isRunningGuidedDemo ? "Ejecutando demo..." : "Ejecutar demo guiada"}
+              </button>
+              <button
+                className="guided-demo-reset-button"
+                disabled={isRunningGuidedDemo || isResettingDemoState}
+                onClick={() => void handleResetDemoState()}
+              >
+                {isResettingDemoState ? "Reseteando..." : "Reset demo state"}
+              </button>
+            </div>
           </div>
           <div className="offline-transfer-panel">
             <p className="eyebrow">Offline transfer</p>

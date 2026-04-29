@@ -16,6 +16,7 @@ import {
   importAuditStore,
   recordConflictResolutionAudit,
   recordEvidenceRegisteredAudit,
+  resetAuditStore,
   verifyEdgeAuditChain
 } from "./audit-store.js";
 import {
@@ -24,6 +25,7 @@ import {
   getConflictResolutions,
   importConflictResolutionStore,
   recordConflictResolution,
+  resetConflictResolutionStore,
   type ConflictResolutionDecision
 } from "./conflict-resolutions.js";
 import {
@@ -33,6 +35,7 @@ import {
   getEvidenceSummary,
   importEvidenceStore,
   recordTextEvidence,
+  resetEvidenceStore,
   verifyEvidenceStore
 } from "./evidence-store.js";
 import {
@@ -46,6 +49,7 @@ import {
   getSyncSummary,
   importEdgeStore,
   recordSyncBatch,
+  resetEdgeMemoryStore,
   type EdgeStoreFile
 } from "./store.js";
 
@@ -184,7 +188,8 @@ function createManifest(now: string) {
       { method: "POST", path: "/evidence/register", description: "Register simulated text evidence with SHA-256 integrity." },
       { method: "GET", path: "/evidence/items", description: "List registered evidence items." },
       { method: "GET", path: "/evidence/summary", description: "Show evidence integrity summary." },
-      { method: "GET", path: "/evidence/verify", description: "Verify evidence hashes." }
+      { method: "GET", path: "/evidence/verify", description: "Verify evidence hashes." },
+      { method: "POST", path: "/admin/reset-demo-state", description: "Reset local demo state on edge." }
     ]
   };
 }
@@ -411,6 +416,28 @@ function handleEvidenceRegister(request: EdgeRouteRequest): EdgeRouteResponse {
   }
 }
 
+function handleResetDemoState(request: EdgeRouteRequest): EdgeRouteResponse {
+  resetEdgeMemoryStore();
+  resetConflictResolutionStore();
+  resetAuditStore();
+  resetEvidenceStore();
+
+  return jsonResponse(
+    200,
+    createApiSuccess(
+      {
+        reset: true,
+        message: "Local edge demo state was reset.",
+        summary: getSyncSummary(),
+        resolutions: getConflictResolutions(),
+        auditSummary: getAuditSummary(),
+        evidenceSummary: getEvidenceSummary()
+      },
+      request.requestId,
+      request.now
+    )
+  );
+}
 export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
   if (request.method === "OPTIONS") {
     return jsonResponse(204, {});
@@ -530,6 +557,9 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
     );
   }
 
+  if (request.method === "POST" && request.pathname === "/admin/reset-demo-state") {
+    return handleResetDemoState(request);
+  }
   return jsonResponse(
     404,
     createApiFailure(

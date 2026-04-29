@@ -135,6 +135,11 @@ export interface RunGuidedDemoResult {
   readonly message: string;
 }
 
+export interface ResetDemoStateResult {
+  readonly ok: boolean;
+  readonly message: string;
+}
+
 export interface EdgeSyncSnapshot {
   readonly ok: boolean;
   readonly source: "edge" | "unavailable";
@@ -741,6 +746,35 @@ export async function resolveSyncConflict(eventId: string): Promise<ResolveConfl
   }
 }
 
+export async function resetEdgeDemoState(): Promise<ResetDemoStateResult> {
+  const edgeBaseUrl = getEdgeBaseUrl();
+
+  try {
+    const response = await fetch(`${edgeBaseUrl}/admin/reset-demo-state`, {
+      method: "POST",
+      headers: {
+        accept: "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        message: `Edge reset endpoint responded with HTTP ${response.status}.`
+      };
+    }
+
+    return {
+      ok: true,
+      message: "Local edge demo state was reset."
+    };
+  } catch {
+    return {
+      ok: false,
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
+    };
+  }
+}
 export async function exportEdgeSyncStore(): Promise<EdgeStoreExportResult> {
   const edgeBaseUrl = getEdgeBaseUrl();
 
