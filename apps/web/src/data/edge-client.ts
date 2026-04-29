@@ -574,30 +574,56 @@ export async function registerDemoEvidence(): Promise<RegisterEvidenceResult> {
   }
 }
 
-function delay(milliseconds: number): Promise<void> {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, milliseconds);
-  });
-}
-
 export async function runGuidedDemoScenario(): Promise<RunGuidedDemoResult> {
-  const firstSync = await submitDemoSyncBatch();
-  await delay(20);
+  const edgeBaseUrl = getEdgeBaseUrl();
 
-  const secondSync = await submitDemoSyncBatch();
-  await delay(20);
+  try {
+    const response = await fetch(`${edgeBaseUrl}/admin/run-guided-demo`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        resetBeforeRun: true
+      })
+    });
 
-  const evidence = await registerDemoEvidence();
+    if (!response.ok) {
+      return {
+        ok: false,
+        message: `Edge guided demo endpoint responded with HTTP ${response.status}.`
+      };
+    }
 
-  const ok = firstSync.ok && secondSync.ok && evidence.ok;
+    const body = (await response.json()) as {
+      readonly ok: boolean;
+      readonly data?: {
+        readonly guidedDemo?: {
+          readonly firstSyncStatus?: string;
+          readonly secondSyncStatus?: string;
+          readonly evidenceHash?: string;
+        };
+      };
+    };
 
-  return {
-    ok,
-    message: ok
-      ? `Guided demo ran: first sync=${firstSync.status}, second sync=${secondSync.status}, evidence registered.`
-      : `Guided demo partial result: first sync=${firstSync.status}, second sync=${secondSync.status}, evidence=${evidence.ok ? "ok" : "failed"}.`
-  };
+    const guidedDemo = body.data?.guidedDemo;
+
+    return {
+      ok: body.ok,
+      message:
+        guidedDemo !== undefined
+          ? `Guided demo ran on edge: first sync=${guidedDemo.firstSyncStatus ?? "unknown"}, second sync=${guidedDemo.secondSyncStatus ?? "unknown"}, evidence=${guidedDemo.evidenceHash?.slice(0, 12) ?? "unknown"}...`
+          : "Guided demo ran on edge."
+    };
+  } catch {
+    return {
+      ok: false,
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
+    };
+  }
 }
+
 export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
   const edgeBaseUrl = getEdgeBaseUrl();
 

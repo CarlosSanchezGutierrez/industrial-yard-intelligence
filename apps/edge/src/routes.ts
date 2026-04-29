@@ -7,6 +7,15 @@ import {
   type SyncSubmitRequest
 } from "@iyi/api-contracts";
 import { cooperSmokeSeed } from "@iyi/seed-data";
+import {
+  asAggregateId,
+  asDeviceId,
+  asEventId,
+  asSyncEnvelopeId,
+  asTenantId,
+  asTerminalId,
+  asUserId
+} from "@iyi/kernel";
 import { reconcileSyncBatch } from "@iyi/sync-core";
 import {
   exportAuditStore,
@@ -190,7 +199,8 @@ function createManifest(now: string) {
       { method: "GET", path: "/evidence/summary", description: "Show evidence integrity summary." },
       { method: "GET", path: "/evidence/verify", description: "Verify evidence hashes." },
       { method: "POST", path: "/admin/reset-demo-state", description: "Reset local demo state on edge." },
-      { method: "GET", path: "/admin/demo-readiness", description: "Show local demo readiness report." }
+      { method: "GET", path: "/admin/demo-readiness", description: "Show local demo readiness report." },
+      { method: "POST", path: "/admin/run-guided-demo", description: "Create a deterministic local demo scenario." }
     ]
   };
 }
@@ -417,6 +427,83 @@ function handleEvidenceRegister(request: EdgeRouteRequest): EdgeRouteResponse {
   }
 }
 
+function normalizeDemoSuffix(value: string): string {
+  return value.replace(/[^a-zA-Z0-9_]/g, "_");
+}
+
+function createGuidedDemoSyncRequest(input: {
+  readonly suffix: string;
+  readonly expectedAggregateVersion: number;
+  readonly now: string;
+}): SyncSubmitRequest {
+  const tenantId = asTenantId("tenant_cooper_tsmith");
+  const terminalId = asTerminalId("terminal_altamira");
+  const userId = asUserId("user_demo_operator");
+  const deviceId = asDeviceId("device_web_demo");
+  const eventId = asEventId(`event_guided_demo_${input.suffix}`);
+
+  return {
+    context: {
+      tenantId,
+      terminalId,
+      userId,
+      deviceId
+    },
+    batch: {
+      batchId: `batch_guided_demo_${input.suffix}`,
+      tenantId,
+      terminalId,
+      deviceId,
+      createdAtClient: input.now,
+      events: [
+        {
+          syncEnvelopeId: asSyncEnvelopeId(`sync_guided_demo_${input.suffix}`),
+          eventId,
+          eventType: "GUIDED_DEMO_MOVEMENT_RECORDED",
+          eventVersion: 1,
+          tenantId,
+          terminalId,
+          userId,
+          deviceId,
+          sourceRuntime: "edge",
+          createdAtClient: input.now,
+          localSequence: input.expectedAggregateVersion + 1,
+          idempotencyKey: `tenant_cooper_tsmith:device_web_demo:guided_demo:${input.suffix}:${eventId}`,
+          aggregateType: "stockpile",
+          aggregateId: asAggregateId("stockpile_pet_coke_001"),
+          validationState: "operational",
+          confidenceLevel: "simulated",
+          payload: {
+            movementType: "GUIDED_DEMO",
+            source: "apps/edge",
+            expectedAggregateVersion: input.expectedAggregateVersion,
+            note: "Server-side guided demo sync event."
+          }
+        }
+      ]
+    }
+  };
+}
+
+function reconcileAndRecordGuidedDemoSync(syncRequest: SyncSubmitRequest, receivedAtEdge: string) {
+  const result = reconcileSyncBatch({
+    batch: syncRequest.batch,
+    receivedAtEdge,
+    context: {
+      expectedTenantId: syncRequest.context.tenantId,
+      knownEventIds: getKnownSyncEventIds(),
+      knownIdempotencyKeys: getKnownSyncIdempotencyKeys(),
+      aggregateVersions: getAggregateVersions()
+    }
+  });
+
+  recordSyncBatch(syncRequest.batch, result);
+
+  return {
+    result,
+    firstStatus: result.results[0]?.status ?? "unknown"
+  };
+}
 function createDemoReadinessReport(now: string) {
   const syncSummary = getSyncSummary();
   const resolutions = getConflictResolutions();
@@ -483,6 +570,84 @@ function createDemoReadinessReport(now: string) {
     evidenceSummary,
     checks
   };
+}
+function handleRunGuidedDemo(request: EdgeRouteRequest): EdgeRouteResponse {
+  const resetBeforeRun = getBooleanBodyValue(request.body, "resetBeforeRun", true);
+
+  if (resetBeforeRun) {
+    resetEdgeMemoryStore();
+    resetConflictResolutionStore();
+    resetAuditStore();
+    resetEvidenceStore();
+  }
+
+  const suffixBase = normalizeDemoSuffix(request.now);
+  const firstSyncRequest = createGuidedDemoSyncRequest({
+    suffix: `accepted_${suffixBase}`,
+    expectedAggregateVersion: 0,
+    now: request.now
+  });
+
+  const firstSync = reconcileAndRecordGuidedDemoSync(firstSyncRequest, request.now);
+
+  const secondSyncRequest = createGuidedDemoSyncRequest({
+    suffix: `conflict_${suffixBase}`,
+    expectedAggregateVersion: 0,
+    now: request.now
+  });
+
+  const secondSync = reconcileAndRecordGuidedDemoSync(secondSyncRequest, request.now);
+
+  const relatedEventId = String(firstSyncRequest.batch.events[0]?.eventId ?? "event_guided_demo_missing");
+
+  const evidence = recordTextEvidence({
+    content: JSON.stringify(
+      {
+        type: "FeatureCollection",
+        name: "guided-demo-evidence",
+        generatedAt: request.now,
+        features: []
+      },
+      null,
+      2
+    ),
+    evidenceKind: "geojson",
+    storageProvider: "edge_filesystem",
+    storageKey: `evidence/geojson/guided-demo-${suffixBase}.geojson`,
+    fileName: `guided-demo-${suffixBase}.geojson`,
+    mimeType: "application/geo+json",
+    relatedEntityId: "stockpile_pet_coke_001",
+    relatedEventId,
+    registeredAt: request.now
+  });
+
+  const evidenceAuditEntry = recordEvidenceRegisteredAudit({
+    evidence,
+    createdAt: request.now
+  });
+
+  return jsonResponse(
+    200,
+    createApiSuccess(
+      {
+        guidedDemo: {
+          resetBeforeRun,
+          firstSyncStatus: firstSync.firstStatus,
+          secondSyncStatus: secondSync.firstStatus,
+          evidenceId: String(evidence.metadata.evidenceId),
+          evidenceHash: evidence.metadata.integrity.hashValue,
+          auditHash: evidenceAuditEntry.integrityHash
+        },
+        readiness: createDemoReadinessReport(request.now),
+        summary: getSyncSummary(),
+        resolutions: getConflictResolutions(),
+        auditSummary: getAuditSummary(),
+        evidenceSummary: getEvidenceSummary()
+      },
+      request.requestId,
+      request.now
+    )
+  );
 }
 function handleResetDemoState(request: EdgeRouteRequest): EdgeRouteResponse {
   resetEdgeMemoryStore();
@@ -625,6 +790,9 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
     );
   }
 
+  if (request.method === "POST" && request.pathname === "/admin/run-guided-demo") {
+    return handleRunGuidedDemo(request);
+  }
   if (request.method === "POST" && request.pathname === "/admin/reset-demo-state") {
     return handleResetDemoState(request);
   }
