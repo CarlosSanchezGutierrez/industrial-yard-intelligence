@@ -16,8 +16,8 @@ import {
   dbSchemaVersion,
   getCoreSchemaSql,
   getRequiredCoreTableNames,
-  type DbStockpileRecord,
-  type DbTenantRecord
+  type DbTenantRecord,
+  type DbUnitOfWork
 } from "@iyi/db";
 import { cooperSmokeSeed } from "@iyi/seed-data";
 import {
@@ -61,6 +61,89 @@ export interface ApiFailureResponse {
   };
   readonly requestId: string;
   readonly timestamp: string;
+}
+
+function createSuccess<TData>(
+  data: TData,
+  requestId: string,
+  timestamp: string
+): ApiSuccessResponse<TData> {
+  return {
+    ok: true,
+    data,
+    requestId,
+    timestamp
+  };
+}
+
+function createFailure(
+  code: string,
+  message: string,
+  requestId: string,
+  timestamp: string
+): ApiFailureResponse {
+  return {
+    ok: false,
+    error: {
+      code,
+      message
+    },
+    requestId,
+    timestamp
+  };
+}
+
+function createCorsHeaders(): Readonly<Record<string, string>> {
+  return {
+    "access-control-allow-origin": "*",
+    "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+    "access-control-allow-headers": "content-type,authorization,x-request-id",
+    "access-control-max-age": "86400"
+  };
+}
+
+function jsonResponse(statusCode: number, payload: unknown): ApiRouteResponse {
+  return {
+    statusCode,
+    headers: {
+      ...createCorsHeaders(),
+      "content-type": "application/json; charset=utf-8"
+    },
+    body: `${JSON.stringify(payload, null, 2)}\n`
+  };
+}
+
+function emptyResponse(statusCode: number): ApiRouteResponse {
+  return {
+    statusCode,
+    headers: createCorsHeaders(),
+    body: ""
+  };
+}
+
+function toTenantSummary(record: DbTenantRecord): CloudApiTenantsPayloadContract["tenants"][number] {
+  return {
+    id: record.id,
+    name: record.name,
+    status: record.status,
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt
+  };
+}
+
+async function createSystemOverviewPayload(
+  unitOfWork: DbUnitOfWork
+): Promise<CloudApiSystemOverviewPayloadContract> {
+  return {
+    tenantCount: await unitOfWork.repositories.tenants.count(),
+    terminalCount: await unitOfWork.repositories.terminals.count(),
+    userCount: await unitOfWork.repositories.users.count(),
+    deviceCount: await unitOfWork.repositories.devices.count(),
+    stockpileCount: await unitOfWork.repositories.stockpiles.count(),
+    syncEventCount: await unitOfWork.repositories.syncEvents.count(),
+    auditEntryCount: await unitOfWork.repositories.auditEntries.count(),
+    evidenceItemCount: await unitOfWork.repositories.evidenceItems.count()
+  };
 }
 
 export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRouteResponse> {
@@ -175,6 +258,7 @@ export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRout
 
   if (request.method === "POST" && request.pathname === "/admin/db/reset") {
     const store = resetApiJsonDb(request.now);
+
     const payload: CloudApiAdminDbResetPayloadContract = {
       reset: true,
       storeFile: getApiDbFilePath(),
