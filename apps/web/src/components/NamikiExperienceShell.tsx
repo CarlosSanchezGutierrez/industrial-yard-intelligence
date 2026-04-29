@@ -278,7 +278,7 @@ function OperationalMap() {
 function MaterialTable() {
     const [query, setQuery] = useState("");
     const [status, setStatus] = useState("Todos");
-    const [selectedName, setSelectedName] = useState(materialRows[0]?.name ?? "");
+    const [selectedName, setSelectedName] = useState<string>(materialRows[0]?.name ?? "");
 
     const statusOptions = useMemo(
         () => ["Todos", ...Array.from(new Set(materialRows.map((row) => row.status)))],
