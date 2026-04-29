@@ -7,6 +7,7 @@ import {
   type SyncSubmitRequest
 } from "@iyi/api-contracts";
 import { cooperSmokeSeed } from "@iyi/seed-data";
+import { reconcileSyncBatch } from "@iyi/sync-core";
 import {
   exportAuditStore,
   getAuditEntries,
@@ -16,7 +17,6 @@ import {
   recordConflictResolutionAudit,
   verifyEdgeAuditChain
 } from "./audit-store.js";
-import { reconcileSyncBatch } from "@iyi/sync-core";
 import {
   exportConflictResolutionStore,
   getConflictResolutionFilePath,
@@ -25,6 +25,15 @@ import {
   recordConflictResolution,
   type ConflictResolutionDecision
 } from "./conflict-resolutions.js";
+import {
+  exportEvidenceStore,
+  getEvidenceItems,
+  getEvidenceStoreFilePath,
+  getEvidenceSummary,
+  importEvidenceStore,
+  recordTextEvidence,
+  verifyEvidenceStore
+} from "./evidence-store.js";
 import {
   exportEdgeStore,
   getAggregateVersions,
@@ -58,7 +67,8 @@ interface EdgeOfflineBackup {
   readonly exportedAt: string;
   readonly syncStore: EdgeStoreFile;
   readonly conflictResolutions: ReturnType<typeof exportConflictResolutionStore>;
-  readonly auditStore: ReturnType<typeof exportAuditStore>;
+  readonly auditStore?: ReturnType<typeof exportAuditStore>;
+  readonly evidenceStore?: ReturnType<typeof exportEvidenceStore>;
 }
 
 function jsonResponse(statusCode: number, body: unknown): EdgeRouteResponse {
@@ -140,7 +150,8 @@ function createOfflineBackup(now: string): EdgeOfflineBackup {
     exportedAt: now,
     syncStore: exportEdgeStore(now),
     conflictResolutions: exportConflictResolutionStore(now),
-    auditStore: exportAuditStore()
+    auditStore: exportAuditStore(),
+    evidenceStore: exportEvidenceStore(now)
   };
 }
 
@@ -155,67 +166,24 @@ function createManifest(now: string) {
     storeFile: getEdgeStoreFilePath(),
     conflictResolutionFile: getConflictResolutionFilePath(),
     auditStoreFile: getAuditStoreFilePath(),
+    evidenceStoreFile: getEvidenceStoreFilePath(),
     routes: [
-      {
-        method: "GET",
-        path: "/health",
-        description: "Edge health check."
-      },
-      {
-        method: "GET",
-        path: "/seed/cooper-smoke",
-        description: "Simulated Cooper/T. Smith seed payload."
-      },
-      {
-        method: "POST",
-        path: "/sync/batches",
-        description: "Local sync batch reconciliation endpoint."
-      },
-      {
-        method: "GET",
-        path: "/sync/events",
-        description: "JSON-backed sync event history."
-      },
-      {
-        method: "GET",
-        path: "/sync/summary",
-        description: "JSON-backed sync summary."
-      },
-      {
-        method: "GET",
-        path: "/sync/export",
-        description: "Export combined offline backup with sync store and conflict resolutions."
-      },
-      {
-        method: "POST",
-        path: "/sync/import",
-        description: "Import combined offline backup or legacy sync store."
-      },
-      {
-        method: "GET",
-        path: "/sync/conflicts/resolutions",
-        description: "List supervisor conflict resolutions."
-      },
-      {
-        method: "POST",
-        path: "/sync/conflicts/resolve",
-        description: "Mark a conflict event as reviewed by supervisor."
-      },
-      {
-        method: "GET",
-        path: "/audit/entries",
-        description: "List append-only audit entries."
-      },
-      {
-        method: "GET",
-        path: "/audit/summary",
-        description: "Show audit chain verification summary."
-      },
-      {
-        method: "GET",
-        path: "/audit/verify",
-        description: "Verify audit hash chain integrity."
-      }
+      { method: "GET", path: "/health", description: "Edge health check." },
+      { method: "GET", path: "/seed/cooper-smoke", description: "Simulated Cooper/T. Smith seed payload." },
+      { method: "POST", path: "/sync/batches", description: "Local sync batch reconciliation endpoint." },
+      { method: "GET", path: "/sync/events", description: "JSON-backed sync event history." },
+      { method: "GET", path: "/sync/summary", description: "JSON-backed sync summary." },
+      { method: "GET", path: "/sync/export", description: "Export combined offline backup." },
+      { method: "POST", path: "/sync/import", description: "Import combined offline backup or legacy sync store." },
+      { method: "GET", path: "/sync/conflicts/resolutions", description: "List supervisor conflict resolutions." },
+      { method: "POST", path: "/sync/conflicts/resolve", description: "Mark a conflict event as reviewed by supervisor." },
+      { method: "GET", path: "/audit/entries", description: "List append-only audit entries." },
+      { method: "GET", path: "/audit/summary", description: "Show audit chain verification summary." },
+      { method: "GET", path: "/audit/verify", description: "Verify audit hash chain integrity." },
+      { method: "POST", path: "/evidence/register", description: "Register simulated text evidence with SHA-256 integrity." },
+      { method: "GET", path: "/evidence/items", description: "List registered evidence items." },
+      { method: "GET", path: "/evidence/summary", description: "Show evidence integrity summary." },
+      { method: "GET", path: "/evidence/verify", description: "Verify evidence hashes." }
     ]
   };
 }
@@ -266,10 +234,18 @@ function handleStoreImport(request: EdgeRouteRequest): EdgeRouteResponse {
       );
 
       const auditImportResult =
-        "auditStore" in importPayload
+        importPayload.auditStore !== undefined
           ? importAuditStore(importPayload.auditStore, replaceExistingStore)
           : {
               importedAuditEntries: 0,
+              replacedExistingStore: replaceExistingStore
+            };
+
+      const evidenceImportResult =
+        importPayload.evidenceStore !== undefined
+          ? importEvidenceStore(importPayload.evidenceStore, replaceExistingStore)
+          : {
+              importedEvidenceItems: 0,
               replacedExistingStore: replaceExistingStore
             };
 
@@ -280,9 +256,11 @@ function handleStoreImport(request: EdgeRouteRequest): EdgeRouteResponse {
             importResult,
             conflictImportResult,
             auditImportResult,
+            evidenceImportResult,
             summary: getSyncSummary(),
             resolutions: getConflictResolutions(),
-            auditSummary: getAuditSummary()
+            auditSummary: getAuditSummary(),
+            evidenceSummary: getEvidenceSummary()
           },
           request.requestId,
           request.now
@@ -298,7 +276,9 @@ function handleStoreImport(request: EdgeRouteRequest): EdgeRouteResponse {
         {
           importResult,
           summary: getSyncSummary(),
-          resolutions: getConflictResolutions()
+          resolutions: getConflictResolutions(),
+          auditSummary: getAuditSummary(),
+          evidenceSummary: getEvidenceSummary()
         },
         request.requestId,
         request.now
@@ -364,16 +344,64 @@ function handleConflictResolution(request: EdgeRouteRequest): EdgeRouteResponse 
   );
 }
 
+function handleEvidenceRegister(request: EdgeRouteRequest): EdgeRouteResponse {
+  const content = getStringBodyValue(request.body, "content");
+
+  if (content === undefined || content.length === 0) {
+    return jsonResponse(
+      400,
+      createApiFailure(
+        createApiError("bad_request", "POST /evidence/register requires non-empty content."),
+        request.requestId,
+        request.now
+      )
+    );
+  }
+
+  try {
+    const evidence = recordTextEvidence({
+      content,
+      evidenceKind: getStringBodyValue(request.body, "evidenceKind"),
+      storageProvider: getStringBodyValue(request.body, "storageProvider"),
+      storageKey: getStringBodyValue(request.body, "storageKey"),
+      fileName: getStringBodyValue(request.body, "fileName"),
+      mimeType: getStringBodyValue(request.body, "mimeType"),
+      relatedEntityId: getStringBodyValue(request.body, "relatedEntityId"),
+      relatedEventId: getStringBodyValue(request.body, "relatedEventId"),
+      registeredAt: request.now
+    });
+
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          evidence,
+          summary: getEvidenceSummary(),
+          verification: verifyEvidenceStore()
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  } catch {
+    return jsonResponse(
+      400,
+      createApiFailure(
+        createApiError("bad_request", "Invalid evidence registration payload."),
+        request.requestId,
+        request.now
+      )
+    );
+  }
+}
+
 export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
   if (request.method === "OPTIONS") {
     return jsonResponse(204, {});
   }
 
   if (request.method === "GET" && request.pathname === "/") {
-    return jsonResponse(
-      200,
-      createApiSuccess(createManifest(request.now), request.requestId, request.now)
-    );
+    return jsonResponse(200, createApiSuccess(createManifest(request.now), request.requestId, request.now));
   }
 
   if (request.method === "GET" && request.pathname === "/health") {
@@ -393,16 +421,7 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
   }
 
   if (request.method === "GET" && request.pathname === "/seed/cooper-smoke") {
-    return jsonResponse(
-      200,
-      createApiSuccess(
-        {
-          seed: cooperSmokeSeed
-        },
-        request.requestId,
-        request.now
-      )
-    );
+    return jsonResponse(200, createApiSuccess({ seed: cooperSmokeSeed }, request.requestId, request.now));
   }
 
   if (request.method === "POST" && request.pathname === "/sync/batches") {
@@ -424,16 +443,7 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
   }
 
   if (request.method === "GET" && request.pathname === "/sync/summary") {
-    return jsonResponse(
-      200,
-      createApiSuccess(
-        {
-          summary: getSyncSummary()
-        },
-        request.requestId,
-        request.now
-      )
-    );
+    return jsonResponse(200, createApiSuccess({ summary: getSyncSummary() }, request.requestId, request.now));
   }
 
   if (request.method === "GET" && request.pathname === "/sync/export") {
@@ -445,7 +455,9 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
         {
           backup,
           store: backup.syncStore,
-          conflictResolutions: backup.conflictResolutions
+          conflictResolutions: backup.conflictResolutions,
+          auditStore: backup.auditStore,
+          evidenceStore: backup.evidenceStore
         },
         request.requestId,
         request.now
@@ -457,60 +469,49 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
     return handleStoreImport(request);
   }
 
-  if (request.method === "GET" && request.pathname === "/audit/entries") {
-    return jsonResponse(
-      200,
-      createApiSuccess(
-        {
-          entries: getAuditEntries()
-        },
-        request.requestId,
-        request.now
-      )
-    );
-  }
-
-  if (request.method === "GET" && request.pathname === "/audit/summary") {
-    return jsonResponse(
-      200,
-      createApiSuccess(
-        {
-          summary: getAuditSummary()
-        },
-        request.requestId,
-        request.now
-      )
-    );
-  }
-
-  if (request.method === "GET" && request.pathname === "/audit/verify") {
-    return jsonResponse(
-      200,
-      createApiSuccess(
-        {
-          verification: verifyEdgeAuditChain()
-        },
-        request.requestId,
-        request.now
-      )
-    );
-  }
-
   if (request.method === "GET" && request.pathname === "/sync/conflicts/resolutions") {
     return jsonResponse(
       200,
-      createApiSuccess(
-        {
-          resolutions: getConflictResolutions()
-        },
-        request.requestId,
-        request.now
-      )
+      createApiSuccess({ resolutions: getConflictResolutions() }, request.requestId, request.now)
     );
   }
 
   if (request.method === "POST" && request.pathname === "/sync/conflicts/resolve") {
     return handleConflictResolution(request);
+  }
+
+  if (request.method === "GET" && request.pathname === "/audit/entries") {
+    return jsonResponse(200, createApiSuccess({ entries: getAuditEntries() }, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/audit/summary") {
+    return jsonResponse(200, createApiSuccess({ summary: getAuditSummary() }, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/audit/verify") {
+    return jsonResponse(
+      200,
+      createApiSuccess({ verification: verifyEdgeAuditChain() }, request.requestId, request.now)
+    );
+  }
+
+  if (request.method === "POST" && request.pathname === "/evidence/register") {
+    return handleEvidenceRegister(request);
+  }
+
+  if (request.method === "GET" && request.pathname === "/evidence/items") {
+    return jsonResponse(200, createApiSuccess({ items: getEvidenceItems() }, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/evidence/summary") {
+    return jsonResponse(200, createApiSuccess({ summary: getEvidenceSummary() }, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/evidence/verify") {
+    return jsonResponse(
+      200,
+      createApiSuccess({ verification: verifyEvidenceStore() }, request.requestId, request.now)
+    );
   }
 
   return jsonResponse(

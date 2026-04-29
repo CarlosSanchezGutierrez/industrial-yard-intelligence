@@ -1,17 +1,34 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
-    "composite": true,
-    "types": ["node"]
-  },
-  "references": [
-    { "path": "../../packages/api-contracts" },
-    { "path": "../../packages/kernel" },
-    { "path": "../../packages/seed-data" },
-    { "path": "../../packages/sync-core" },
-    { "path": "../../packages/sync-protocol" }
-  ],
-  "include": ["src/**/*.ts"]
+    "extends":  "../../tsconfig.base.json",
+    "compilerOptions":  {
+                            "rootDir":  "src",
+                            "outDir":  "dist",
+                            "composite":  true,
+                            "types":  [
+                                          "node"
+                                      ]
+                        },
+    "references":  [
+                       {
+                           "path":  "../../packages/api-contracts"
+                       },
+                       {
+                           "path":  "../../packages/kernel"
+                       },
+                       {
+                           "path":  "../../packages/seed-data"
+                       },
+                       {
+                           "path":  "../../packages/sync-core"
+                       },
+                       {
+                           "path":  "../../packages/sync-protocol"
+                       },
+                       {
+                           "path":  "../../packages/media"
+                       }
+                   ],
+    "include":  [
+                    "src/**/*.ts"
+                ]
 }

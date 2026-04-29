@@ -32,6 +32,9 @@ importers:
       '@iyi/kernel':
         specifier: workspace:*
         version: link:../../packages/kernel
+      '@iyi/media':
+        specifier: workspace:^
+        version: link:../../packages/media
       '@iyi/seed-data':
         specifier: workspace:*
         version: link:../../packages/seed-data

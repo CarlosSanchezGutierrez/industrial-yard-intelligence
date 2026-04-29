@@ -17,6 +17,7 @@
     "@iyi/api-contracts": "workspace:*",
     "@iyi/audit": "workspace:^",
     "@iyi/kernel": "workspace:*",
+    "@iyi/media": "workspace:^",
     "@iyi/seed-data": "workspace:*",
     "@iyi/sync-core": "workspace:*",
     "@iyi/sync-protocol": "workspace:*"
