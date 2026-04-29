@@ -113,3 +113,8 @@ Core architecture documents:
 Architecture decision records live under:
 
 - `docs/adr/`
+## Architecture diagrams
+
+Architecture v1 diagrams:
+
+`docs/ARCHITECTURE_V1_DIAGRAMS.md`

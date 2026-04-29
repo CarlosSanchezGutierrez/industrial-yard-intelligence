@@ -55,3 +55,8 @@ After this check, build, test, typecheck, smoke scripts and ci-local pass, the a
 - `docs/adr/0004-audit-before-production-sync.md`
 - `docs/adr/0005-sync-preview-before-apply.md`
 - `docs/adr/0006-domain-rules-outside-http.md`
+## Diagrams
+
+Architecture diagrams are documented in:
+
+`docs/ARCHITECTURE_V1_DIAGRAMS.md`

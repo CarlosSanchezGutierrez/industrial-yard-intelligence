@@ -39,3 +39,8 @@ Recommended order:
 5. Mobile capture design.
 6. Deployment design.
 7. Industrial evidence hardening.
+## Architecture diagrams
+
+Architecture v1 diagrams are now available in:
+
+`docs/ARCHITECTURE_V1_DIAGRAMS.md`

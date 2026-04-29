@@ -137,3 +137,18 @@ The v1 skeleton intentionally does not include:
 - production observability
 
 Those belong to v2/v3.
+## Architecture diagrams
+
+Diagrams are documented in:
+
+`docs/ARCHITECTURE_V1_DIAGRAMS.md`
+
+Included diagrams:
+
+- system context
+- package boundaries
+- stockpile lifecycle
+- Cloud API mutation audit
+- Edge-to-cloud sync skeleton
+- local runtime ports
+- architecture readiness gate
