@@ -150,3 +150,5 @@ vite.config.ts.timestamp-*
 
 # Local edge runtime data
 apps/edge/.edge-data/
+.api-data/
+apps/api/.api-data/

@@ -71,6 +71,7 @@ function Assert-NoUtf8BomFiles {
         "\dist\",
         "\.git\",
         "\.edge-data\",
+        "\.api-data\",
         "\artifacts\"
     )
 
@@ -110,6 +111,8 @@ function Assert-NoRuntimeArtifactsTracked {
     $badFiles = git ls-files | Where-Object {
         $_ -like "*/dist/*" -or
         $_ -like "*/.edge-data/*" -or
+        $_ -like "*/.api-data/*" -or
+        $_ -like ".api-data/*" -or
         $_ -like "artifacts/*"
     }
 

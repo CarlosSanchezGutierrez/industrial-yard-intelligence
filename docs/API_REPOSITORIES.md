@@ -18,3 +18,14 @@ Next persistence step:
 2. Replace in-memory unit of work with JSON or Postgres-backed implementation.
 3. Add auth and tenant scoping.
 4. Add write endpoints only after read model is stable.
+## JSON file mode
+
+apps/api now uses JsonFileDbStore from packages/db.
+
+Default path:
+
+.api-data/api-db.json
+
+This lets the backend keep state across requests and restarts during local development.
+
+Production target remains PostgreSQL.

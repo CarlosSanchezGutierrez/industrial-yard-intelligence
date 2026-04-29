@@ -14,7 +14,7 @@ Future cloud API, production persistence, auth, tenant management and remote syn
 
 Current mode:
 
-Repository-backed in-memory API using packages/db repository contracts.
+Repository-backed JSON file API using packages/db repository contracts.
 
 Current endpoints:
 
@@ -60,3 +60,18 @@ Current headers:
 - access-control-allow-headers: content-type,authorization,x-request-id
 
 Before production, this should be restricted to known frontend origins.
+## Local JSON persistence
+
+apps/api now persists its repository state to:
+
+.api-data/api-db.json
+
+Admin endpoints:
+
+GET /admin/db/snapshot
+Returns the current API JSON DB snapshot.
+
+POST /admin/db/reset
+Resets the API JSON DB to Cooper/T. Smith seed data.
+
+This is still not the final production database. The next long-term target is PostgreSQL.

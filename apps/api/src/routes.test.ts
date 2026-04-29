@@ -61,7 +61,7 @@ describe("@iyi/api routes", () => {
     expect(body.ok).toBe(true);
     expect(body.data.status).toBe("ok");
     expect(body.data.service).toBe("@iyi/api");
-    expect(body.data.repositoryMode).toBe("in_memory");
+    expect(body.data.repositoryMode).toBe("json_file");
     expect(body.data.dbSchemaVersion).toContain("core_schema");
   });
 
@@ -199,6 +199,57 @@ describe("@iyi/api routes", () => {
     expect(response.headers["access-control-allow-origin"]).toBe("*");
     expect(response.headers["access-control-allow-methods"]).toContain("GET");
     expect(response.headers["access-control-allow-methods"]).toContain("OPTIONS");
+  });
+  it("serves API JSON DB snapshot", async () => {
+    const response = await get("/admin/db/snapshot");
+    const body = JSON.parse(response.body) as {
+      ok: boolean;
+      data: {
+        storeFile: string;
+        snapshot: {
+          version: number;
+          tables: {
+            app_tenants: readonly unknown[];
+            stockpiles: readonly unknown[];
+          };
+        };
+      };
+    };
+
+    expect(response.statusCode).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.data.storeFile).toContain("api-db.json");
+    expect(body.data.snapshot.version).toBe(1);
+    expect(body.data.snapshot.tables.app_tenants).toHaveLength(1);
+    expect(body.data.snapshot.tables.stockpiles.length).toBeGreaterThan(0);
+  });
+
+  it("resets API JSON DB to seed state", async () => {
+    const response = await routeApiRequest({
+      method: "POST",
+      pathname: "/admin/db/reset",
+      requestId: "request_admin_db_reset",
+      now
+    });
+
+    const body = JSON.parse(response.body) as {
+      ok: boolean;
+      data: {
+        reset: boolean;
+        storeFile: string;
+        overview: {
+          tenantCount: number;
+          stockpileCount: number;
+        };
+      };
+    };
+
+    expect(response.statusCode).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.data.reset).toBe(true);
+    expect(body.data.storeFile).toContain("api-db.json");
+    expect(body.data.overview.tenantCount).toBe(1);
+    expect(body.data.overview.stockpileCount).toBeGreaterThan(0);
   });
   it("returns 404 for unknown route", async () => {
     const response = await get("/unknown");

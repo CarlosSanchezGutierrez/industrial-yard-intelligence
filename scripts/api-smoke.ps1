@@ -83,7 +83,7 @@ $health = Invoke-JsonRequest -Method "GET" -Path "/health"
 Assert-OkResponse -Response $health -StepName "Health check"
 Assert-Condition -Condition ($health.data.status -eq "ok") -Message "Health status should be ok."
 Assert-Condition -Condition ($health.data.service -eq "@iyi/api") -Message "Unexpected API service."
-Assert-Condition -Condition ($health.data.repositoryMode -eq "in_memory") -Message "Expected in_memory repository mode."
+Assert-Condition -Condition ($health.data.repositoryMode -eq "json_file") -Message "Expected json_file repository mode."
 Write-Host "OK health"
 
 Write-Host ""
@@ -148,5 +148,27 @@ Assert-Condition -Condition ($overview.data.stockpileCount -ge 1) -Message "Expe
 Assert-Condition -Condition ($overview.data.syncEventCount -eq 0) -Message "Expected syncEventCount = 0 in API seed mode."
 Write-Host "OK system overview"
 
+
+Write-Host ""
+Write-Host "9. Admin DB snapshot"
+$dbSnapshot = Invoke-JsonRequest -Method "GET" -Path "/admin/db/snapshot"
+Assert-OkResponse -Response $dbSnapshot -StepName "Admin DB snapshot"
+Assert-Condition -Condition ($dbSnapshot.data.storeFile -like "*api-db.json*") -Message "Expected api-db.json store file."
+Assert-Condition -Condition ($dbSnapshot.data.snapshot.version -eq 1) -Message "Expected DB snapshot version 1."
+Assert-Condition -Condition ($dbSnapshot.data.snapshot.tables.app_tenants.Count -eq 1) -Message "Expected 1 tenant in DB snapshot."
+Write-Host "OK admin DB snapshot"
+
+Write-Host ""
+Write-Host "10. Admin DB reset"
+$dbReset = Invoke-RestMethod `
+    -Method "POST" `
+    -Uri "$ApiBaseUrl/admin/db/reset" `
+    -Headers @{
+        Accept = "application/json"
+    }
+Assert-OkResponse -Response $dbReset -StepName "Admin DB reset"
+Assert-Condition -Condition ($dbReset.data.reset -eq $true) -Message "Expected reset=true."
+Assert-Condition -Condition ($dbReset.data.overview.tenantCount -eq 1) -Message "Expected tenantCount = 1 after reset."
+Write-Host "OK admin DB reset"
 Write-Host ""
 Write-Host "API SMOKE TEST PASSED"

@@ -15,7 +15,7 @@ export interface CloudApiHealthPayloadContract {
   readonly status: "ok";
   readonly service: "@iyi/api";
   readonly dbSchemaVersion: string;
-  readonly repositoryMode: "in_memory";
+  readonly repositoryMode: "in_memory" | "json_file";
 }
 
 export interface CloudApiDbSchemaPayloadContract {
@@ -79,6 +79,16 @@ export interface CloudApiSystemOverviewPayloadContract {
   readonly auditEntryCount: number;
   readonly evidenceItemCount: number;
 }
+export interface CloudApiAdminDbSnapshotPayloadContract {
+  readonly storeFile: string;
+  readonly snapshot: unknown;
+}
+
+export interface CloudApiAdminDbResetPayloadContract {
+  readonly reset: true;
+  readonly storeFile: string;
+  readonly overview: CloudApiSystemOverviewPayloadContract;
+}
 
 export const cloudApiRouteDefinitions = [
   {
@@ -120,6 +130,16 @@ export const cloudApiRouteDefinitions = [
     method: "GET",
     path: "/system/overview",
     description: "Return repository-backed system overview."
+  },
+  {
+    method: "GET",
+    path: "/admin/db/snapshot",
+    description: "Return API JSON database snapshot."
+  },
+  {
+    method: "POST",
+    path: "/admin/db/reset",
+    description: "Reset API JSON database to seed state."
   }
 ] as const satisfies readonly CloudApiRouteDefinitionContract[];
 

@@ -1,11 +1,17 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import {
+  createEmptyJsonFileDbSnapshot,
   createInMemoryDbUnitOfWork,
+  createJsonFileDbStore,
   type DbDeviceRecord,
   type DbStockpileRecord,
   type DbTenantRecord,
   type DbTerminalRecord,
   type DbUnitOfWork,
-  type DbUserRecord
+  type DbUserRecord,
+  type JsonFileDbSnapshot,
+  type JsonFileDbStore
 } from "@iyi/db";
 import { cooperSmokeSeed } from "@iyi/seed-data";
 
@@ -33,6 +39,12 @@ function normalizeStockpileStatus(value: unknown): DbStockpileRecord["status"] {
   }
 
   return "operational";
+}
+
+export function getApiDbFilePath(): string {
+  const dataDirectory = process.env["IYI_API_DATA_DIR"] ?? join(process.cwd(), ".api-data");
+
+  return join(dataDirectory, "api-db.json");
 }
 
 export function createApiRepositorySeed(now = new Date().toISOString()): {
@@ -147,7 +159,24 @@ export function createApiRepositorySeed(now = new Date().toISOString()): {
   };
 }
 
-export function createApiUnitOfWork(now = new Date().toISOString()): DbUnitOfWork {
+export function createApiSeedSnapshot(now = new Date().toISOString()): JsonFileDbSnapshot {
+  const seed = createApiRepositorySeed(now);
+  const snapshot = createEmptyJsonFileDbSnapshot(now);
+
+  return {
+    ...snapshot,
+    tables: {
+      ...snapshot.tables,
+      app_tenants: seed.tenants,
+      terminals: seed.terminals,
+      app_users: seed.users,
+      devices: seed.devices,
+      stockpiles: seed.stockpiles
+    }
+  };
+}
+
+export function createInMemoryApiUnitOfWork(now = new Date().toISOString()): DbUnitOfWork {
   const seed = createApiRepositorySeed(now);
 
   return createInMemoryDbUnitOfWork({
@@ -157,4 +186,46 @@ export function createApiUnitOfWork(now = new Date().toISOString()): DbUnitOfWor
     devices: seed.devices,
     stockpiles: seed.stockpiles
   });
+}
+
+function isEmptyApiSnapshot(snapshot: JsonFileDbSnapshot): boolean {
+  return snapshot.tables.app_tenants.length === 0;
+}
+
+export function createApiJsonDbStore(now = new Date().toISOString()): JsonFileDbStore {
+  const filePath = getApiDbFilePath();
+  const store = createJsonFileDbStore({
+    filePath
+  });
+
+  const snapshot = existsSync(filePath) ? store.loadFromDisk() : createEmptyJsonFileDbSnapshot(now);
+
+  if (isEmptyApiSnapshot(snapshot)) {
+    store.importSnapshot(createApiSeedSnapshot(now));
+    store.saveToDisk(now);
+  } else {
+    store.importSnapshot(snapshot);
+  }
+
+  return store;
+}
+
+export function createApiUnitOfWork(now = new Date().toISOString()): DbUnitOfWork {
+  return createApiJsonDbStore(now);
+}
+
+export function getApiJsonDbSnapshot(now = new Date().toISOString()): JsonFileDbSnapshot {
+  return createApiJsonDbStore(now).exportSnapshot(now);
+}
+
+export function resetApiJsonDb(now = new Date().toISOString()): JsonFileDbStore {
+  const store = createJsonFileDbStore({
+    filePath: getApiDbFilePath()
+  });
+
+  store.reset(true);
+  store.importSnapshot(createApiSeedSnapshot(now));
+  store.saveToDisk(now);
+
+  return store;
 }

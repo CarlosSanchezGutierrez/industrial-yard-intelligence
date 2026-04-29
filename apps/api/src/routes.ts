@@ -2,6 +2,8 @@ import {
   cloudApiRouteDefinitions,
   type CloudApiDbSchemaPayloadContract,
   type CloudApiDbTablesPayloadContract,
+  type CloudApiAdminDbResetPayloadContract,
+  type CloudApiAdminDbSnapshotPayloadContract,
   type CloudApiHealthPayloadContract,
   type CloudApiManifestPayloadContract,
   type CloudApiSeedPayloadContract,
@@ -17,7 +19,12 @@ import {
   type DbTenantRecord
 } from "@iyi/db";
 import { cooperSmokeSeed } from "@iyi/seed-data";
-import { createApiUnitOfWork } from "./repository-seed.js";
+import {
+  createApiUnitOfWork,
+  getApiDbFilePath,
+  getApiJsonDbSnapshot,
+  resetApiJsonDb
+} from "./repository-seed.js";
 
 export interface ApiRouteRequest {
   readonly method: string;
@@ -135,6 +142,20 @@ function toStockpileSummary(
     status: record.status
   };
 }
+async function createSystemOverviewPayload(
+  unitOfWork: Awaited<ReturnType<typeof createApiUnitOfWork>>
+): Promise<CloudApiSystemOverviewPayloadContract> {
+  return {
+    tenantCount: await unitOfWork.repositories.tenants.count(),
+    terminalCount: await unitOfWork.repositories.terminals.count(),
+    userCount: await unitOfWork.repositories.users.count(),
+    deviceCount: await unitOfWork.repositories.devices.count(),
+    stockpileCount: await unitOfWork.repositories.stockpiles.count(),
+    syncEventCount: await unitOfWork.repositories.syncEvents.count(),
+    auditEntryCount: await unitOfWork.repositories.auditEntries.count(),
+    evidenceItemCount: await unitOfWork.repositories.evidenceItems.count()
+  };
+}
 
 export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRouteResponse> {
   if (request.method === "OPTIONS") {
@@ -159,7 +180,7 @@ export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRout
       status: "ok",
       service: "@iyi/api",
       dbSchemaVersion,
-      repositoryMode: "in_memory"
+      repositoryMode: "json_file"
     };
 
     return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
@@ -215,15 +236,26 @@ export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRout
   }
 
   if (request.method === "GET" && request.pathname === "/system/overview") {
-    const payload: CloudApiSystemOverviewPayloadContract = {
-      tenantCount: await unitOfWork.repositories.tenants.count(),
-      terminalCount: await unitOfWork.repositories.terminals.count(),
-      userCount: await unitOfWork.repositories.users.count(),
-      deviceCount: await unitOfWork.repositories.devices.count(),
-      stockpileCount: await unitOfWork.repositories.stockpiles.count(),
-      syncEventCount: await unitOfWork.repositories.syncEvents.count(),
-      auditEntryCount: await unitOfWork.repositories.auditEntries.count(),
-      evidenceItemCount: await unitOfWork.repositories.evidenceItems.count()
+    const payload = await createSystemOverviewPayload(unitOfWork);
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/admin/db/snapshot") {
+    const payload: CloudApiAdminDbSnapshotPayloadContract = {
+      storeFile: getApiDbFilePath(),
+      snapshot: getApiJsonDbSnapshot(request.now)
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "POST" && request.pathname === "/admin/db/reset") {
+    const store = resetApiJsonDb(request.now);
+    const payload: CloudApiAdminDbResetPayloadContract = {
+      reset: true,
+      storeFile: getApiDbFilePath(),
+      overview: await createSystemOverviewPayload(store)
     };
 
     return jsonResponse(200, createSuccess(payload, request.requestId, request.now));

@@ -12,6 +12,8 @@ describe("@iyi/api-contracts cloud API", () => {
     expect(cloudApiRouteDefinitions.some((route) => route.path === "/tenants")).toBe(true);
     expect(cloudApiRouteDefinitions.some((route) => route.path === "/stockpiles")).toBe(true);
     expect(cloudApiRouteDefinitions.some((route) => route.path === "/system/overview")).toBe(true);
+    expect(cloudApiRouteDefinitions.some((route) => route.path === "/admin/db/snapshot")).toBe(true);
+    expect(cloudApiRouteDefinitions.some((route) => route.path === "/admin/db/reset")).toBe(true);
   });
 
   it("recognizes cloud API route paths", () => {
@@ -25,11 +27,11 @@ describe("@iyi/api-contracts cloud API", () => {
       status: "ok",
       service: "@iyi/api",
       dbSchemaVersion: "2026_04_28_0001_core_schema",
-      repositoryMode: "in_memory"
+      repositoryMode: "json_file"
     };
 
     expect(payload.status).toBe("ok");
-    expect(payload.repositoryMode).toBe("in_memory");
+    expect(payload.repositoryMode).toBe("json_file");
   });
 
   it("types system overview payload", () => {
