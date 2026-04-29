@@ -162,6 +162,38 @@ export interface DemoReadinessResult {
   readonly message: string;
 }
 
+export interface EdgeDemoReportMetric {
+  readonly label: string;
+  readonly value: number;
+  readonly detail: string;
+}
+
+export interface EdgeDemoReportProofPoint {
+  readonly label: string;
+  readonly detail: string;
+}
+
+export interface EdgeDemoExecutiveReport {
+  readonly reportId: string;
+  readonly title: string;
+  readonly customer: string;
+  readonly generatedAt: string;
+  readonly status: "ready_for_demo" | "needs_attention" | "empty_demo_state";
+  readonly summary: readonly string[];
+  readonly metrics: readonly EdgeDemoReportMetric[];
+  readonly proofPoints: readonly EdgeDemoReportProofPoint[];
+  readonly demoScript: readonly string[];
+  readonly recommendedNextSteps: readonly string[];
+  readonly readiness: DemoReadinessReport;
+}
+
+export interface DemoReportResult {
+  readonly ok: boolean;
+  readonly source: "edge" | "unavailable";
+  readonly report: EdgeDemoExecutiveReport | null;
+  readonly message: string;
+}
+
 export interface EdgeSyncSnapshot {
   readonly ok: boolean;
   readonly source: "edge" | "unavailable";
@@ -304,6 +336,12 @@ interface DemoReadinessResponse {
   readonly ok: boolean;
   readonly data?: {
     readonly readiness?: DemoReadinessReport;
+  };
+}
+interface DemoReportResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly report?: EdgeDemoExecutiveReport;
   };
 }
 
@@ -814,6 +852,47 @@ export async function resolveSyncConflict(eventId: string): Promise<ResolveConfl
   }
 }
 
+export async function loadDemoExecutiveReport(): Promise<DemoReportResult> {
+  const edgeBaseUrl = getEdgeBaseUrl();
+
+  try {
+    const response = await fetch(`${edgeBaseUrl}/admin/demo-report`, {
+      method: "GET",
+      headers: {
+        accept: "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        source: "edge",
+        report: null,
+        message: `Edge demo report endpoint responded with HTTP ${response.status}.`
+      };
+    }
+
+    const body = (await response.json()) as DemoReportResponse;
+    const report = body.data?.report ?? null;
+
+    return {
+      ok: body.ok && report !== null,
+      source: "edge",
+      report,
+      message:
+        report !== null
+          ? `Loaded executive report ${report.reportId}.`
+          : "Edge demo report response did not contain report payload."
+    };
+  } catch {
+    return {
+      ok: false,
+      source: "unavailable",
+      report: null,
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
+    };
+  }
+}
 export async function resetEdgeDemoState(): Promise<ResetDemoStateResult> {
   const edgeBaseUrl = getEdgeBaseUrl();
 

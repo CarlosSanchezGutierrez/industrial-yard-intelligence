@@ -6,6 +6,7 @@ import {
   exportEdgeSyncStore,
   importEdgeSyncStore,
   loadCooperSmokeSeed,
+  loadDemoExecutiveReport,
   loadEdgeSyncSnapshot,
   registerDemoEvidence,
   resetEdgeDemoState,
@@ -18,6 +19,7 @@ import {
   type EdgeEvidenceItem,
   type EdgeEvidenceSummary,
   type EdgeEvidenceVerification,
+  type EdgeDemoExecutiveReport,
   type DemoReadinessReport,
   type EdgeSyncEvent,
   type EdgeSyncSummary,
@@ -114,6 +116,8 @@ function App() {
   const [evidenceItems, setEvidenceItems] = useState<readonly EdgeEvidenceItem[]>([]);
   const [evidenceVerification, setEvidenceVerification] = useState<EdgeEvidenceVerification | null>(null);
   const [demoReadiness, setDemoReadiness] = useState<DemoReadinessReport | null>(null);
+  const [demoReport, setDemoReport] = useState<EdgeDemoExecutiveReport | null>(null);
+  const [demoReportMessage, setDemoReportMessage] = useState("Sin reporte ejecutivo cargado todavía.");
   const [evidenceMessage, setEvidenceMessage] = useState("Registra evidencia simulada para generar hash SHA-256.");
   const [isRegisteringEvidence, setIsRegisteringEvidence] = useState(false);
   const [edgeMonitorMessage, setEdgeMonitorMessage] = useState("Esperando conexión al edge.");
@@ -122,7 +126,10 @@ function App() {
   const [resolvingConflictEventId, setResolvingConflictEventId] = useState<string | null>(null);
 
   async function refreshEdgeMonitor(): Promise<void> {
-    const snapshot = await loadEdgeSyncSnapshot();
+    const [snapshot, reportResult] = await Promise.all([
+      loadEdgeSyncSnapshot(),
+      loadDemoExecutiveReport()
+    ]);
     setEdgeSummary(snapshot.summary);
     setEdgeEvents(snapshot.events);
     setConflictResolutions(snapshot.conflictResolutions);
@@ -132,6 +139,8 @@ function App() {
     setEvidenceItems(snapshot.evidenceItems);
     setEvidenceVerification(snapshot.evidenceVerification);
     setDemoReadiness(snapshot.demoReadiness);
+    setDemoReport(reportResult.report);
+    setDemoReportMessage(reportResult.message);
     setEdgeMonitorMessage(snapshot.message);
   }
 
@@ -164,6 +173,14 @@ function App() {
       setEvidenceVerification(snapshot.evidenceVerification);
       setDemoReadiness(snapshot.demoReadiness);
       setEdgeMonitorMessage(snapshot.message);
+    });
+    void loadDemoExecutiveReport().then((result) => {
+      if (!isMounted) {
+        return;
+      }
+
+      setDemoReport(result.report);
+      setDemoReportMessage(result.message);
     });
 
     return () => {
@@ -223,6 +240,15 @@ function App() {
 
     setTransferMessage(result.message);
     setIsTransferring(false);
+  }
+  function handleExportDemoReport(): void {
+    if (demoReport === null) {
+      setDemoReportMessage("No hay reporte ejecutivo disponible para exportar.");
+      return;
+    }
+
+    downloadJsonFile(`iyi-demo-report-${Date.now()}.json`, demoReport);
+    setDemoReportMessage(`Exported executive report ${demoReport.reportId}.`);
   }
 
   function handleImportClick(): void {
@@ -311,6 +337,76 @@ function App() {
         ))}
       </section>
 
+      <section className="executive-report-panel">
+        <div className="panel-header">
+          <div>
+            <p className="eyebrow">Executive Demo Report</p>
+            <h2>{demoReport?.title ?? "Industrial Yard Intelligence Demo Report"}</h2>
+          </div>
+          <span className={`executive-report-status executive-${demoReport?.status ?? "empty_demo_state"}`}>
+            {demoReport?.status ?? "empty_demo_state"}
+          </span>
+        </div>
+
+        <p className="executive-report-message">{demoReportMessage}</p>
+
+        <div className="executive-report-actions">
+          <button className="secondary-button" onClick={() => void refreshEdgeMonitor()}>
+            Actualizar reporte
+          </button>
+          <button className="secondary-button" disabled={demoReport === null} onClick={handleExportDemoReport}>
+            Exportar reporte JSON
+          </button>
+        </div>
+
+        {demoReport === null ? (
+          <div className="empty-state">
+            Sin reporte ejecutivo. Verifica que el edge esté corriendo y que exista el endpoint /admin/demo-report.
+          </div>
+        ) : (
+          <>
+            <div className="executive-metric-grid">
+              {demoReport.metrics.map((metric) => (
+                <article key={metric.label}>
+                  <span>{metric.label}</span>
+                  <strong>{metric.value}</strong>
+                  <small>{metric.detail}</small>
+                </article>
+              ))}
+            </div>
+
+            <div className="executive-report-grid">
+              <article>
+                <h3>Proof points</h3>
+                {demoReport.proofPoints.map((proofPoint) => (
+                  <div className="executive-line-item" key={proofPoint.label}>
+                    <strong>{proofPoint.label}</strong>
+                    <span>{proofPoint.detail}</span>
+                  </div>
+                ))}
+              </article>
+
+              <article>
+                <h3>Demo script</h3>
+                {demoReport.demoScript.map((step) => (
+                  <div className="executive-line-item" key={step}>
+                    <strong>{step}</strong>
+                  </div>
+                ))}
+              </article>
+
+              <article>
+                <h3>Next steps</h3>
+                {demoReport.recommendedNextSteps.map((step) => (
+                  <div className="executive-line-item" key={step}>
+                    <strong>{step}</strong>
+                  </div>
+                ))}
+              </article>
+            </div>
+          </>
+        )}
+      </section>
       <section className="demo-readiness-panel">
         <div className="panel-header">
           <div>
