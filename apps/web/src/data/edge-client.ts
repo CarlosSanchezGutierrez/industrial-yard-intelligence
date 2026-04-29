@@ -1265,3 +1265,189 @@ export async function importEdgeSyncStore(
     };
   }
 }
+export interface EdgeDbProjectionSummary {
+  readonly version: 1;
+  readonly exportedAt: string;
+  readonly storeFile: string;
+  readonly tableCounts: Record<string, number>;
+  readonly totalRows: number;
+}
+
+export interface EdgeDbSnapshot {
+  readonly version: 1;
+  readonly exportedAt?: string;
+  readonly tables: Record<string, readonly unknown[]>;
+}
+
+export interface EdgeDbSummaryResult {
+  readonly ok: boolean;
+  readonly source: "edge" | "unavailable";
+  readonly summary: EdgeDbProjectionSummary | null;
+  readonly message: string;
+}
+
+export interface EdgeDbSnapshotResult {
+  readonly ok: boolean;
+  readonly source: "edge" | "unavailable";
+  readonly snapshot: EdgeDbSnapshot | null;
+  readonly message: string;
+}
+
+export interface EdgeDbSnapshotSaveResult {
+  readonly ok: boolean;
+  readonly source: "edge" | "unavailable";
+  readonly storeFile: string | null;
+  readonly snapshot: EdgeDbSnapshot | null;
+  readonly message: string;
+}
+export async function loadEdgeDbSummary(): Promise<EdgeDbSummaryResult> {
+  const edgeBaseUrl = getEdgeBaseUrl();
+
+  try {
+    const response = await fetch(`${edgeBaseUrl}/db/summary`, {
+      method: "GET",
+      headers: {
+        accept: "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        source: "edge",
+        summary: null,
+        message: `Edge DB summary endpoint responded with HTTP ${response.status}.`
+      };
+    }
+
+    const body = (await response.json()) as {
+      readonly ok: boolean;
+      readonly data?: {
+        readonly summary?: EdgeDbProjectionSummary;
+      };
+    };
+
+    const summary = body.data?.summary ?? null;
+
+    return {
+      ok: body.ok && summary !== null,
+      source: "edge",
+      summary,
+      message:
+        summary !== null
+          ? `Loaded DB projection: ${summary.totalRows} rows across ${Object.keys(summary.tableCounts).length} tables.`
+          : "Edge DB summary response did not contain summary payload."
+    };
+  } catch {
+    return {
+      ok: false,
+      source: "unavailable",
+      summary: null,
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
+    };
+  }
+}
+
+export async function exportEdgeDbSnapshot(): Promise<EdgeDbSnapshotResult> {
+  const edgeBaseUrl = getEdgeBaseUrl();
+
+  try {
+    const response = await fetch(`${edgeBaseUrl}/db/snapshot`, {
+      method: "GET",
+      headers: {
+        accept: "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        source: "edge",
+        snapshot: null,
+        message: `Edge DB snapshot endpoint responded with HTTP ${response.status}.`
+      };
+    }
+
+    const body = (await response.json()) as {
+      readonly ok: boolean;
+      readonly data?: {
+        readonly snapshot?: EdgeDbSnapshot;
+      };
+    };
+
+    const snapshot = body.data?.snapshot ?? null;
+    const tableCount = snapshot !== null ? Object.keys(snapshot.tables).length : 0;
+
+    return {
+      ok: body.ok && snapshot !== null,
+      source: "edge",
+      snapshot,
+      message:
+        snapshot !== null
+          ? `Exported DB projection snapshot with ${tableCount} tables.`
+          : "Edge DB snapshot response did not contain snapshot payload."
+    };
+  } catch {
+    return {
+      ok: false,
+      source: "unavailable",
+      snapshot: null,
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
+    };
+  }
+}
+
+export async function saveEdgeDbSnapshot(): Promise<EdgeDbSnapshotSaveResult> {
+  const edgeBaseUrl = getEdgeBaseUrl();
+
+  try {
+    const response = await fetch(`${edgeBaseUrl}/db/snapshot/save`, {
+      method: "POST",
+      headers: {
+        accept: "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        source: "edge",
+        storeFile: null,
+        snapshot: null,
+        message: `Edge DB snapshot save endpoint responded with HTTP ${response.status}.`
+      };
+    }
+
+    const body = (await response.json()) as {
+      readonly ok: boolean;
+      readonly data?: {
+        readonly saved?: boolean;
+        readonly storeFile?: string;
+        readonly snapshot?: EdgeDbSnapshot;
+      };
+    };
+
+    const saved = body.data?.saved === true;
+    const storeFile = body.data?.storeFile ?? null;
+    const snapshot = body.data?.snapshot ?? null;
+
+    return {
+      ok: body.ok && saved,
+      source: "edge",
+      storeFile,
+      snapshot,
+      message:
+        saved && storeFile !== null
+          ? `Saved DB projection snapshot to ${storeFile}.`
+          : "Edge DB snapshot save response did not confirm saved=true."
+    };
+  } catch {
+    return {
+      ok: false,
+      source: "unavailable",
+      storeFile: null,
+      snapshot: null,
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
+    };
+  }
+}

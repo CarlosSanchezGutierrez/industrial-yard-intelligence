@@ -1,3 +1,9 @@
+import {
+  exportEdgeDbSnapshot,
+  loadEdgeDbSummary,
+  saveEdgeDbSnapshot,
+  type EdgeDbProjectionSummary
+} from "./data/edge-client";
 import { industrialDarkTheme, themeToCssVariables } from "@iyi/design-tokens";
 import { cooperSmokeSeed, type SmokeStockpile, type SmokeTenantSeed } from "@iyi/seed-data";
 import type { CSSProperties, ChangeEvent } from "react";
@@ -372,6 +378,38 @@ function App() {
     (event) => event.status === "conflict" && !resolvedConflictEventIds.has(event.eventId)
   );
 
+  async function handleRefreshEdgeDbProjection(): Promise<void> {
+    setIsLoadingEdgeDb(true);
+    const result = await loadEdgeDbSummary();
+    setEdgeDbSummary(result.summary);
+    setEdgeDbMessage(result.message);
+    setIsLoadingEdgeDb(false);
+  }
+
+  async function handleExportEdgeDbSnapshot(): Promise<void> {
+    setIsExportingEdgeDbSnapshot(true);
+    const result = await exportEdgeDbSnapshot();
+
+    if (result.ok && result.snapshot !== null) {
+      downloadJsonFile(`iyi-edge-db-snapshot-${Date.now()}.json`, result.snapshot);
+    }
+
+    setEdgeDbMessage(result.message);
+    setIsExportingEdgeDbSnapshot(false);
+  }
+
+  async function handleSaveEdgeDbSnapshot(): Promise<void> {
+    setIsSavingEdgeDbSnapshot(true);
+    const result = await saveEdgeDbSnapshot();
+
+    if (result.snapshot !== null) {
+      const summaryResult = await loadEdgeDbSummary();
+      setEdgeDbSummary(summaryResult.summary);
+    }
+
+    setEdgeDbMessage(result.message);
+    setIsSavingEdgeDbSnapshot(false);
+  }
   return (
     <main className="app-shell" style={applyThemeVariables()}>
       <nav className="top-nav">
@@ -417,6 +455,58 @@ function App() {
         ))}
       </section>
 
+      <section className="db-projection-panel">
+        <div className="panel-header">
+          <div>
+            <p className="eyebrow">DB Projection</p>
+            <h2>Snapshot unificado del edge</h2>
+          </div>
+          <span className="db-projection-status">
+            {edgeDbSummary === null ? "NO DATA" : `${edgeDbSummary.totalRows} ROWS`}
+          </span>
+        </div>
+
+        <p className="db-projection-message">{edgeDbMessage}</p>
+
+        <div className="db-projection-actions">
+          <button
+            className="secondary-button"
+            disabled={isLoadingEdgeDb}
+            onClick={() => void handleRefreshEdgeDbProjection()}
+          >
+            {isLoadingEdgeDb ? "Cargando DB..." : "Actualizar DB projection"}
+          </button>
+          <button
+            className="secondary-button"
+            disabled={isExportingEdgeDbSnapshot}
+            onClick={() => void handleExportEdgeDbSnapshot()}
+          >
+            {isExportingEdgeDbSnapshot ? "Exportando snapshot..." : "Exportar DB snapshot"}
+          </button>
+          <button
+            className="secondary-button"
+            disabled={isSavingEdgeDbSnapshot}
+            onClick={() => void handleSaveEdgeDbSnapshot()}
+          >
+            {isSavingEdgeDbSnapshot ? "Guardando snapshot..." : "Guardar snapshot en edge"}
+          </button>
+        </div>
+
+        {edgeDbSummary === null ? (
+          <div className="empty-state">
+            Sin resumen DB. Levanta edge y presiona “Actualizar DB projection”.
+          </div>
+        ) : (
+          <div className="db-table-count-grid">
+            {Object.entries(edgeDbSummary.tableCounts).map(([tableName, rowCount]) => (
+              <article key={tableName}>
+                <span>{tableName}</span>
+                <strong>{rowCount}</strong>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
       <section className="executive-report-panel">
         <div className="panel-header">
           <div>
