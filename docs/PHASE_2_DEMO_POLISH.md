@@ -87,3 +87,18 @@ Location:
 Purpose:
 
 Make the cockpit immediately show whether the local demo stack is healthy before presenting stockpiles, audit and sync.
+## Demo data reset panel
+
+`DemoDataResetPanel` adds a visible Cloud API demo reset action to the cockpit.
+
+Location:
+
+`apps/web/src/components/DemoDataResetPanel.tsx`
+
+Runtime route used:
+
+`POST /admin/db/reset`
+
+Purpose:
+
+Before a live demo, reset Cloud API JSON data back to the seed baseline without manually deleting `.api-data`.

@@ -196,3 +196,8 @@ The cockpit includes an operator workflow progress panel:
 The cockpit includes live local stack status cards:
 
 `apps/web/src/components/RuntimeConnectionStatusPanel.tsx`
+## Phase 2 demo data reset
+
+The cockpit includes a Cloud API demo reset panel:
+
+`apps/web/src/components/DemoDataResetPanel.tsx`
