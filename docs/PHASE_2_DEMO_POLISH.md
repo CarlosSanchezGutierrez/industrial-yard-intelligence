@@ -179,3 +179,14 @@ Purpose:
 Make the demo feel industrial and spatial by showing stockpiles as patio zones instead of only table/card data.
 
 This is not a production GIS map yet. It is a visual bridge toward future GPS/geospatial work.
+## Phase 2 gate
+
+Run:
+
+pnpm phase2:check
+
+Gate document:
+
+docs/PHASE_2_DEMO_POLISH_GATE.md
+
+This validates that the Phase 2 demo cockpit panels exist, are mounted and represent the expected runtime routes.

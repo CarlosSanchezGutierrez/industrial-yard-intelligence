@@ -226,3 +226,12 @@ The cockpit includes a guided Edge-to-Cloud sync demo panel:
 The cockpit includes a conceptual yard operations map:
 
 `apps/web/src/components/YardOperationsMapPanel.tsx`
+## Phase 2 demo polish gate
+
+Run:
+
+pnpm phase2:check
+
+Document:
+
+docs/PHASE_2_DEMO_POLISH_GATE.md
