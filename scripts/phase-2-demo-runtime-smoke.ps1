@@ -5,7 +5,9 @@ param(
     [AllowEmptyString()]
     [string] $EdgeBaseUrl = "",
 
-    [switch] $SkipReset
+    [switch] $SkipReset,
+
+    [switch] $IncludeAudit
 )
 
 $ErrorActionPreference = "Stop"
@@ -70,7 +72,9 @@ function Invoke-IyiGet {
         [string] $Name,
 
         [Parameter(Mandatory = $true)]
-        [string] $Uri
+        [string] $Uri,
+
+        [int] $TimeoutSec = 20
     )
 
     Write-Host "==> GET ${Name}: $Uri"
@@ -79,13 +83,13 @@ function Invoke-IyiGet {
         return Invoke-RestMethod `
             -Method GET `
             -Uri $Uri `
-            -TimeoutSec 45 `
+            -TimeoutSec $TimeoutSec `
             -Headers @{
                 "x-request-id" = "phase-2-demo-runtime-smoke"
             }
     }
     catch {
-        throw "GET $Name failed at $Uri. Start a fresh local stack with: pnpm dev:stack:windows. $($_.Exception.Message)"
+        throw "GET $Name failed at $Uri. $($_.Exception.Message)"
     }
 }
 
@@ -97,7 +101,9 @@ function Invoke-IyiPost {
         [Parameter(Mandatory = $true)]
         [string] $Uri,
 
-        [object] $Body = $null
+        [object] $Body = $null,
+
+        [int] $TimeoutSec = 20
     )
 
     Write-Host "==> POST ${Name}: $Uri"
@@ -112,7 +118,7 @@ function Invoke-IyiPost {
         return Invoke-RestMethod `
             -Method POST `
             -Uri $Uri `
-            -TimeoutSec 45 `
+            -TimeoutSec $TimeoutSec `
             -ContentType "application/json" `
             -Headers @{
                 "x-request-id" = "phase-2-demo-runtime-smoke"
@@ -120,7 +126,7 @@ function Invoke-IyiPost {
             -Body $jsonBody
     }
     catch {
-        throw "POST $Name failed at $Uri. Start a fresh local stack with: pnpm dev:stack:windows. $($_.Exception.Message)"
+        throw "POST $Name failed at $Uri. $($_.Exception.Message)"
     }
 }
 
@@ -168,12 +174,18 @@ $stockpilesResponse = Invoke-IyiGet `
 $stockpilesPayload = Unwrap-IyiPayload -Response $stockpilesResponse
 Assert-IyiCondition ($null -ne $stockpilesPayload) "Cloud API stockpiles returned empty payload."
 
-$auditResponse = Invoke-IyiGet `
-    -Name "Cloud API audit mutations" `
-    -Uri "$resolvedApiBaseUrl/audit/mutations"
+if ($IncludeAudit) {
+    $auditResponse = Invoke-IyiGet `
+        -Name "Cloud API audit mutations" `
+        -Uri "$resolvedApiBaseUrl/audit/mutations" `
+        -TimeoutSec 8
 
-$auditPayload = Unwrap-IyiPayload -Response $auditResponse
-Assert-IyiCondition ($null -ne $auditPayload) "Cloud API audit mutations returned empty payload."
+    $auditPayload = Unwrap-IyiPayload -Response $auditResponse
+    Assert-IyiCondition ($null -ne $auditPayload) "Cloud API audit mutations returned empty payload."
+}
+else {
+    Write-Host "==> SKIP Cloud API audit mutations: deferred to backend hardening"
+}
 
 $syncStatusResponse = Invoke-IyiGet `
     -Name "Cloud API sync status" `

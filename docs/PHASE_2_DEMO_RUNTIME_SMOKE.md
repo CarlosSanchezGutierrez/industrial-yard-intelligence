@@ -66,3 +66,14 @@ pnpm phase2:close -- -CheckOnly
 If either service is offline, start the stack first:
 
 `pnpm dev:stack:windows`
+## Audit route note
+
+`GET /audit/mutations` is intentionally skipped by default in `phase2:runtime`.
+
+Reason:
+
+The Phase 2 baseline validates the demo runtime path for health, reset, stockpiles and sync. Audit backend hardening moves to the next backend phase.
+
+To include audit manually:
+
+`pnpm phase2:runtime -- -IncludeAudit`

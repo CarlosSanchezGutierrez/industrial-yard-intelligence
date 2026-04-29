@@ -41,18 +41,6 @@ function unwrapData(value: unknown): unknown {
     return value;
 }
 
-function getString(value: unknown, fallback: string): string {
-    if (typeof value === "string" && value.trim().length > 0) {
-        return value;
-    }
-
-    if (typeof value === "number") {
-        return String(value);
-    }
-
-    return fallback;
-}
-
 function getRecordString(record: Record<string, unknown>, keys: readonly string[], fallback: string): string {
     for (const key of keys) {
         const value = record[key];
@@ -69,23 +57,32 @@ function getRecordString(record: Record<string, unknown>, keys: readonly string[
     return fallback;
 }
 
+async function fetchJsonWithTimeout(url: string, timeoutMilliseconds: number): Promise<unknown> {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => {
+        controller.abort();
+    }, timeoutMilliseconds);
+
+    try {
+        const response = await fetch(url, {
+            headers: {
+                accept: "application/json",
+                "x-request-id": "web-audit-timeline-story",
+            },
+            signal: controller.signal,
+        });
+
+        if (!response.ok) {
+            throw new Error(`Cloud API audit timeline failed with HTTP ${response.status}.`);
+        }
+
+        return (await response.json()) as unknown;
+    } finally {
+        window.clearTimeout(timeout);
+    }
+}
+
 function formatAuditAction(action: string): string {
-    if (action === "stockpile.created" || action === "stockpile_create" || action === "created") {
-        return "Stockpile created";
-    }
-
-    if (
-        action === "stockpile.status_updated" ||
-        action === "stockpile_status_updated" ||
-        action === "status_updated"
-    ) {
-        return "Status updated";
-    }
-
-    if (action === "stockpile.updated" || action === "updated") {
-        return "Stockpile updated";
-    }
-
     return action
         .replace(/[._-]+/gu, " ")
         .replace(/\b\w/gu, (match) => match.toUpperCase());
@@ -173,24 +170,6 @@ function buildMetrics(events: readonly AuditTimelineEvent[]): AuditTimelineMetri
     };
 }
 
-function getActionClasses(action: string): string {
-    const normalizedAction = action.toLowerCase();
-
-    if (normalizedAction.includes("created")) {
-        return "border-emerald-200 bg-emerald-50 text-emerald-800";
-    }
-
-    if (normalizedAction.includes("status")) {
-        return "border-blue-200 bg-blue-50 text-blue-800";
-    }
-
-    if (normalizedAction.includes("updated")) {
-        return "border-amber-200 bg-amber-50 text-amber-800";
-    }
-
-    return "border-slate-200 bg-slate-50 text-slate-700";
-}
-
 function MetricCard({
     label,
     value,
@@ -216,22 +195,16 @@ function AuditEventCard({
     readonly index: number;
 }) {
     return (
-        <div className="relative rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <div className="flex items-start gap-4">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-sm font-bold text-white">
                     {index + 1}
                 </div>
 
                 <div className="min-w-0 flex-1">
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <h3 className="text-base font-semibold text-slate-950">
-                            {formatAuditAction(event.action)}
-                        </h3>
-                        <span className={`w-fit rounded-full border px-3 py-1 text-xs font-semibold ${getActionClasses(event.action)}`}>
-                            {event.entityType}
-                        </span>
-                    </div>
-
+                    <h3 className="text-base font-semibold text-slate-950">
+                        {formatAuditAction(event.action)}
+                    </h3>
                     <p className="mt-2 text-sm leading-6 text-slate-600">{event.summary}</p>
 
                     <div className="mt-3 grid gap-2 md:grid-cols-3">
@@ -275,18 +248,7 @@ export function AuditTimelineStoryPanel() {
             setStatus("loading");
             setMessage("Loading mutation audit timeline...");
 
-            const response = await fetch(`${getApiBaseUrl()}/audit/mutations`, {
-                headers: {
-                    accept: "application/json",
-                    "x-request-id": "web-audit-timeline-story",
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(`Cloud API audit timeline failed with HTTP ${response.status}.`);
-            }
-
-            const body = (await response.json()) as unknown;
+            const body = await fetchJsonWithTimeout(`${getApiBaseUrl()}/audit/mutations`, 6000);
             const nextEvents = extractAuditEvents(body);
 
             setEvents(nextEvents);
@@ -295,11 +257,17 @@ export function AuditTimelineStoryPanel() {
             setMessage(
                 nextEvents.length > 0
                     ? "Audit timeline ready for demo."
-                    : "No audit events yet. Create or update a stockpile first.",
+                    : "No audit events yet. Backend audit route is optional for Phase 2 runtime.",
             );
         } catch (error) {
+            setEvents([]);
             setStatus("error");
-            setMessage(error instanceof Error ? error.message : "Could not load audit timeline.");
+            setUpdatedAt(new Date().toLocaleTimeString());
+            setMessage(
+                error instanceof Error
+                    ? `Audit route unavailable for now: ${error.message}`
+                    : "Audit route unavailable for now.",
+            );
         }
     }
 
@@ -318,8 +286,8 @@ export function AuditTimelineStoryPanel() {
                         Trazabilidad explicable para supervisores
                     </h2>
                     <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-                        Convierte los eventos de auditoria en una narrativa clara: quien cambio que,
-                        cuando ocurrio y sobre que stockpile o recurso operacional.
+                        Convierte los eventos de auditoria en una narrativa clara. En Phase 2, si el backend
+                        de auditoria no responde, la UI falla seguro y no bloquea la demo.
                     </p>
                 </div>
 
@@ -354,12 +322,6 @@ export function AuditTimelineStoryPanel() {
                     <AuditEventCard event={event} index={index} key={event.id} />
                 ))}
             </div>
-
-            {events.length > 6 ? (
-                <p className="mt-4 text-sm text-slate-500">
-                    Showing 6 of {events.length} audit events for demo readability.
-                </p>
-            ) : null}
         </section>
     );
 }
