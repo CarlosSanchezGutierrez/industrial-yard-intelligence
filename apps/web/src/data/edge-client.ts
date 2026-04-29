@@ -194,6 +194,31 @@ export interface DemoReportResult {
   readonly message: string;
 }
 
+export interface EdgeDemoPackage {
+  readonly version: 1;
+  readonly packageId: string;
+  readonly customer: string;
+  readonly product: string;
+  readonly exportedAt: string;
+  readonly contents: {
+    readonly executiveReport: boolean;
+    readonly offlineBackup: boolean;
+    readonly syncStore: boolean;
+    readonly conflictResolutions: boolean;
+    readonly auditStore: boolean;
+    readonly evidenceStore: boolean;
+  };
+  readonly report: EdgeDemoExecutiveReport;
+  readonly backup: EdgeOfflineBackup;
+}
+
+export interface DemoPackageResult {
+  readonly ok: boolean;
+  readonly source: "edge" | "unavailable";
+  readonly packageData: EdgeDemoPackage | null;
+  readonly message: string;
+}
+
 export interface EdgeSyncSnapshot {
   readonly ok: boolean;
   readonly source: "edge" | "unavailable";
@@ -342,6 +367,12 @@ interface DemoReportResponse {
   readonly ok: boolean;
   readonly data?: {
     readonly report?: EdgeDemoExecutiveReport;
+  };
+}
+interface DemoPackageResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly package?: EdgeDemoPackage;
   };
 }
 
@@ -889,6 +920,47 @@ export async function loadDemoExecutiveReport(): Promise<DemoReportResult> {
       ok: false,
       source: "unavailable",
       report: null,
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
+    };
+  }
+}
+export async function exportDemoPackage(): Promise<DemoPackageResult> {
+  const edgeBaseUrl = getEdgeBaseUrl();
+
+  try {
+    const response = await fetch(`${edgeBaseUrl}/admin/demo-package`, {
+      method: "GET",
+      headers: {
+        accept: "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        source: "edge",
+        packageData: null,
+        message: `Edge demo package endpoint responded with HTTP ${response.status}.`
+      };
+    }
+
+    const body = (await response.json()) as DemoPackageResponse;
+    const packageData = body.data?.package ?? null;
+
+    return {
+      ok: body.ok && packageData !== null,
+      source: "edge",
+      packageData,
+      message:
+        packageData !== null
+          ? `Exported demo package ${packageData.packageId}.`
+          : "Edge demo package response did not contain package payload."
+    };
+  } catch {
+    return {
+      ok: false,
+      source: "unavailable",
+      packageData: null,
       message: `Local edge server unavailable at ${edgeBaseUrl}.`
     };
   }

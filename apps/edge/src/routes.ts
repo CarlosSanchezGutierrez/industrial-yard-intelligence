@@ -201,7 +201,8 @@ function createManifest(now: string) {
       { method: "POST", path: "/admin/reset-demo-state", description: "Reset local demo state on edge." },
       { method: "GET", path: "/admin/demo-readiness", description: "Show local demo readiness report." },
       { method: "POST", path: "/admin/run-guided-demo", description: "Create a deterministic local demo scenario." },
-      { method: "GET", path: "/admin/demo-report", description: "Show executive demo report for Cooper/T. Smith." }
+      { method: "GET", path: "/admin/demo-report", description: "Show executive demo report for Cooper/T. Smith." },
+      { method: "GET", path: "/admin/demo-package", description: "Export executive report plus full offline backup package." }
     ]
   };
 }
@@ -660,6 +661,28 @@ function createDemoExecutiveReport(now: string) {
     readiness
   };
 }
+function createDemoPackage(now: string) {
+  const report = createDemoExecutiveReport(now);
+  const backup = createOfflineBackup(now);
+
+  return {
+    version: 1,
+    packageId: `demo_package_${normalizeDemoSuffix(now)}`,
+    customer: "Cooper/T. Smith",
+    product: "Industrial Yard Intelligence",
+    exportedAt: now,
+    contents: {
+      executiveReport: true,
+      offlineBackup: true,
+      syncStore: true,
+      conflictResolutions: true,
+      auditStore: true,
+      evidenceStore: true
+    },
+    report,
+    backup
+  };
+}
 function handleRunGuidedDemo(request: EdgeRouteRequest): EdgeRouteResponse {
   const resetBeforeRun = getBooleanBodyValue(request.body, "resetBeforeRun", true);
 
@@ -888,6 +911,18 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
       createApiSuccess(
         {
           report: createDemoExecutiveReport(request.now)
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  }
+  if (request.method === "GET" && request.pathname === "/admin/demo-package") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          package: createDemoPackage(request.now)
         },
         request.requestId,
         request.now

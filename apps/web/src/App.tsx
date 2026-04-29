@@ -3,6 +3,7 @@ import { cooperSmokeSeed, type SmokeStockpile, type SmokeTenantSeed } from "@iyi
 import type { CSSProperties, ChangeEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import {
+  exportDemoPackage,
   exportEdgeSyncStore,
   importEdgeSyncStore,
   loadCooperSmokeSeed,
@@ -118,6 +119,7 @@ function App() {
   const [demoReadiness, setDemoReadiness] = useState<DemoReadinessReport | null>(null);
   const [demoReport, setDemoReport] = useState<EdgeDemoExecutiveReport | null>(null);
   const [demoReportMessage, setDemoReportMessage] = useState("Sin reporte ejecutivo cargado todavía.");
+  const [isExportingDemoPackage, setIsExportingDemoPackage] = useState(false);
   const [evidenceMessage, setEvidenceMessage] = useState("Registra evidencia simulada para generar hash SHA-256.");
   const [isRegisteringEvidence, setIsRegisteringEvidence] = useState(false);
   const [edgeMonitorMessage, setEdgeMonitorMessage] = useState("Esperando conexión al edge.");
@@ -250,6 +252,17 @@ function App() {
     downloadJsonFile(`iyi-demo-report-${Date.now()}.json`, demoReport);
     setDemoReportMessage(`Exported executive report ${demoReport.reportId}.`);
   }
+  async function handleExportDemoPackage(): Promise<void> {
+    setIsExportingDemoPackage(true);
+    const result = await exportDemoPackage();
+
+    if (result.ok && result.packageData !== null) {
+      downloadJsonFile(`iyi-demo-package-${Date.now()}.json`, result.packageData);
+    }
+
+    setDemoReportMessage(result.message);
+    setIsExportingDemoPackage(false);
+  }
 
   function handleImportClick(): void {
     fileInputRef.current?.click();
@@ -356,6 +369,13 @@ function App() {
           </button>
           <button className="secondary-button" disabled={demoReport === null} onClick={handleExportDemoReport}>
             Exportar reporte JSON
+          </button>
+          <button
+            className="secondary-button"
+            disabled={isExportingDemoPackage}
+            onClick={() => void handleExportDemoPackage()}
+          >
+            {isExportingDemoPackage ? "Exportando package..." : "Exportar demo package"}
           </button>
         </div>
 
