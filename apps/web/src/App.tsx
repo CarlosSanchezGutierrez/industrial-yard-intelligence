@@ -58,6 +58,9 @@ import { YardOperationsMapPanel } from "./components/YardOperationsMapPanel.js";
 import { CockpitSectionNavigationPanel } from "./components/CockpitSectionNavigationPanel.js";
 import { PremiumCockpitHero } from "./components/PremiumCockpitHero.js";
 import "./styles/premium-cockpit.css";
+import { PremiumCockpitCommandDeck } from "./components/PremiumCockpitCommandDeck.js";
+import { PremiumGpsPreviewPanel } from "./components/PremiumGpsPreviewPanel.js";
+import "./styles/premium-experience.css";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
@@ -446,17 +449,21 @@ function App() {
   return (
     <main className="app-shell" style={applyThemeVariables()}>
             <PremiumCockpitHero />
-            <DemoCommandCenter />
+            <PremiumCockpitCommandDeck />
             <CockpitSectionNavigationPanel />
-            <DemoNavigationPanel />
-            <OperatorWorkflowProgressPanel />
             <RuntimeConnectionStatusPanel />
             <DemoDataResetPanel />
             <IndustrialValueSnapshotPanel />
-            <StockpileDemoSummaryPanel />
             <YardOperationsMapPanel />
+            <StockpileDemoSummaryPanel />
+            <StockpileCreatePanel />
+            <StockpileStatusPanel />
+            <OperatorWorkflowProgressPanel />
             <AuditTimelineStoryPanel />
             <SyncDemoStoryPanel />
+            <PremiumGpsPreviewPanel />
+            <DemoNavigationPanel />
+            <DemoCommandCenter />
       <nav className="top-nav">
         <div>
           <strong>Industrial Yard Intelligence</strong>

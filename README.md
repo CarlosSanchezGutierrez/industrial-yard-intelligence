@@ -286,3 +286,14 @@ Main files:
 
 - `apps/web/src/components/PremiumCockpitHero.tsx`
 - `apps/web/src/styles/premium-cockpit.css`
+## Phase 2.5 premium full cockpit
+
+Document:
+
+`docs/PHASE_2_5_PREMIUM_FULL_COCKPIT.md`
+
+Main files:
+
+- `apps/web/src/components/PremiumCockpitCommandDeck.tsx`
+- `apps/web/src/components/PremiumGpsPreviewPanel.tsx`
+- `apps/web/src/styles/premium-experience.css`

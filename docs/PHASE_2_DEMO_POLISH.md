@@ -275,3 +275,18 @@ Added:
 Purpose:
 
 Improve perceived SaaS/product quality before adding GPS/map/perimeter capture.
+## Phase 2.5 premium full cockpit
+
+Document:
+
+`docs/PHASE_2_5_PREMIUM_FULL_COCKPIT.md`
+
+Added:
+
+- `PremiumCockpitCommandDeck`
+- `PremiumGpsPreviewPanel`
+- `premium-experience.css`
+
+Purpose:
+
+Apply premium UI/UX treatment to the whole cockpit, not only the first hero.
