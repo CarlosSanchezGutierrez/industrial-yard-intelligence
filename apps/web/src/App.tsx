@@ -456,8 +456,6 @@ function App() {
             <IndustrialValueSnapshotPanel />
             <YardOperationsMapPanel />
             <StockpileDemoSummaryPanel />
-            <StockpileCreatePanel />
-            <StockpileStatusPanel />
             <OperatorWorkflowProgressPanel />
             <AuditTimelineStoryPanel />
             <SyncDemoStoryPanel />
@@ -510,7 +508,6 @@ function App() {
       <StockpileCreatePanel snapshot={cloudApiSnapshot} onCreated={() => void handleRefreshCloudApi()} />
       <CloudEdgeSyncPanel />
       <AuditMutationPanel />
-      <StockpileLifecyclePanel />
       <StockpileStatusPanel snapshot={cloudApiSnapshot} onUpdated={() => void handleRefreshCloudApi()} />
       <section className="cloud-api-panel">
         <div className="panel-header">
