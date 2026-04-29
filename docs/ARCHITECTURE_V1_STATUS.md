@@ -217,3 +217,12 @@ Final local verification document:
 Command:
 
 `pnpm architecture:gate`
+## Runtime gate
+
+Runtime gate document:
+
+`docs/ARCHITECTURE_V1_RUNTIME_GATE.md`
+
+Command:
+
+`pnpm architecture:runtime`

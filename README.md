@@ -144,3 +144,11 @@ Run:
 pnpm architecture:gate
 
 This validates the local v1 skeleton before demo/incubator presentation.
+## Architecture v1 runtime gate
+
+After starting the local stack:
+
+pnpm dev:stack:windows
+pnpm architecture:runtime
+
+This validates the live API, Edge and sync runtime paths.

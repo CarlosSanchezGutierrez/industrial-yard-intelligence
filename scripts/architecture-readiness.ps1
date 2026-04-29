@@ -132,6 +132,11 @@ $requiredFiles = @(
     "scripts\api-smoke.ps1",
     "scripts\demo-smoke.ps1",
     "scripts\cloud-edge-sync-smoke.ps1",
+    "scripts\architecture-readiness.ps1",
+    "scripts\architecture-v1-status.ps1",
+    "scripts\architecture-v1-gate.ps1",
+    "scripts\architecture-v1-runtime-gate.ps1",
+    "scripts\demo-operator-v1.ps1",
     "scripts\ci-local.ps1",
     "docs\API_BACKEND.md",
     "docs\LOCAL_STACK.md",
@@ -140,7 +145,17 @@ $requiredFiles = @(
     "docs\CLOUD_EDGE_SYNC.md",
     "docs\CLOUD_EDGE_SYNC_SMOKE.md",
     "docs\EDGE_CLOUD_SYNC_EXPORT_HANDLER.md",
-    "docs\WEB_CLOUD_EDGE_SYNC.md"
+    "docs\WEB_CLOUD_EDGE_SYNC.md",
+    "docs\ARCHITECTURE_V1_BLUEPRINT.md",
+    "docs\ARCHITECTURE_V1_DIAGRAMS.md",
+    "docs\ARCHITECTURE_V1_PHASE_GATE.md",
+    "docs\ARCHITECTURE_V1_READINESS.md",
+    "docs\ARCHITECTURE_V1_ROADMAP.md",
+    "docs\ARCHITECTURE_V1_STATUS.md",
+    "docs\ARCHITECTURE_V1_FINAL_GATE.md",
+    "docs\ARCHITECTURE_V1_RUNTIME_GATE.md",
+    "docs\DEMO_OPERATOR_V1.md",
+    "docs\INVESTOR_TECHNICAL_NARRATIVE.md"
 )
 
 foreach ($requiredFile in $requiredFiles) {
@@ -172,7 +187,9 @@ $requiredTextChecks = @(
     @{ Path = "scripts\demo-smoke.ps1"; Text = "/sync/packages/db-projection" },
     @{ Path = "scripts\cloud-edge-sync-smoke.ps1"; Text = "/sync/packages/db-projection" },
     @{ Path = "scripts\cloud-edge-sync-smoke.ps1"; Text = "/sync/preview" },
-    @{ Path = "scripts\cloud-edge-sync-smoke.ps1"; Text = "/sync/ingest" }
+    @{ Path = "scripts\cloud-edge-sync-smoke.ps1"; Text = "/sync/ingest" },
+    @{ Path = "scripts\architecture-v1-runtime-gate.ps1"; Text = "/sync/packages/db-projection" },
+    @{ Path = "scripts\architecture-v1-runtime-gate.ps1"; Text = "/sync/status" }
 )
 
 foreach ($check in $requiredTextChecks) {
@@ -201,6 +218,10 @@ if (-not $SkipPackageScripts) {
         "demo:smoke",
         "sync:smoke",
         "architecture:check",
+        "architecture:status",
+        "architecture:gate",
+        "architecture:runtime",
+        "demo:operator",
         "typecheck",
         "test"
     )

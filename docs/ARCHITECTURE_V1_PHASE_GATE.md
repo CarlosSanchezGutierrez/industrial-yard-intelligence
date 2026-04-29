@@ -68,3 +68,10 @@ Run:
 pnpm architecture:gate
 
 This command runs the architecture readiness check, status check, demo operator check, package builds, package tests, root typecheck, root tests and ci-local.
+## Runtime gate
+
+With the local stack running, run:
+
+pnpm architecture:runtime
+
+This validates the live API, Edge and integrated Cloud Edge sync runtime path.

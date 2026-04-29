@@ -59,3 +59,10 @@ With the local stack running, also run:
 - pnpm demo:smoke
 - pnpm sync:smoke
 - pnpm smoke:runtime
+## Live runtime gate
+
+After starting the local stack, run:
+
+pnpm architecture:runtime
+
+This validates the API, Edge and integrated sync smoke paths against the running services.

@@ -72,3 +72,10 @@ Validate the v1 skeleton with:
 pnpm architecture:check
 
 This should pass together with build, test, typecheck and local CI before declaring the skeleton closed.
+## Architecture runtime gate
+
+After the local stack is running, validate live runtime readiness with:
+
+pnpm architecture:runtime
+
+This runs API smoke, Edge smoke, integrated sync smoke and full runtime smoke against the local services.
