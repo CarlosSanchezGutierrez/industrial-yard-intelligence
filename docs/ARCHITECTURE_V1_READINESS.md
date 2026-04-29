@@ -87,3 +87,12 @@ Architecture v1 manifest:
 Command:
 
 `pnpm architecture:manifest -- -CheckOnly`
+## Closure
+
+Architecture closure document:
+
+`docs/ARCHITECTURE_V1_CLOSURE.md`
+
+Command:
+
+`pnpm architecture:close`

@@ -35,7 +35,8 @@
                     "architecture:status":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-status.ps1",
                     "architecture:gate":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-gate.ps1",
                     "architecture:runtime":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-runtime-gate.ps1",
-                    "architecture:manifest":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-manifest.ps1"
+                    "architecture:manifest":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-manifest.ps1",
+                    "architecture:close":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-close.ps1"
                 },
     "keywords":  [
                      "industrial",

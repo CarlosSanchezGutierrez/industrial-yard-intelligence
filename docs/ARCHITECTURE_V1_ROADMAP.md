@@ -56,3 +56,12 @@ This prints the recommended architecture demo flow and validates that demo-facin
 Current architecture status:
 
 `docs/ARCHITECTURE_V1_STATUS.md`
+## V1 closure
+
+Current closure target:
+
+`V1_SKELETON_CLOSED_FOR_DEMO`
+
+Closure document:
+
+`docs/ARCHITECTURE_V1_CLOSURE.md`

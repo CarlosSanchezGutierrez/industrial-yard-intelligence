@@ -82,3 +82,10 @@ Run:
 `pnpm architecture:manifest -- -CheckOnly`
 
 This validates the final docs/scripts expected for v1 demo handoff.
+## Closure command
+
+Run:
+
+`pnpm architecture:close`
+
+This validates the manifest, readiness check, status check, demo operator check and final static gate.

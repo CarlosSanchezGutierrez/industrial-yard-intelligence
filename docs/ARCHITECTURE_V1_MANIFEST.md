@@ -197,3 +197,12 @@ After this manifest passes, move to v1 closure:
 3. Run pnpm architecture:runtime.
 4. Run pnpm demo:operator.
 5. Tag the skeleton as v1 demo baseline.
+## Closure document
+
+Architecture v1 closure:
+
+`docs/ARCHITECTURE_V1_CLOSURE.md`
+
+Command:
+
+`pnpm architecture:close`

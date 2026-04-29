@@ -161,3 +161,12 @@ pnpm architecture:manifest
 Document:
 
 `docs/ARCHITECTURE_V1_MANIFEST.md`
+## Architecture v1 closure
+
+Run:
+
+pnpm architecture:close
+
+Document:
+
+`docs/ARCHITECTURE_V1_CLOSURE.md`
