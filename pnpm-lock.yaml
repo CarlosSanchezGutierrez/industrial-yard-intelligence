@@ -29,6 +29,9 @@ importers:
       '@iyi/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@iyi/domain':
+        specifier: workspace:^
+        version: link:../../packages/domain
       '@iyi/seed-data':
         specifier: workspace:*
         version: link:../../packages/seed-data

@@ -260,7 +260,7 @@ export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRout
       const result = await updateStockpileStatusCommand(stockpileId, request.body, request.now);
 
       if (!result.ok) {
-        const statusCode = result.code === "not_found" ? 404 : 400;
+        const statusCode = result.code === "not_found" ? 404 : result.code === "conflict" ? 409 : 400;
 
         return jsonResponse(
           statusCode,

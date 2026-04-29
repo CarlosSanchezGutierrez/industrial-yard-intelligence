@@ -204,4 +204,33 @@ describe("@iyi/api stockpile service", () => {
       expect(result.message).toContain("missing_stockpile");
     }
   });
+
+  it("rejects status transitions from archived to active states", async () => {
+    await createStockpileCommand(
+      {
+        id: "stockpile_archived_terminal",
+        tenantId: "tenant_cooper_tsmith",
+        terminalId: "terminal_altamira",
+        name: "Archived target",
+        material: "pet coke",
+        status: "archived"
+      },
+      now
+    );
+
+    const result = await updateStockpileStatusCommand(
+      "stockpile_archived_terminal",
+      {
+        status: "operational"
+      },
+      "2026-04-28T14:00:00.000Z"
+    );
+
+    expect(result.ok).toBe(false);
+
+    if (!result.ok) {
+      expect(result.code).toBe("conflict");
+      expect(result.message).toContain("cannot transition");
+    }
+  });
 });

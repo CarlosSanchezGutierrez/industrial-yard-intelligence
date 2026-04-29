@@ -11,6 +11,7 @@
   "dependencies": {
     "@iyi/api-contracts": "workspace:^",
     "@iyi/db": "workspace:*",
+    "@iyi/domain": "workspace:^",
     "@iyi/seed-data": "workspace:*"
   },
   "devDependencies": {

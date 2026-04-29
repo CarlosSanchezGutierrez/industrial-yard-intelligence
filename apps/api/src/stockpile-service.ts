@@ -5,6 +5,10 @@ import type {
   CloudApiStockpileSummaryContract,
   CloudApiUpdateStockpileStatusRequestContract
 } from "@iyi/api-contracts";
+import {
+  canTransitionStockpileStatus,
+  isStockpileLifecycleStatus
+} from "@iyi/domain";
 import type {
   DbStockpileRecord,
   JsonFileDbStore
@@ -74,27 +78,11 @@ function optionalNumberBodyValue(body: RecordLike, key: string, fallback: number
 }
 
 function normalizeStockpileStatus(value: unknown): DbStockpileRecord["status"] {
-  if (
-    value === "draft" ||
-    value === "operational" ||
-    value === "pending_review" ||
-    value === "validated" ||
-    value === "archived"
-  ) {
+  if (isStockpileLifecycleStatus(value)) {
     return value;
   }
 
   return "draft";
-}
-
-function isStockpileStatus(value: unknown): value is CloudApiStockpileStatusContract {
-  return (
-    value === "draft" ||
-    value === "operational" ||
-    value === "pending_review" ||
-    value === "validated" ||
-    value === "archived"
-  );
 }
 
 export function toStockpileSummary(record: DbStockpileRecord): CloudApiStockpileSummaryContract {
@@ -201,7 +189,7 @@ export function parseUpdateStockpileStatusCommand(
 
   const request = body as unknown as Partial<CloudApiUpdateStockpileStatusRequestContract>;
 
-  if (!isStockpileStatus(request.status)) {
+  if (!isStockpileLifecycleStatus(request.status)) {
     return {
       ok: false,
       code: "bad_request",
@@ -214,7 +202,7 @@ export function parseUpdateStockpileStatusCommand(
 
   return {
     ok: true,
-    status: request.status,
+    status: request.status as CloudApiStockpileStatusContract,
     ...(validationState !== undefined ? { validationState } : {}),
     ...(confidenceLevel !== undefined ? { confidenceLevel } : {})
   };
@@ -280,6 +268,14 @@ export async function updateStockpileStatusCommand(
       ok: false,
       code: "not_found",
       message: `Stockpile ${normalizedId} was not found.`
+    };
+  }
+
+  if (!canTransitionStockpileStatus(existing.status, parsed.status)) {
+    return {
+      ok: false,
+      code: "conflict",
+      message: `Stockpile ${normalizedId} cannot transition from ${existing.status} to ${parsed.status}.`
     };
   }
 
