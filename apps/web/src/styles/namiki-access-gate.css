@@ -1,24 +1,42 @@
 .nmk-access-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
     min-height: 100vh;
-    padding: clamp(14px, 2vw, 28px);
+    overflow: auto;
+    padding: clamp(12px, 2vw, 28px);
     color: #f8fafc;
     background:
-        radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.18), transparent 34%),
-        radial-gradient(circle at 92% 12%, rgba(52, 211, 153, 0.12), transparent 28%),
-        radial-gradient(circle at 50% 100%, rgba(251, 191, 36, 0.08), transparent 26%),
+        radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.2), transparent 34%),
+        radial-gradient(circle at 88% 18%, rgba(52, 211, 153, 0.14), transparent 32%),
+        radial-gradient(circle at 50% 100%, rgba(251, 191, 36, 0.08), transparent 28%),
         #020617;
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+}
+
+.nmk-access-screen * {
+    box-sizing: border-box;
 }
 
 .nmk-access-shell {
     display: grid;
-    gap: 18px;
+    gap: 16px;
     max-width: 1480px;
-    min-height: calc(100vh - clamp(28px, 4vw, 56px));
+    min-height: calc(100vh - clamp(24px, 4vw, 56px));
     margin: 0 auto;
 }
 
-.nmk-access-brandbar,
-.nmk-access-hero,
+.nmk-access-topbar,
+.nmk-access-main,
 .nmk-access-capabilities {
     border: 1px solid rgba(148, 163, 184, 0.16);
     background:
@@ -28,7 +46,7 @@
         0 28px 80px rgba(0, 0, 0, 0.34);
 }
 
-.nmk-access-brandbar {
+.nmk-access-topbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -46,6 +64,7 @@
 .nmk-access-brand > span {
     width: 18px;
     height: 18px;
+    flex: 0 0 auto;
     border-radius: 999px;
     background: #34d399;
     box-shadow: 0 0 0 10px rgba(52, 211, 153, 0.1);
@@ -55,7 +74,7 @@
     display: block;
     color: #f8fafc;
     font-size: 18px;
-    font-weight: 800;
+    font-weight: 850;
     letter-spacing: -0.035em;
 }
 
@@ -65,7 +84,7 @@
     font-size: 13px;
 }
 
-.nmk-access-badge {
+.nmk-access-status {
     width: fit-content;
     padding: 10px 14px;
     border: 1px solid rgba(52, 211, 153, 0.28);
@@ -73,21 +92,21 @@
     color: #34d399;
     background: rgba(6, 78, 59, 0.16);
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 850;
 }
 
-.nmk-access-hero {
+.nmk-access-main {
     position: relative;
     display: grid;
-    gap: 18px;
+    gap: 20px;
     min-height: 620px;
     overflow: hidden;
-    padding: clamp(22px, 4vw, 54px);
+    padding: clamp(22px, 4vw, 56px);
     border-radius: 34px;
     isolation: isolate;
 }
 
-.nmk-access-hero::before {
+.nmk-access-main::before {
     position: absolute;
     inset: 0;
     z-index: -1;
@@ -96,10 +115,10 @@
         linear-gradient(to right, rgba(125, 211, 252, 0.055) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(125, 211, 252, 0.055) 1px, transparent 1px);
     background-size: 54px 54px;
-    mask-image: radial-gradient(circle at 50% 40%, black, transparent 72%);
+    mask-image: radial-gradient(circle at 50% 38%, black, transparent 72%);
 }
 
-.nmk-access-hero::after {
+.nmk-access-main::after {
     position: absolute;
     right: -180px;
     bottom: -220px;
@@ -108,63 +127,106 @@
     height: 620px;
     content: "";
     border-radius: 999px;
-    background: rgba(56, 189, 248, 0.12);
-    filter: blur(42px);
+    background: rgba(56, 189, 248, 0.13);
+    filter: blur(44px);
 }
 
-@media (min-width: 1100px) {
-    .nmk-access-hero {
-        grid-template-columns: minmax(0, 1.1fr) 430px;
+@media (min-width: 1120px) {
+    .nmk-access-main {
+        grid-template-columns: minmax(0, 1.12fr) 440px;
         align-items: center;
     }
 }
 
 .nmk-access-kicker,
-.nmk-access-card-head p {
+.nmk-access-panel-head p {
     margin: 0;
     color: #38bdf8;
     font-size: 12px;
-    font-weight: 900;
+    font-weight: 950;
     letter-spacing: 0.2em;
     text-transform: uppercase;
 }
 
 .nmk-access-copy h1 {
-    max-width: 920px;
+    max-width: 930px;
     margin: 16px 0 0;
     color: #f8fafc;
-    font-size: clamp(48px, 7vw, 96px);
-    font-weight: 820;
-    letter-spacing: -0.075em;
+    font-size: clamp(46px, 7vw, 96px);
+    font-weight: 850;
+    letter-spacing: -0.078em;
     line-height: 0.9;
 }
 
-.nmk-access-subtitle {
+.nmk-access-lead {
     max-width: 780px;
     margin: 22px 0 0;
-    color: rgba(226, 232, 240, 0.74);
-    font-size: clamp(16px, 1.6vw, 22px);
+    color: rgba(226, 232, 240, 0.76);
+    font-size: clamp(16px, 1.55vw, 22px);
     line-height: 1.55;
 }
 
-.nmk-access-feature-row {
+.nmk-access-pills {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 26px;
 }
 
-.nmk-access-feature-row span {
+.nmk-access-pills span {
     padding: 9px 12px;
-    border: 1px solid rgba(56, 189, 248, 0.22);
+    border: 1px solid rgba(56, 189, 248, 0.24);
     border-radius: 999px;
     color: #dbeafe;
-    background: rgba(8, 47, 73, 0.38);
+    background: rgba(8, 47, 73, 0.4);
     font-size: 13px;
-    font-weight: 750;
+    font-weight: 780;
 }
 
-.nmk-access-card {
+.nmk-access-mini-grid {
+    display: grid;
+    gap: 10px;
+    max-width: 860px;
+    margin-top: 26px;
+}
+
+@media (min-width: 860px) {
+    .nmk-access-mini-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.nmk-access-mini-grid article,
+.nmk-access-company-card,
+.nmk-access-roadmap article,
+.nmk-access-capabilities article {
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98));
+}
+
+.nmk-access-mini-grid article {
+    min-height: 112px;
+    padding: 13px;
+    border-radius: 18px;
+}
+
+.nmk-access-mini-grid strong {
+    display: block;
+    color: #f8fafc;
+    font-size: 15px;
+    font-weight: 850;
+}
+
+.nmk-access-mini-grid span {
+    display: block;
+    margin-top: 7px;
+    color: rgba(203, 213, 225, 0.68);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.nmk-access-panel {
     display: grid;
     gap: 14px;
     padding: 18px;
@@ -178,29 +240,30 @@
         0 28px 70px rgba(0, 0, 0, 0.36);
 }
 
-.nmk-access-card-head {
+.nmk-access-panel-head {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
 }
 
-.nmk-access-card-head h2 {
+.nmk-access-panel-head h2 {
     margin: 6px 0 0;
     color: #f8fafc;
     font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -0.05em;
+    font-weight: 850;
+    letter-spacing: -0.055em;
 }
 
-.nmk-access-card-head > span {
+.nmk-access-panel-head > span,
+.nmk-access-company-card div span {
     padding: 6px 9px;
     border: 1px solid rgba(52, 211, 153, 0.24);
     border-radius: 999px;
     color: #34d399;
     background: rgba(6, 78, 59, 0.18);
     font-size: 12px;
-    font-weight: 800;
+    font-weight: 850;
 }
 
 .nmk-access-field {
@@ -211,67 +274,56 @@
 .nmk-access-field span {
     color: rgba(203, 213, 225, 0.72);
     font-size: 11px;
-    font-weight: 900;
+    font-weight: 950;
     letter-spacing: 0.14em;
     text-transform: uppercase;
 }
 
 .nmk-access-field select {
-    min-height: 48px;
+    min-height: 50px;
     width: 100%;
     padding: 0 13px;
-    border: 1px solid rgba(148, 163, 184, 0.18);
+    border: 1px solid rgba(148, 163, 184, 0.2);
     border-radius: 16px;
     color: #f8fafc;
-    background: rgba(2, 6, 23, 0.9);
+    background: rgba(2, 6, 23, 0.94);
     outline: none;
     font: inherit;
-    font-weight: 750;
+    font-weight: 800;
 }
 
 .nmk-access-field select:focus {
-    border-color: rgba(125, 211, 252, 0.58);
-    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+    border-color: rgba(125, 211, 252, 0.6);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
 }
 
-.nmk-access-tenant-card {
+.nmk-access-company-card {
     padding: 14px;
-    border: 1px solid rgba(56, 189, 248, 0.18);
+    border-color: rgba(56, 189, 248, 0.2);
     border-radius: 20px;
-    background:
-        linear-gradient(180deg, rgba(8, 13, 24, 0.98), rgba(2, 6, 23, 0.98));
 }
 
-.nmk-access-tenant-card div {
+.nmk-access-company-card div {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
 }
 
-.nmk-access-tenant-card strong {
+.nmk-access-company-card strong {
     color: #f8fafc;
     font-size: 18px;
-    font-weight: 850;
-    letter-spacing: -0.035em;
+    font-weight: 900;
+    letter-spacing: -0.04em;
 }
 
-.nmk-access-tenant-card div span {
-    padding: 5px 8px;
-    border-radius: 999px;
-    color: #34d399;
-    background: rgba(6, 78, 59, 0.2);
-    font-size: 12px;
-    font-weight: 800;
-}
-
-.nmk-access-tenant-card p {
+.nmk-access-company-card p {
     margin: 10px 0 0;
     color: rgba(203, 213, 225, 0.72);
     font-size: 14px;
 }
 
-.nmk-access-tenant-card small {
+.nmk-access-company-card small {
     display: block;
     margin-top: 10px;
     color: rgba(226, 232, 240, 0.7);
@@ -280,18 +332,18 @@
 }
 
 .nmk-access-enter {
-    min-height: 50px;
-    border: 1px solid rgba(56, 189, 248, 0.34);
+    min-height: 52px;
+    border: 1px solid rgba(56, 189, 248, 0.36);
     border-radius: 999px;
     color: #f8fafc;
     background:
-        linear-gradient(180deg, rgba(14, 116, 144, 0.96), rgba(7, 89, 133, 0.96));
+        linear-gradient(180deg, rgba(14, 116, 144, 0.98), rgba(7, 89, 133, 0.98));
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.08),
-        0 18px 42px rgba(8, 47, 73, 0.32);
+        inset 0 1px 0 rgba(255, 255, 255, 0.09),
+        0 18px 42px rgba(8, 47, 73, 0.34);
     cursor: pointer;
     font-size: 15px;
-    font-weight: 850;
+    font-weight: 900;
     transition:
         transform 160ms ease,
         box-shadow 160ms ease,
@@ -299,31 +351,36 @@
 }
 
 .nmk-access-enter:hover {
-    border-color: rgba(125, 211, 252, 0.52);
+    border-color: rgba(125, 211, 252, 0.56);
     transform: translateY(-1px);
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.11),
-        0 24px 54px rgba(8, 47, 73, 0.42);
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 24px 54px rgba(8, 47, 73, 0.44);
 }
 
-.nmk-access-coming-soon {
+.nmk-access-roadmap {
+    display: grid;
+    gap: 9px;
+}
+
+.nmk-access-roadmap article {
     padding: 13px;
-    border: 1px solid rgba(251, 191, 36, 0.22);
+    border-color: rgba(251, 191, 36, 0.22);
     border-radius: 18px;
     background: rgba(120, 53, 15, 0.13);
 }
 
-.nmk-access-coming-soon strong {
+.nmk-access-roadmap strong {
     display: block;
     color: #fbbf24;
     font-size: 13px;
-    font-weight: 900;
+    font-weight: 950;
 }
 
-.nmk-access-coming-soon span {
+.nmk-access-roadmap span {
     display: block;
     margin-top: 5px;
-    color: rgba(254, 243, 199, 0.82);
+    color: rgba(254, 243, 199, 0.84);
     font-size: 13px;
     line-height: 1.4;
 }
@@ -344,10 +401,7 @@
 .nmk-access-capabilities article {
     min-height: 138px;
     padding: 14px;
-    border: 1px solid rgba(148, 163, 184, 0.14);
     border-radius: 20px;
-    background:
-        linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98));
 }
 
 .nmk-access-capabilities span {
@@ -359,7 +413,7 @@
     color: #06283a;
     background: #38bdf8;
     font-size: 12px;
-    font-weight: 900;
+    font-weight: 950;
 }
 
 .nmk-access-capabilities strong {
@@ -367,7 +421,7 @@
     margin-top: 14px;
     color: #f8fafc;
     font-size: 16px;
-    font-weight: 850;
+    font-weight: 900;
     letter-spacing: -0.03em;
 }
 
@@ -383,24 +437,28 @@
         padding: 10px;
     }
 
-    .nmk-access-brandbar {
+    .nmk-access-topbar {
         align-items: flex-start;
         flex-direction: column;
         border-radius: 22px;
     }
 
-    .nmk-access-hero {
+    .nmk-access-main {
         min-height: auto;
         border-radius: 24px;
     }
 
     .nmk-access-copy h1 {
-        font-size: 46px;
+        font-size: 44px;
         line-height: 0.95;
     }
 
-    .nmk-access-card {
+    .nmk-access-panel {
         border-radius: 22px;
+    }
+
+    .nmk-access-panel-head {
+        flex-direction: column;
     }
 
     .nmk-access-capabilities {

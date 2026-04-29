@@ -12,7 +12,7 @@ type TenantOption = {
     readonly description: string;
 };
 
-const accessStorageKey = "namiki:access-gate:v1";
+const accessStorageKey = "namiki:access-gate:v2";
 
 const tenantOptions: readonly TenantOption[] = [
     {
@@ -20,14 +20,13 @@ const tenantOptions: readonly TenantOption[] = [
         name: "Cooper/T. Smith",
         location: "Altamira, Tamaulipas",
         status: "Disponible",
-        description: "Patios industriales, materiales a granel, GPS, evidencia, auditoría y operación local-first.",
+        description: "Operación de patios industriales, materiales a granel, GPS, evidencia, auditoría y trabajo local sin internet.",
     },
 ];
 
 function readStoredTenant(): TenantId | null {
     try {
         const value = window.localStorage.getItem(accessStorageKey);
-
         return value === "cooper-t-smith" ? value : null;
     } catch {
         return null;
@@ -35,7 +34,11 @@ function readStoredTenant(): TenantId | null {
 }
 
 function saveTenant(value: TenantId) {
-    window.localStorage.setItem(accessStorageKey, value);
+    try {
+        window.localStorage.setItem(accessStorageKey, value);
+    } catch {
+        return;
+    }
 }
 
 export function NamikiAccessGate({ children }: { readonly children: ReactNode }) {
@@ -59,7 +62,7 @@ export function NamikiAccessGate({ children }: { readonly children: ReactNode })
     return (
         <main className="nmk-access-screen">
             <section className="nmk-access-shell">
-                <div className="nmk-access-brandbar">
+                <header className="nmk-access-topbar">
                     <div className="nmk-access-brand">
                         <span />
                         <div>
@@ -68,29 +71,44 @@ export function NamikiAccessGate({ children }: { readonly children: ReactNode })
                         </div>
                     </div>
 
-                    <div className="nmk-access-badge">
-                        MVP local-first
+                    <div className="nmk-access-status">
+                        MVP operativo
                     </div>
-                </div>
+                </header>
 
-                <section className="nmk-access-hero">
+                <section className="nmk-access-main">
                     <div className="nmk-access-copy">
                         <p className="nmk-access-kicker">Bienvenido</p>
-                        <h1>Sistema operativo para patios industriales.</h1>
-                        <p className="nmk-access-subtitle">
-                            Controla materiales, ubicación, evidencia, GPS, perímetros, historial y sincronización desde una consola visual preparada para campo.
+                        <h1>Sistema operativo visual para patios industriales.</h1>
+                        <p className="nmk-access-lead">
+                            Controla materiales, zonas, GPS, evidencia, perímetros, historial y sincronización desde una consola diseñada para operación en campo.
                         </p>
 
-                        <div className="nmk-access-feature-row">
+                        <div className="nmk-access-pills">
                             <span>Funciona local sin internet</span>
                             <span>GPS y mapa</span>
                             <span>Auditoría</span>
-                            <span>Sincronización</span>
+                            <span>Modo supervisor</span>
+                        </div>
+
+                        <div className="nmk-access-mini-grid">
+                            <article>
+                                <strong>Patio visible</strong>
+                                <span>Zonas, pilas, materiales y movimientos.</span>
+                            </article>
+                            <article>
+                                <strong>Captura de campo</strong>
+                                <span>Ubicación, evidencia y medición desde cualquier dispositivo.</span>
+                            </article>
+                            <article>
+                                <strong>Sincronización</strong>
+                                <span>Trabajo local primero, envío cuando haya conexión.</span>
+                            </article>
                         </div>
                     </div>
 
-                    <aside className="nmk-access-card">
-                        <div className="nmk-access-card-head">
+                    <aside className="nmk-access-panel">
+                        <div className="nmk-access-panel-head">
                             <div>
                                 <p>Acceso empresarial</p>
                                 <h2>Elige tu empresa</h2>
@@ -112,7 +130,7 @@ export function NamikiAccessGate({ children }: { readonly children: ReactNode })
                             </select>
                         </label>
 
-                        <article className="nmk-access-tenant-card">
+                        <article className="nmk-access-company-card">
                             <div>
                                 <strong>{tenant.name}</strong>
                                 <span>{tenant.status}</span>
@@ -125,9 +143,15 @@ export function NamikiAccessGate({ children }: { readonly children: ReactNode })
                             Entrar al sistema
                         </button>
 
-                        <div className="nmk-access-coming-soon">
-                            <strong>Próximamente</strong>
-                            <span>Creación de cuentas de colaborador y administradores disponible.</span>
+                        <div className="nmk-access-roadmap">
+                            <article>
+                                <strong>Próximamente</strong>
+                                <span>Creación de cuentas de colaborador y administradores disponible.</span>
+                            </article>
+                            <article>
+                                <strong>Próximamente</strong>
+                                <span>App móvil para sistemas Android y iOS.</span>
+                            </article>
                         </div>
                     </aside>
                 </section>
@@ -135,23 +159,23 @@ export function NamikiAccessGate({ children }: { readonly children: ReactNode })
                 <section className="nmk-access-capabilities">
                     <article>
                         <span>01</span>
-                        <strong>Patio visible</strong>
-                        <p>Mapa operativo, zonas, materiales, equipos y movimientos.</p>
+                        <strong>Inventario operativo</strong>
+                        <p>Materiales visibles por patio, estado y responsable.</p>
                     </article>
                     <article>
                         <span>02</span>
-                        <strong>Captura de campo</strong>
-                        <p>GPS, evidencia, dirección, precisión y perímetros desde cualquier dispositivo.</p>
+                        <strong>GPS industrial</strong>
+                        <p>Ubicación, precisión, perímetros y puntos de evidencia.</p>
                     </article>
                     <article>
                         <span>03</span>
-                        <strong>Operación local-first</strong>
-                        <p>Registro local, exportación, auditoría y sincronización cuando haya conexión.</p>
+                        <strong>Trabajo offline</strong>
+                        <p>Captura local aunque la conexión no sea perfecta.</p>
                     </article>
                     <article>
                         <span>04</span>
                         <strong>Supervisión</strong>
-                        <p>Panel para recibir capturas, revisar estado y validar información crítica.</p>
+                        <p>Recepción de capturas, revisión y sincronización.</p>
                     </article>
                 </section>
             </section>
