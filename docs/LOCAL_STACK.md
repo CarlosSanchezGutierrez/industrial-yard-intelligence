@@ -79,3 +79,18 @@ After the local stack is running, validate live runtime readiness with:
 pnpm architecture:runtime
 
 This runs API smoke, Edge smoke, integrated sync smoke and full runtime smoke against the local services.
+## Windows stack launcher
+
+Command:
+
+pnpm dev:stack:windows
+
+Script:
+
+scripts/dev-stack-windows.ps1
+
+It opens three PowerShell windows:
+
+- API on port 8788
+- Edge on port 8787
+- Web with VITE_IYI_API_BASE_URL and VITE_IYI_EDGE_BASE_URL
