@@ -37,3 +37,19 @@ It improves demo clarity and product storytelling inside the web cockpit.
 4. Improve stockpile cards and status labels.
 5. Add visual audit timeline polish.
 6. Add edge/cloud connection status cards.
+## Demo navigation panel
+
+`DemoNavigationPanel` adds a guided presentation layer inside the cockpit.
+
+Location:
+
+`apps/web/src/components/DemoNavigationPanel.tsx`
+
+It helps presenters explain the system in this order:
+
+1. Architecture baseline.
+2. Stockpile operator workflow.
+3. Audit traceability.
+4. Edge-to-cloud sync safety.
+
+This keeps the demo focused and avoids jumping randomly between panels.

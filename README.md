@@ -181,3 +181,8 @@ Document:
 First UI component:
 
 `apps/web/src/components/DemoCommandCenter.tsx`
+## Phase 2 cockpit navigation
+
+The web cockpit includes a guided demo navigation panel:
+
+`apps/web/src/components/DemoNavigationPanel.tsx`
