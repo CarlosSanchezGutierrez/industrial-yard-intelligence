@@ -57,7 +57,16 @@ const captureTools = [
     { title: "Medición de volumen", text: "Base para comparar estimación, evidencia y estado." },
 ] as const;
 
-const evidenceRows = [
+type EvidenceItem = {
+    readonly id: string;
+    readonly material: string;
+    readonly type: string;
+    readonly source: string;
+    readonly status: string;
+    readonly note: string;
+    readonly time: string;
+};
+const evidenceRows: readonly EvidenceItem[] = [
     {
         id: "EV-001",
         material: "Pet coke",
@@ -947,10 +956,10 @@ function MaterialesView() {
 }
 
 function EvidenceWorkspace() {
-    const [targetMaterial, setTargetMaterial] = useState(materialRows[0]?.name ?? "Pet coke");
+    const [targetMaterial, setTargetMaterial] = useState<string>(materialRows[0]?.name ?? "Pet coke");
     const [evidenceType, setEvidenceType] = useState("Foto");
     const [note, setNote] = useState("");
-    const [queuedItems, setQueuedItems] = useState(evidenceRows);
+    const [queuedItems, setQueuedItems] = useState<readonly EvidenceItem[]>(evidenceRows);
 
     function addEvidenceItem() {
         const trimmedNote = note.trim();
