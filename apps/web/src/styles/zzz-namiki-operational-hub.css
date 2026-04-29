@@ -1,0 +1,735 @@
+:root {
+    color-scheme: dark;
+    --namiki-bg: #020617;
+    --namiki-panel: rgba(15, 23, 42, 0.98);
+    --namiki-card: rgba(30, 41, 59, 0.86);
+    --namiki-line: rgba(148, 163, 184, 0.2);
+    --namiki-line-strong: rgba(56, 189, 248, 0.34);
+    --namiki-text: #ffffff;
+    --namiki-muted: #dbeafe;
+    --namiki-soft: #94a3b8;
+    --namiki-blue: #38bdf8;
+    --namiki-green: #34d399;
+    --namiki-amber: #fbbf24;
+    --namiki-red: #fb7185;
+    --namiki-shadow: 0 28px 80px rgba(0, 0, 0, 0.52);
+}
+
+html,
+body,
+#root,
+#root > main {
+    min-height: 100%;
+    color: var(--namiki-text) !important;
+    background: #020617 !important;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.12), transparent 34rem),
+        radial-gradient(circle at 92% 4%, rgba(52, 211, 153, 0.09), transparent 34rem),
+        linear-gradient(180deg, #020617 0%, #07111f 48%, #020617 100%) !important;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
+#root > main {
+    width: min(100%, 1520px) !important;
+    margin: 0 auto !important;
+    padding: clamp(0.85rem, 1.7vw, 1.5rem) !important;
+}
+
+#root > main > section:not(.namiki-product-shell) {
+    display: none !important;
+}
+
+.namiki-product-shell,
+.namiki-page-surface,
+.namiki-page-grid {
+    display: grid !important;
+    gap: 1rem;
+    width: 100%;
+    color: var(--namiki-text) !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.namiki-topbar,
+.namiki-current-page,
+.namiki-menu,
+.namiki-hero-panel,
+.namiki-side-panel,
+.namiki-wide-panel,
+.namiki-stat-card,
+.namiki-product-card,
+.namiki-material-card,
+.namiki-map-preview,
+.namiki-product-drawer,
+.namiki-timeline-card,
+.namiki-operational-map {
+    border: 1px solid var(--namiki-line) !important;
+    color: var(--namiki-text) !important;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.075), transparent 18rem),
+        linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.94)) !important;
+    box-shadow: var(--namiki-shadow) !important;
+    backdrop-filter: blur(18px);
+}
+
+.namiki-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem;
+    border-radius: 1.25rem;
+}
+
+.namiki-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.namiki-brand > span {
+    width: 0.82rem;
+    height: 0.82rem;
+    border-radius: 999px;
+    background: var(--namiki-green);
+    box-shadow: 0 0 0 0.42rem rgba(52, 211, 153, 0.12);
+}
+
+.namiki-brand strong,
+.namiki-menu span,
+.namiki-current-page h2,
+.namiki-page-header h1,
+.namiki-side-panel h2,
+.namiki-product-card h3,
+.namiki-material-card h3,
+.namiki-stat-card strong,
+.namiki-product-drawer summary strong,
+.namiki-timeline-card h3,
+.namiki-map-zone,
+.namiki-stockpile,
+.namiki-yard-dock,
+.namiki-yard-equipment,
+.namiki-yard-label {
+    color: var(--namiki-text) !important;
+}
+
+.namiki-brand p,
+.namiki-current-page span,
+.namiki-menu small,
+.namiki-product-card p,
+.namiki-stat-card span,
+.namiki-material-card p,
+.namiki-page-header span,
+.namiki-product-drawer summary span,
+.namiki-timeline-card p {
+    color: var(--namiki-soft) !important;
+}
+
+.namiki-brand strong {
+    display: block;
+    font-size: 0.98rem;
+    font-weight: 700;
+}
+
+.namiki-brand p {
+    margin: 0.1rem 0 0;
+    font-size: 0.82rem;
+}
+
+.namiki-menu-button,
+.namiki-action-row button,
+.namiki-menu button,
+.namiki-product-drawer summary em,
+.namiki-filter-row button {
+    border: 1px solid rgba(56, 189, 248, 0.28) !important;
+    border-radius: 999px !important;
+    color: var(--namiki-text) !important;
+    background:
+        linear-gradient(135deg, rgba(3, 105, 161, 0.92), rgba(15, 23, 42, 0.96)) !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    font-weight: 650 !important;
+}
+
+.namiki-menu-button {
+    min-height: 2.65rem;
+    padding: 0 1.1rem;
+}
+
+.namiki-menu {
+    display: grid;
+    gap: 0.7rem;
+    padding: 0.85rem;
+    border-radius: 1.25rem;
+}
+
+@media (min-width: 900px) {
+    .namiki-menu {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+}
+
+.namiki-menu button {
+    min-height: 5rem;
+    padding: 0.9rem;
+    text-align: left;
+    border-radius: 1.05rem !important;
+    background:
+        linear-gradient(135deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.88)) !important;
+}
+
+.namiki-menu button.is-active,
+.namiki-filter-row button.is-active {
+    border-color: rgba(56, 189, 248, 0.58) !important;
+    background:
+        radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.28), transparent 10rem),
+        linear-gradient(135deg, #075985, #0f172a) !important;
+}
+
+.namiki-menu span {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.namiki-menu small {
+    display: block;
+    margin-top: 0.28rem;
+    font-size: 0.82rem;
+    line-height: 1.35;
+}
+
+.namiki-current-page {
+    padding: 1.1rem;
+    border-radius: 1.25rem;
+}
+
+.namiki-current-page p,
+.namiki-page-header p {
+    margin: 0;
+    color: var(--namiki-blue) !important;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.namiki-current-page h2 {
+    margin: 0.35rem 0 0;
+    font-size: clamp(1.3rem, 2.4vw, 2.6rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+}
+
+.namiki-current-page span {
+    display: block;
+    margin-top: 0.45rem;
+    font-size: 0.95rem;
+    line-height: 1.45;
+}
+
+@media (min-width: 1100px) {
+    .namiki-page-grid {
+        grid-template-columns: minmax(0, 1.15fr) minmax(24rem, 0.85fr);
+        align-items: start;
+    }
+}
+
+.namiki-span-2,
+.namiki-wide-panel {
+    grid-column: 1 / -1;
+}
+
+.namiki-hero-panel,
+.namiki-side-panel,
+.namiki-wide-panel {
+    padding: clamp(1.1rem, 2vw, 1.6rem);
+    border-radius: 1.25rem;
+}
+
+.namiki-wide-panel {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.namiki-page-header h1 {
+    margin: 0.6rem 0 0;
+    max-width: 64rem;
+    font-size: clamp(2rem, 4.4vw, 4.6rem);
+    font-weight: 700;
+    line-height: 0.96;
+    letter-spacing: -0.045em;
+}
+
+.namiki-page-header span {
+    display: block;
+    margin-top: 0.85rem;
+    max-width: 56rem;
+    font-size: clamp(1rem, 1.25vw, 1.12rem);
+    line-height: 1.5;
+}
+
+.namiki-action-row,
+.namiki-filter-row,
+.namiki-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+}
+
+.namiki-action-row {
+    margin-top: 1.35rem;
+}
+
+.namiki-action-row button,
+.namiki-filter-row button {
+    min-height: 2.8rem;
+    padding: 0 1.1rem;
+}
+
+.namiki-side-panel h2 {
+    margin: 0 0 1rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.namiki-card-stack,
+.namiki-stat-grid,
+.namiki-material-grid,
+.namiki-card-grid,
+.namiki-timeline-grid {
+    display: grid;
+    gap: 0.85rem;
+}
+
+@media (min-width: 820px) {
+    .namiki-stat-grid,
+    .namiki-card-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 820px) {
+    .namiki-material-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.namiki-product-card,
+.namiki-stat-card,
+.namiki-material-card,
+.namiki-timeline-card {
+    padding: 1rem;
+    border-radius: 1.15rem;
+}
+
+.namiki-product-card h3,
+.namiki-material-card h3,
+.namiki-timeline-card h3 {
+    margin: 0;
+    font-size: 1.08rem;
+    font-weight: 700;
+}
+
+.namiki-product-card p,
+.namiki-stat-card span,
+.namiki-timeline-card p {
+    display: block;
+    margin-top: 0.42rem;
+    font-size: 0.92rem;
+    line-height: 1.45;
+}
+
+.namiki-stat-card p {
+    margin: 0;
+    color: var(--namiki-soft) !important;
+    font-size: 0.86rem;
+}
+
+.namiki-stat-card strong {
+    display: block;
+    margin-top: 0.55rem;
+    font-size: 1.8rem;
+    font-weight: 750;
+    letter-spacing: -0.035em;
+}
+
+.namiki-material-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.namiki-material-card strong {
+    color: var(--namiki-text);
+    font-size: 1rem;
+}
+
+.namiki-material-card span,
+.namiki-chip-row span {
+    width: fit-content;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid rgba(52, 211, 153, 0.24);
+    border-radius: 999px;
+    color: var(--namiki-green) !important;
+    background: rgba(6, 78, 59, 0.26);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.namiki-material-card span,
+.namiki-material-card p {
+    grid-column: 1 / -1;
+}
+
+.namiki-material-card p {
+    margin: 0;
+}
+
+.namiki-operational-map {
+    position: relative;
+    min-height: 38rem;
+    margin-top: 1.2rem;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    background:
+        linear-gradient(to right, rgba(125, 211, 252, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(125, 211, 252, 0.08) 1px, transparent 1px),
+        radial-gradient(circle at 55% 55%, rgba(14, 165, 233, 0.18), rgba(2, 6, 23, 0.96)) !important;
+    background-size: 46px 46px, 46px 46px, auto !important;
+}
+
+.namiki-water-zone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 9rem;
+    display: flex;
+    align-items: center;
+    padding-left: 1.2rem;
+    color: var(--namiki-soft);
+    background: linear-gradient(180deg, rgba(14, 165, 233, 0.24), rgba(14, 165, 233, 0.04));
+    font-weight: 700;
+}
+
+.namiki-rail-line {
+    position: absolute;
+    left: 4%;
+    right: 4%;
+    bottom: 5rem;
+    height: 0.3rem;
+    border-radius: 999px;
+    background: repeating-linear-gradient(90deg, rgba(148, 163, 184, 0.7), rgba(148, 163, 184, 0.7) 1.4rem, transparent 1.4rem, transparent 2.2rem);
+    opacity: 0.65;
+}
+
+.namiki-conveyor-line {
+    position: absolute;
+    top: 45%;
+    left: 38%;
+    width: 22rem;
+    height: 1.25rem;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    border-radius: 999px;
+    color: #fef3c7;
+    background: rgba(120, 53, 15, 0.45);
+    font-size: 0.78rem;
+    font-weight: 800;
+    transform: rotate(8deg);
+}
+
+.namiki-yard-label,
+.namiki-yard-dock,
+.namiki-yard-equipment,
+.namiki-stockpile {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(148, 163, 184, 0.26);
+    border-radius: 1rem;
+    background: rgba(30, 41, 59, 0.86);
+    font-weight: 800;
+}
+
+.namiki-yard-label {
+    min-width: 4.8rem;
+    min-height: 2.3rem;
+    border-color: rgba(96, 165, 250, 0.42);
+    background: rgba(30, 64, 175, 0.58);
+    font-size: 0.78rem;
+}
+
+.namiki-label-arthur {
+    top: 11rem;
+    left: 19%;
+}
+
+.namiki-label-sharon {
+    top: 11rem;
+    left: 33%;
+}
+
+.namiki-label-mr2 {
+    top: 11rem;
+    left: 48%;
+}
+
+.namiki-yard-dock {
+    top: 14rem;
+    min-width: 14rem;
+    min-height: 2.7rem;
+    background: rgba(71, 85, 105, 0.72);
+}
+
+.namiki-dock-one {
+    left: 16%;
+}
+
+.namiki-dock-two {
+    left: 39%;
+}
+
+.namiki-stockpile {
+    min-width: 10rem;
+    min-height: 4.6rem;
+    border-color: rgba(56, 189, 248, 0.28);
+    background: rgba(8, 47, 73, 0.86);
+}
+
+.namiki-stockpile-petcoke {
+    top: 22rem;
+    left: 28%;
+}
+
+.namiki-stockpile-clinker {
+    top: 24rem;
+    left: 55%;
+}
+
+.namiki-stockpile-hms {
+    bottom: 6rem;
+    left: 15%;
+}
+
+.namiki-stockpile-fluorita {
+    bottom: 5.5rem;
+    left: 40%;
+}
+
+.namiki-yard-equipment {
+    min-width: 7.5rem;
+    min-height: 3.4rem;
+    border-color: rgba(52, 211, 153, 0.26);
+    background: rgba(6, 78, 59, 0.58);
+}
+
+.namiki-equipment-bodega {
+    right: 8%;
+    top: 18rem;
+    min-width: 11rem;
+    min-height: 5.8rem;
+}
+
+.namiki-equipment-bascula {
+    right: 14%;
+    bottom: 5rem;
+}
+
+.namiki-equipment-telestacker {
+    top: 30rem;
+    left: 54%;
+    min-width: 6.2rem;
+    min-height: 2.4rem;
+    border-color: rgba(96, 165, 250, 0.42);
+    background: rgba(30, 64, 175, 0.58);
+    font-size: 0.78rem;
+}
+
+.namiki-map-legend {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.namiki-map-legend span {
+    padding: 0.38rem 0.65rem;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 999px;
+    color: var(--namiki-soft);
+    background: rgba(15, 23, 42, 0.78);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.namiki-product-drawer {
+    padding: 0;
+    overflow: hidden;
+    border-radius: 1.15rem;
+}
+
+.namiki-product-drawer summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+.namiki-product-drawer summary::-webkit-details-marker {
+    display: none;
+}
+
+.namiki-product-drawer summary strong {
+    display: block;
+    font-size: 1rem;
+}
+
+.namiki-product-drawer summary span {
+    display: block;
+    margin-top: 0.28rem;
+    font-size: 0.88rem;
+    line-height: 1.35;
+}
+
+.namiki-product-drawer summary em {
+    min-width: 5rem;
+    padding: 0.52rem 0.8rem;
+    text-align: center;
+    font-style: normal;
+    font-size: 0.82rem;
+}
+
+.namiki-drawer-content {
+    padding: 1rem;
+    border-top: 1px solid var(--namiki-line);
+    background: #020617 !important;
+}
+
+.namiki-filter-row {
+    margin-bottom: 1rem;
+}
+
+.namiki-timeline-card {
+    display: grid;
+    gap: 0.85rem;
+    grid-template-columns: 5rem minmax(0, 1fr);
+}
+
+.namiki-timeline-time {
+    display: grid;
+    min-height: 3.2rem;
+    place-items: center;
+    border: 1px solid rgba(56, 189, 248, 0.26);
+    border-radius: 1rem;
+    color: var(--namiki-blue);
+    background: rgba(8, 47, 73, 0.58);
+    font-weight: 800;
+}
+
+.namiki-product-shell section,
+.namiki-product-shell article,
+.namiki-product-shell div,
+.namiki-product-shell details,
+.namiki-product-shell summary,
+.namiki-product-shell nav,
+.namiki-product-shell header {
+    color: var(--namiki-text) !important;
+}
+
+.namiki-product-shell [class*="bg-white"],
+.namiki-product-shell [class*="bg-slate-50"],
+.namiki-product-shell [class*="bg-slate-100"],
+.namiki-product-shell [class*="bg-blue-50"],
+.namiki-product-shell [class*="bg-blue-100"],
+.namiki-product-shell [class*="bg-emerald-50"],
+.namiki-product-shell [class*="bg-emerald-100"],
+.namiki-product-shell [class*="bg-amber-50"],
+.namiki-product-shell [class*="bg-amber-100"],
+.namiki-product-shell [class*="bg-violet-50"],
+.namiki-product-shell [class*="bg-violet-100"] {
+    background:
+        linear-gradient(135deg, rgba(30, 41, 59, 0.86), rgba(15, 23, 42, 0.78)) !important;
+}
+
+.namiki-product-shell [class*="text-slate-950"],
+.namiki-product-shell [class*="text-slate-900"],
+.namiki-product-shell [class*="text-blue-950"],
+.namiki-product-shell [class*="text-emerald-950"],
+.namiki-product-shell [class*="text-amber-950"],
+.namiki-product-shell [class*="text-violet-950"] {
+    color: var(--namiki-text) !important;
+}
+
+.namiki-product-shell [class*="text-slate-600"],
+.namiki-product-shell [class*="text-slate-500"],
+.namiki-product-shell [class*="text-blue-700"],
+.namiki-product-shell [class*="text-emerald-700"],
+.namiki-product-shell [class*="text-amber-700"],
+.namiki-product-shell [class*="text-violet-700"] {
+    color: var(--namiki-soft) !important;
+}
+
+.namiki-product-shell [class*="border-slate-200"],
+.namiki-product-shell [class*="border-slate-300"],
+.namiki-product-shell [class*="border-blue-300"],
+.namiki-product-shell [class*="border-emerald-300"],
+.namiki-product-shell [class*="border-amber-300"],
+.namiki-product-shell [class*="border-violet-300"] {
+    border-color: var(--namiki-line) !important;
+}
+
+.namiki-product-shell button {
+    color: var(--namiki-text) !important;
+}
+
+@media (max-width: 760px) {
+    #root > main {
+        padding: 0.75rem !important;
+    }
+
+    .namiki-topbar,
+    .namiki-current-page,
+    .namiki-hero-panel,
+    .namiki-side-panel,
+    .namiki-wide-panel {
+        border-radius: 1.05rem;
+    }
+
+    .namiki-page-header h1 {
+        font-size: clamp(2rem, 10vw, 3.2rem);
+    }
+
+    .namiki-operational-map {
+        min-height: 32rem;
+    }
+
+    .namiki-product-drawer summary {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .namiki-yard-dock,
+    .namiki-stockpile,
+    .namiki-yard-equipment {
+        transform: scale(0.82);
+        transform-origin: center;
+    }
+}
