@@ -30,3 +30,8 @@ The next implementation step is to persist these entries into the shared DB `aud
 
 - `POST /stockpiles` succeeds
 - `PATCH /stockpiles/:id/status` succeeds
+## Snapshot store adapter
+
+The local snapshot adapter is documented in:
+
+`docs/API_AUDIT_MUTATION_STORE.md`
