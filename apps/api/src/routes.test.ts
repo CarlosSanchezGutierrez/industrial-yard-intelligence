@@ -177,6 +177,29 @@ describe("@iyi/api routes", () => {
     expect(body.data.syncEventCount).toBe(0);
   });
 
+  it("adds CORS headers to JSON responses", async () => {
+    const response = await get("/health");
+
+    expect(response.headers["access-control-allow-origin"]).toBe("*");
+    expect(response.headers["access-control-allow-methods"]).toContain("OPTIONS");
+    expect(response.headers["access-control-allow-headers"]).toContain("content-type");
+    expect(response.headers["content-type"]).toBe("application/json; charset=utf-8");
+  });
+
+  it("serves CORS preflight requests", async () => {
+    const response = await routeApiRequest({
+      method: "OPTIONS",
+      pathname: "/health",
+      requestId: "request_options_health",
+      now
+    });
+
+    expect(response.statusCode).toBe(204);
+    expect(response.body).toBe("");
+    expect(response.headers["access-control-allow-origin"]).toBe("*");
+    expect(response.headers["access-control-allow-methods"]).toContain("GET");
+    expect(response.headers["access-control-allow-methods"]).toContain("OPTIONS");
+  });
   it("returns 404 for unknown route", async () => {
     const response = await get("/unknown");
     const body = JSON.parse(response.body) as {

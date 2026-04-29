@@ -81,13 +81,31 @@ function createFailure(
   };
 }
 
+function createCorsHeaders(): Readonly<Record<string, string>> {
+  return {
+    "access-control-allow-origin": "*",
+    "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+    "access-control-allow-headers": "content-type,authorization,x-request-id",
+    "access-control-max-age": "86400"
+  };
+}
+
 function jsonResponse(statusCode: number, payload: unknown): ApiRouteResponse {
   return {
     statusCode,
     headers: {
+      ...createCorsHeaders(),
       "content-type": "application/json; charset=utf-8"
     },
     body: `${JSON.stringify(payload, null, 2)}\n`
+  };
+}
+
+function emptyResponse(statusCode: number): ApiRouteResponse {
+  return {
+    statusCode,
+    headers: createCorsHeaders(),
+    body: ""
   };
 }
 
@@ -119,6 +137,10 @@ function toStockpileSummary(
 }
 
 export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRouteResponse> {
+  if (request.method === "OPTIONS") {
+    return emptyResponse(204);
+  }
+
   const unitOfWork = createApiUnitOfWork(request.now);
 
   if (request.method === "GET" && request.pathname === "/") {

@@ -49,3 +49,14 @@ Default local port:
 Run:
 
 pnpm --filter @iyi/api dev
+## CORS
+
+apps/api includes permissive local-development CORS headers so apps/web can call it from Vite during development.
+
+Current headers:
+
+- access-control-allow-origin: *
+- access-control-allow-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+- access-control-allow-headers: content-type,authorization,x-request-id
+
+Before production, this should be restricted to known frontend origins.
