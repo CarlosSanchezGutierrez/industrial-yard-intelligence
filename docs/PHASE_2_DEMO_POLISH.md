@@ -166,3 +166,16 @@ Runtime routes used:
 Purpose:
 
 Demonstrate that Edge can export a DB projection package, Cloud API can preview it, and apply mode remains safely blocked.
+## Yard operations map panel
+
+`YardOperationsMapPanel` adds a conceptual yard map to the cockpit.
+
+Location:
+
+`apps/web/src/components/YardOperationsMapPanel.tsx`
+
+Purpose:
+
+Make the demo feel industrial and spatial by showing stockpiles as patio zones instead of only table/card data.
+
+This is not a production GIS map yet. It is a visual bridge toward future GPS/geospatial work.

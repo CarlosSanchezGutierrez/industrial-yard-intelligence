@@ -221,3 +221,8 @@ The cockpit includes a clearer audit timeline panel:
 The cockpit includes a guided Edge-to-Cloud sync demo panel:
 
 `apps/web/src/components/SyncDemoStoryPanel.tsx`
+## Phase 2 yard operations map
+
+The cockpit includes a conceptual yard operations map:
+
+`apps/web/src/components/YardOperationsMapPanel.tsx`
