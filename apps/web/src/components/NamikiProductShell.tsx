@@ -351,7 +351,7 @@ export function NamikiProductShell() {
                             type="button"
                         >
                             <span>{page.label}</span>
-                            <small>{page.description}</small>
+                            <small>{page.subtitle}</small>
                         </button>
                     ))}
                 </nav>
