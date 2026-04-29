@@ -208,3 +208,12 @@ Recommended order:
 6. Mobile capture plan.
 7. Deployment plan.
 8. Evidence/media hardening.
+## Final gate
+
+Final local verification document:
+
+`docs/ARCHITECTURE_V1_FINAL_GATE.md`
+
+Command:
+
+`pnpm architecture:gate`

@@ -32,7 +32,8 @@
                     "sync:smoke":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cloud-edge-sync-smoke.ps1",
                     "architecture:check":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-readiness.ps1",
                     "demo:operator":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo-operator-v1.ps1",
-                    "architecture:status":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-status.ps1"
+                    "architecture:status":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-status.ps1",
+                    "architecture:gate":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-gate.ps1"
                 },
     "keywords":  [
                      "industrial",

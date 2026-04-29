@@ -61,3 +61,10 @@ Skeleton-ready means the project can safely move into the next stage:
 - Postgres adapter planning
 - mobile app planning
 - investor/demo narrative
+## Final local gate
+
+Run:
+
+pnpm architecture:gate
+
+This command runs the architecture readiness check, status check, demo operator check, package builds, package tests, root typecheck, root tests and ci-local.

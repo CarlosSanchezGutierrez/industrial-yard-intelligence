@@ -137,3 +137,10 @@ pnpm architecture:status
 Status document:
 
 `docs/ARCHITECTURE_V1_STATUS.md`
+## Architecture v1 final gate
+
+Run:
+
+pnpm architecture:gate
+
+This validates the local v1 skeleton before demo/incubator presentation.

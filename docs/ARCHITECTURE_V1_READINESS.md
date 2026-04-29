@@ -69,3 +69,12 @@ Architecture v1 status report:
 Command:
 
 `pnpm architecture:status`
+## Final gate
+
+Final local gate:
+
+`docs/ARCHITECTURE_V1_FINAL_GATE.md`
+
+Command:
+
+`pnpm architecture:gate`
