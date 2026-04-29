@@ -83,7 +83,7 @@ export function computeEvidenceIntegrity(
   };
 }
 
-export function createEvidenceIntegrityMetadata(
+export function createEvidenceMetadata(
   input: EvidenceIntegrityMetadataInput,
   integrity: EvidenceIntegrityRecord
 ): EvidenceIntegrityMetadata {
@@ -107,7 +107,7 @@ export function verifyEvidenceIntegrity(
   );
 }
 
-export function createTextEvidenceIntegrityMetadata(input: {
+export function createTextEvidenceMetadata(input: {
   readonly content: string;
   readonly metadata: EvidenceIntegrityMetadataInput;
 }): EvidenceIntegrityMetadata {
@@ -115,7 +115,7 @@ export function createTextEvidenceIntegrityMetadata(input: {
     bytes: input.content
   });
 
-  return createEvidenceIntegrityMetadata(input.metadata, integrity);
+  return createEvidenceMetadata(input.metadata, integrity);
 }
 
 export function assertEvidenceStorageKey(storageKey: string): string {
