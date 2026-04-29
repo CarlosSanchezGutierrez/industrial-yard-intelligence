@@ -7,7 +7,7 @@ import {
 } from "./cloud-api.js";
 
 describe("Cloud API stockpile lifecycle contract", () => {
-    it("publishes the stockpile lifecycle route", () => {
+    it("publishes GET /stockpiles/lifecycle", () => {
         expect(isCloudApiRoutePath("/stockpiles/lifecycle")).toBe(true);
 
         expect(cloudApiRouteDefinitions).toEqual(
@@ -20,7 +20,7 @@ describe("Cloud API stockpile lifecycle contract", () => {
         );
     });
 
-    it("models lifecycle statuses, transitions and allowed transitions by status", () => {
+    it("models statuses, transitions and allowed transitions by status", () => {
         const payload: CloudApiStockpileLifecyclePayloadContract = {
             statuses: ["draft", "operational", "pending_review", "validated", "archived"],
             transitions: [
@@ -29,8 +29,8 @@ describe("Cloud API stockpile lifecycle contract", () => {
                     to: "operational",
                 },
                 {
-                    from: "operational",
-                    to: "validated",
+                    from: "validated",
+                    to: "archived",
                 },
             ],
             allowedTransitionsByStatus: {
@@ -42,7 +42,13 @@ describe("Cloud API stockpile lifecycle contract", () => {
             },
         };
 
-        expect(payload.statuses).toContain("draft");
+        expect(payload.statuses).toEqual([
+            "draft",
+            "operational",
+            "pending_review",
+            "validated",
+            "archived",
+        ]);
         expect(payload.transitions).toContainEqual({
             from: "draft",
             to: "operational",

@@ -21,7 +21,7 @@ export function createStockpileLifecyclePayload(): CloudApiStockpileLifecyclePay
         ]),
     ) as Record<
         CloudApiStockpileLifecycleStatusContract,
-        CloudApiStockpileLifecycleStatusContract[]
+        readonly CloudApiStockpileLifecycleStatusContract[]
     >;
 
     const transitions = statuses.flatMap((from) =>

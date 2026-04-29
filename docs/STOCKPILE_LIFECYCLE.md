@@ -23,3 +23,12 @@ Same-status updates are idempotent.
 apps/api applies these rules through stockpile-service.ts.
 
 This keeps lifecycle rules out of HTTP routing and ready for future mobile, edge and Postgres implementations.
+## API exposure
+
+GET /stockpiles/lifecycle
+
+Returns the canonical lifecycle metadata from `@iyi/domain`:
+
+- `statuses`
+- `transitions`
+- `allowedTransitionsByStatus`

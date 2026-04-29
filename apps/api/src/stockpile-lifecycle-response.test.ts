@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { createStockpileLifecyclePayload } from "./stockpile-lifecycle-response.js";
 
 describe("createStockpileLifecyclePayload", () => {
-    it("exposes stockpile lifecycle statuses in domain order", () => {
+    it("exposes lifecycle statuses in canonical domain order", () => {
         const payload = createStockpileLifecyclePayload();
 
         expect(payload.statuses).toEqual([
@@ -18,30 +18,16 @@ describe("createStockpileLifecyclePayload", () => {
     it("exposes allowed transitions by current status", () => {
         const payload = createStockpileLifecyclePayload();
 
-        expect(payload.allowedTransitionsByStatus.draft).toEqual([
-            "operational",
-            "pending_review",
-            "validated",
-            "archived",
-        ]);
-        expect(payload.allowedTransitionsByStatus.operational).toEqual([
-            "pending_review",
-            "validated",
-            "archived",
-        ]);
-        expect(payload.allowedTransitionsByStatus.pending_review).toEqual([
-            "operational",
-            "validated",
-            "archived",
-        ]);
-        expect(payload.allowedTransitionsByStatus.validated).toEqual([
-            "pending_review",
-            "archived",
-        ]);
-        expect(payload.allowedTransitionsByStatus.archived).toEqual([]);
+        expect(payload.allowedTransitionsByStatus).toEqual({
+            draft: ["operational", "pending_review", "validated", "archived"],
+            operational: ["pending_review", "validated", "archived"],
+            pending_review: ["operational", "validated", "archived"],
+            validated: ["pending_review", "archived"],
+            archived: [],
+        });
     });
 
-    it("derives explicit transitions without archived outgoing transitions", () => {
+    it("derives explicit non-idempotent transitions", () => {
         const payload = createStockpileLifecyclePayload();
 
         expect(payload.transitions).toContainEqual({
@@ -54,6 +40,10 @@ describe("createStockpileLifecyclePayload", () => {
         });
         expect(payload.transitions).not.toContainEqual({
             from: "archived",
+            to: "draft",
+        });
+        expect(payload.transitions).not.toContainEqual({
+            from: "draft",
             to: "draft",
         });
     });

@@ -122,3 +122,12 @@ Allowed status values:
 - archived
 
 This prepares the supervisor review flow.
+## Stockpile lifecycle
+
+GET /stockpiles/lifecycle
+
+Returns stockpile lifecycle metadata generated from `@iyi/domain`:
+
+- statuses
+- explicit transitions
+- allowed transitions indexed by current status
