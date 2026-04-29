@@ -27,3 +27,10 @@ http://localhost:8788
 Override with:
 
 VITE_IYI_API_BASE_URL
+## Stockpile lifecycle panel
+
+The web cockpit now consumes:
+
+GET /stockpiles/lifecycle
+
+This lets the cockpit display the canonical status model from the shared domain layer.

@@ -42,6 +42,7 @@ import {
 } from "./data/edge-client.js";
 import "./styles.css";
 
+import { StockpileLifecyclePanel } from "./components/StockpileLifecyclePanel.js";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
@@ -473,6 +474,7 @@ function App() {
       </section>
 
       <StockpileCreatePanel snapshot={cloudApiSnapshot} onCreated={() => void handleRefreshCloudApi()} />
+      <StockpileLifecyclePanel />
       <StockpileStatusPanel snapshot={cloudApiSnapshot} onUpdated={() => void handleRefreshCloudApi()} />
       <section className="cloud-api-panel">
         <div className="panel-header">
