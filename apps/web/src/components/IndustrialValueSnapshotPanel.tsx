@@ -84,7 +84,7 @@ function ProofPointCard({
 
 export function IndustrialValueSnapshotPanel() {
     return (
-        <section data-iyi-section="overview business" id="industrial-value" className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section data-iyi-section="overview" id="industrial-value" className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
                 <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">

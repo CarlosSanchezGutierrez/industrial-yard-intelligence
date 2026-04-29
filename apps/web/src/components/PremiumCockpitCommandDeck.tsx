@@ -1,56 +1,64 @@
 const commandCards = [
     {
+        target: "operations",
         eyebrow: "01",
         title: "Materiales",
         value: "Ver pilas",
-        text: "Consulta qué material está en el patio y en qué estado está.",
-        href: "#stockpile-summary",
+        text: "Consulta materiales y estados.",
     },
     {
+        target: "map",
         eyebrow: "02",
         title: "Mapa",
         value: "Ver patio",
-        text: "Ubica zonas, materiales y áreas de trabajo.",
-        href: "#yard-map",
+        text: "Revisa zonas y ubicación general.",
     },
     {
+        target: "audit",
         eyebrow: "03",
-        title: "Sistema",
-        value: "Revisar conexión",
-        text: "Valida si el sistema local está respondiendo.",
-        href: "#runtime-status",
+        title: "Historial",
+        value: "Ver cambios",
+        text: "Consulta movimientos importantes.",
     },
     {
+        target: "runtime",
         eyebrow: "04",
-        title: "GPS",
-        value: "Preparar captura",
-        text: "Siguiente paso: ubicación real y trazado de perímetros.",
-        href: "#premium-gps-preview",
+        title: "Sistema",
+        value: "Revisar estado",
+        text: "Validación técnica interna.",
     },
 ] as const;
 
+function goTo(section: string) {
+    window.dispatchEvent(
+        new CustomEvent("iyi:navigate", {
+            detail: section,
+        }),
+    );
+}
+
 function CommandCard({
+    target,
     eyebrow,
     title,
     value,
     text,
-    href,
 }: {
+    readonly target: string;
     readonly eyebrow: string;
     readonly title: string;
     readonly value: string;
     readonly text: string;
-    readonly href: string;
 }) {
     return (
-        <a className="iyi-command-card" href={href}>
+        <button className="iyi-command-card" onClick={() => goTo(target)} type="button">
             <div className="iyi-command-card-top">
                 <span>{eyebrow}</span>
                 <p>{title}</p>
             </div>
             <h3>{value}</h3>
             <p>{text}</p>
-        </a>
+        </button>
     );
 }
 
@@ -60,10 +68,10 @@ export function PremiumCockpitCommandDeck() {
             <div className="iyi-command-deck-header">
                 <div>
                     <p className="iyi-premium-kicker">Accesos rápidos</p>
-                    <h2>Lo importante primero.</h2>
+                    <h2>Entrar directo a lo importante.</h2>
                 </div>
                 <p>
-                    Cuatro entradas simples para presentar la demo sin perderse entre paneles técnicos.
+                    Cada botón abre una sección limpia. Ya no manda al usuario a media página.
                 </p>
             </div>
 
@@ -71,11 +79,11 @@ export function PremiumCockpitCommandDeck() {
                 {commandCards.map((card) => (
                     <CommandCard
                         key={card.title}
+                        target={card.target}
                         eyebrow={card.eyebrow}
                         title={card.title}
                         value={card.value}
                         text={card.text}
-                        href={card.href}
                     />
                 ))}
             </div>

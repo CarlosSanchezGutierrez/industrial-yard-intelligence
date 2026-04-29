@@ -66,6 +66,7 @@ import "./styles/premium-tabs.css";
 import { PremiumUxFrame } from "./components/PremiumUxFrame.js";
 import "./styles/premium-ux-depth.css";
 import "./styles/premium-dark-product.css";
+import "./styles/dark-product-final.css";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }

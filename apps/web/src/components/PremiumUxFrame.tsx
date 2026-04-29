@@ -1,26 +1,19 @@
 const uxSignals = [
     {
-        label: "Objetivo",
-        value: "Que se entienda rápido",
-        detail: "El operador debe saber qué revisar sin leer párrafos largos.",
-    },
-    {
         label: "Vista",
         value: "Secciones separadas",
-        detail: "Inicio, materiales, mapa, historial y sistema.",
+        detail: "No más pantalla infinita.",
+    },
+    {
+        label: "Uso",
+        value: "Lenguaje operativo",
+        detail: "Materiales, mapa, historial y sistema.",
     },
     {
         label: "Siguiente",
         value: "GPS real",
-        detail: "Ubicación actual y dibujo de zonas en mapa.",
+        detail: "Ubicación y dibujo de zonas.",
     },
-] as const;
-
-const qualityItems = [
-    "Diseño oscuro",
-    "Texto reducido",
-    "Botones claros",
-    "Secciones separadas",
 ] as const;
 
 function UxSignalCard({
@@ -47,19 +40,10 @@ export function PremiumUxFrame() {
             <div className="iyi-ux-frame-header">
                 <div>
                     <p className="iyi-premium-kicker">Diseño operativo</p>
-                    <h2>Menos texto. Más control visual.</h2>
+                    <h2>Menos texto. Más control.</h2>
                     <p>
-                        La pantalla debe servir para campo, supervisión y demo. Lo técnico queda escondido en secciones internas.
+                        La información queda separada por secciones para que operación y supervisión no se pierdan.
                     </p>
-                </div>
-
-                <div className="iyi-ux-quality-list">
-                    {qualityItems.map((item) => (
-                        <div key={item}>
-                            <span />
-                            {item}
-                        </div>
-                    ))}
                 </div>
             </div>
 

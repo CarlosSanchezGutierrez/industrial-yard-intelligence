@@ -69,7 +69,7 @@ function DemoStepCard({
 
 export function DemoCommandCenter() {
     return (
-        <section data-iyi-section="overview" id="demo-command-center" className="rounded-3xl border border-slate-200 bg-slate-950 p-5 text-white shadow-sm">
+        <section data-iyi-section="runtime" id="demo-command-center" className="rounded-3xl border border-slate-200 bg-slate-950 p-5 text-white shadow-sm">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                 <div className="max-w-3xl">
                     <p className="text-xs font-semibold uppercase tracking-[0.26em] text-slate-300">

@@ -326,3 +326,12 @@ Document:
 Main file:
 
 `apps/web/src/styles/premium-dark-product.css`
+## Phase 2.5 dark no-scroll UX
+
+Document:
+
+`docs/PHASE_2_5_DARK_NO_SCROLL_UX.md`
+
+Main CSS:
+
+`apps/web/src/styles/dark-product-final.css`

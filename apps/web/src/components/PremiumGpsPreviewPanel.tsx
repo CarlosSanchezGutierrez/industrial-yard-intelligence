@@ -23,7 +23,7 @@ const gpsCapabilities = [
 
 export function PremiumGpsPreviewPanel() {
     return (
-        <section data-iyi-section="map gps" id="premium-gps-preview" className="iyi-gps-preview">
+        <section data-iyi-section="map" id="premium-gps-preview" className="iyi-gps-preview">
             <div className="iyi-gps-preview-copy">
                 <p className="iyi-premium-kicker">Siguiente módulo</p>
                 <h2>GPS y perímetros del patio.</h2>

@@ -1,27 +1,35 @@
 const executiveSignals = [
     {
-        label: "Operación",
-        value: "Patio visible",
-        detail: "Material, zonas y estados en una sola vista.",
+        label: "Patio",
+        value: "Material visible",
+        detail: "Ver qué hay, dónde está y en qué estado se encuentra.",
     },
     {
-        label: "Control",
+        label: "Registro",
         value: "Menos papel",
-        detail: "Registro digital para supervisores y operadores.",
+        detail: "Captura digital para operación y supervisión.",
     },
     {
-        label: "Siguiente",
-        value: "GPS y perímetros",
-        detail: "Ubicación real, mapa y áreas delimitadas.",
+        label: "GPS",
+        value: "Siguiente paso",
+        detail: "Ubicación real y dibujo de perímetros.",
     },
 ] as const;
 
 const premiumMilestones = [
-    "Ver material en patio",
-    "Registrar cambios",
-    "Revisar historial",
-    "Preparar GPS real",
+    "Ver materiales",
+    "Registrar movimientos",
+    "Consultar historial",
+    "Dibujar zonas con GPS",
 ] as const;
+
+function goTo(section: string) {
+    window.dispatchEvent(
+        new CustomEvent("iyi:navigate", {
+            detail: section,
+        }),
+    );
+}
 
 function ExecutiveSignalCard({
     label,
@@ -51,18 +59,16 @@ export function PremiumCockpitHero() {
                         Modelo Namiki · Patio industrial
                     </div>
 
-                    <h1>
-                        Control visual del patio y sus materiales.
-                    </h1>
+                    <h1>Control visual del patio.</h1>
 
                     <p className="iyi-premium-hero-lead">
-                        Una pantalla para ubicar pilas de material, revisar su estado y preparar captura GPS desde celular o laptop.
+                        Ubica materiales, revisa estados y prepara captura GPS desde celular o laptop.
                     </p>
 
                     <div className="iyi-premium-hero-actions">
-                        <a href="#yard-map">Ver mapa</a>
-                        <a href="#stockpile-summary">Ver materiales</a>
-                        <a href="#premium-gps-preview">Ver GPS</a>
+                        <button onClick={() => goTo("map")} type="button">Mapa</button>
+                        <button onClick={() => goTo("operations")} type="button">Materiales</button>
+                        <button onClick={() => goTo("audit")} type="button">Historial</button>
                     </div>
                 </div>
 
@@ -70,7 +76,7 @@ export function PremiumCockpitHero() {
                     <p className="iyi-premium-kicker">Estado actual</p>
                     <h2>Demo operativa</h2>
                     <p>
-                        Vista enfocada en explicar el patio, los materiales y el flujo de trabajo sin lenguaje técnico innecesario.
+                        Pantalla enfocada en patio, materiales y supervisión. Lo técnico queda separado.
                     </p>
 
                     <div className="iyi-premium-milestones">
