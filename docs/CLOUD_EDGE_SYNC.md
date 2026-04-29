@@ -49,3 +49,12 @@ Next steps:
 ## Route wiring
 
 `apps/api/src/routes.ts` wraps `routeApiRequest` with `wrapCloudApiSyncRoutes`, so these paths are handled before falling through to the existing core API route logic.
+## Runtime smoke coverage
+
+`scripts/api-smoke.ps1` validates:
+
+GET /sync/status
+POST /sync/preview
+POST /sync/ingest
+
+This confirms the Cloud API exposes contract-safe Cloud Edge sync stubs before real ingestion is enabled.

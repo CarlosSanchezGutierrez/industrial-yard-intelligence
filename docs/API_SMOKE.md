@@ -41,3 +41,19 @@ Required assertions:
 - stockpile history response includes matching stockpileId
 - stockpile history response includes entries
 - every returned history entry belongs to the selected stockpile
+## Cloud Edge sync runtime check
+
+The API smoke test validates:
+
+GET /sync/status
+POST /sync/preview
+POST /sync/ingest
+
+Required assertions:
+
+- sync status exposes supported package kinds
+- sync status exposes supported conflict policies
+- sync status exposes supported directions
+- preview mode accepts a valid package without applying records
+- ingest apply mode validates the package but remains disabled
+- apply mode returns zero applied records and skips the package payload count

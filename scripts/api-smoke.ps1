@@ -588,3 +588,237 @@ foreach ($historyEntry in $stockpileAuditHistoryEntries) {
         throw "Stockpile audit history included entry for a different stockpile."
     }
 }
+
+Write-Host "==> Cloud Edge sync runtime stubs"
+
+function Get-IyiApiSyncSmokeBaseUrl {
+    $candidateVariableNames = @(
+        "ApiBaseUrl",
+        "BaseUrl",
+        "IyiApiBaseUrl",
+        "CloudApiBaseUrl"
+    )
+
+    foreach ($candidateVariableName in $candidateVariableNames) {
+        $candidateVariable = Get-Variable -Name $candidateVariableName -Scope Script -ErrorAction SilentlyContinue
+
+        if ($null -ne $candidateVariable -and -not [string]::IsNullOrWhiteSpace([string] $candidateVariable.Value)) {
+            return ([string] $candidateVariable.Value).TrimEnd("/")
+        }
+    }
+
+    $candidateEnvironmentNames = @(
+        "IYI_API_BASE_URL",
+        "VITE_IYI_API_BASE_URL",
+        "API_BASE_URL"
+    )
+
+    foreach ($candidateEnvironmentName in $candidateEnvironmentNames) {
+        $candidateEnvironmentValue = [System.Environment]::GetEnvironmentVariable($candidateEnvironmentName)
+
+        if (-not [string]::IsNullOrWhiteSpace($candidateEnvironmentValue)) {
+            return $candidateEnvironmentValue.TrimEnd("/")
+        }
+    }
+
+    return "http://localhost:8788"
+}
+
+function Unwrap-IyiApiSyncPayload {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object] $Response
+    )
+
+    if ($Response.PSObject.Properties.Name -contains "data") {
+        return $Response.data
+    }
+
+    return $Response
+}
+
+$syncSmokeBaseUrl = Get-IyiApiSyncSmokeBaseUrl
+
+$syncStatusResponse = Invoke-RestMethod `
+    -Method GET `
+    -Uri "$syncSmokeBaseUrl/sync/status" `
+    -Headers @{
+        "x-request-id" = "api-smoke-sync-status"
+    }
+
+if ($null -eq $syncStatusResponse) {
+    throw "Sync status response was empty."
+}
+
+$syncStatusPayload = Unwrap-IyiApiSyncPayload -Response $syncStatusResponse
+
+if ($null -eq $syncStatusPayload.enabled) {
+    throw "Sync status payload did not include enabled."
+}
+
+if ($null -eq $syncStatusPayload.supportedPackageKinds) {
+    throw "Sync status payload did not include supportedPackageKinds."
+}
+
+if ($null -eq $syncStatusPayload.supportedConflictPolicies) {
+    throw "Sync status payload did not include supportedConflictPolicies."
+}
+
+if ($null -eq $syncStatusPayload.supportedDirections) {
+    throw "Sync status payload did not include supportedDirections."
+}
+
+$syncSupportedPackageKinds = @($syncStatusPayload.supportedPackageKinds)
+$syncSupportedConflictPolicies = @($syncStatusPayload.supportedConflictPolicies)
+$syncSupportedDirections = @($syncStatusPayload.supportedDirections)
+
+if ($syncSupportedPackageKinds -notcontains "db_projection_snapshot") {
+    throw "Sync status should support db_projection_snapshot packages."
+}
+
+if ($syncSupportedPackageKinds -notcontains "audit_mutation_delta") {
+    throw "Sync status should support audit_mutation_delta packages."
+}
+
+if ($syncSupportedConflictPolicies -notcontains "manual_review") {
+    throw "Sync status should support manual_review conflict policy."
+}
+
+if ($syncSupportedDirections -notcontains "edge_to_cloud") {
+    throw "Sync status should support edge_to_cloud direction."
+}
+
+$syncPreviewPackage = @{
+    manifest = @{
+        packageId = "sync_pkg_api_smoke_preview"
+        packageKind = "db_projection_snapshot"
+        direction = "edge_to_cloud"
+        createdAt = "2026-01-01T00:00:00.000Z"
+        source = @{
+            tenantId = "tenant_cooper_t_smith"
+            terminalId = "terminal_altamira"
+            nodeId = "edge_altamira_yard_001"
+            nodeRole = "edge"
+        }
+        target = @{
+            tenantId = "tenant_cooper_t_smith"
+            terminalId = "terminal_altamira"
+            nodeId = "cloud_primary"
+            nodeRole = "cloud"
+        }
+        schemaVersion = "cloud-edge-sync-v1"
+        payloadHash = "sha256:api-smoke-preview"
+        payloadRecordCount = 2
+    }
+    payload = @{
+        stockpiles = @()
+    }
+}
+
+$syncPreviewRequest = @{
+    package = $syncPreviewPackage
+    conflictPolicy = "manual_review"
+}
+
+$syncPreviewResponse = Invoke-RestMethod `
+    -Method POST `
+    -Uri "$syncSmokeBaseUrl/sync/preview" `
+    -ContentType "application/json" `
+    -Headers @{
+        "x-request-id" = "api-smoke-sync-preview"
+    } `
+    -Body ($syncPreviewRequest | ConvertTo-Json -Depth 20)
+
+if ($null -eq $syncPreviewResponse) {
+    throw "Sync preview response was empty."
+}
+
+$syncPreviewPayload = Unwrap-IyiApiSyncPayload -Response $syncPreviewResponse
+
+if ($syncPreviewPayload.packageId -ne "sync_pkg_api_smoke_preview") {
+    throw "Sync preview packageId mismatch."
+}
+
+if ($syncPreviewPayload.accepted -ne $true) {
+    throw "Sync preview should be accepted."
+}
+
+if ($syncPreviewPayload.ingestMode -ne "preview") {
+    throw "Sync preview ingestMode should be preview."
+}
+
+if ($syncPreviewPayload.conflictPolicy -ne "manual_review") {
+    throw "Sync preview conflictPolicy mismatch."
+}
+
+if ([int] $syncPreviewPayload.detectedRecordCount -ne 2) {
+    throw "Sync preview detectedRecordCount mismatch."
+}
+
+$syncIngestPackage = @{
+    manifest = @{
+        packageId = "sync_pkg_api_smoke_ingest"
+        packageKind = "audit_mutation_delta"
+        direction = "edge_to_cloud"
+        createdAt = "2026-01-01T00:05:00.000Z"
+        source = @{
+            tenantId = "tenant_cooper_t_smith"
+            terminalId = "terminal_altamira"
+            nodeId = "edge_altamira_yard_001"
+            nodeRole = "edge"
+        }
+        target = @{
+            tenantId = "tenant_cooper_t_smith"
+            terminalId = "terminal_altamira"
+            nodeId = "cloud_primary"
+            nodeRole = "cloud"
+        }
+        schemaVersion = "cloud-edge-sync-v1"
+        payloadHash = "sha256:api-smoke-ingest"
+        payloadRecordCount = 3
+    }
+    payload = @{
+        audit_entries = @()
+    }
+}
+
+$syncIngestRequest = @{
+    package = $syncIngestPackage
+    ingestMode = "apply"
+    conflictPolicy = "reject"
+}
+
+$syncIngestResponse = Invoke-RestMethod `
+    -Method POST `
+    -Uri "$syncSmokeBaseUrl/sync/ingest" `
+    -ContentType "application/json" `
+    -Headers @{
+        "x-request-id" = "api-smoke-sync-ingest"
+    } `
+    -Body ($syncIngestRequest | ConvertTo-Json -Depth 20)
+
+if ($null -eq $syncIngestResponse) {
+    throw "Sync ingest response was empty."
+}
+
+$syncIngestPayload = Unwrap-IyiApiSyncPayload -Response $syncIngestResponse
+
+if ($syncIngestPayload.packageId -ne "sync_pkg_api_smoke_ingest") {
+    throw "Sync ingest packageId mismatch."
+}
+
+if ($syncIngestPayload.accepted -ne $false) {
+    throw "Sync ingest apply mode should not be accepted yet."
+}
+
+if ($syncIngestPayload.ingestMode -ne "apply") {
+    throw "Sync ingest ingestMode should be apply."
+}
+
+if ([int] $syncIngestPayload.appliedRecordCount -ne 0) {
+    throw "Sync ingest should not apply records yet."
+}
+
+if ([int] $syncIngestPayload.skippedRecordCount -ne 3) {
+    throw "Sync ingest skippedRecordCount mismatch."
+}
