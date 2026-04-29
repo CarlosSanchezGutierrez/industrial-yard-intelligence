@@ -183,6 +183,13 @@ Invoke-Step "Test api contracts" {
     pnpm --filter @iyi/api-contracts test
 }
 
+Invoke-Step "Build api" {
+    pnpm --filter @iyi/api build
+}
+
+Invoke-Step "Test api" {
+    pnpm --filter @iyi/api test
+}
 Invoke-Step "Build edge" {
     pnpm --filter @iyi/edge build
 }
