@@ -85,10 +85,21 @@ export interface EdgeStoreFile {
   readonly aggregateVersions?: Record<string, number>;
 }
 
+export interface EdgeOfflineBackup {
+  readonly version: 1;
+  readonly exportedAt: string;
+  readonly syncStore: EdgeStoreFile;
+  readonly conflictResolutions: {
+    readonly version: 1;
+    readonly exportedAt?: string;
+    readonly resolutions: readonly EdgeConflictResolution[];
+  };
+}
+
 export interface EdgeStoreExportResult {
   readonly ok: boolean;
   readonly source: "edge" | "unavailable";
-  readonly store: EdgeStoreFile | null;
+  readonly store: EdgeOfflineBackup | null;
   readonly message: string;
 }
 
@@ -153,7 +164,13 @@ interface EdgeConflictResolutionsResponse {
 interface EdgeExportResponse {
   readonly ok: boolean;
   readonly data?: {
+    readonly backup?: EdgeOfflineBackup;
     readonly store?: EdgeStoreFile;
+    readonly conflictResolutions?: {
+      readonly version: 1;
+      readonly exportedAt?: string;
+      readonly resolutions: readonly EdgeConflictResolution[];
+    };
   };
 }
 
@@ -461,22 +478,43 @@ export async function exportEdgeSyncStore(): Promise<EdgeStoreExportResult> {
     }
 
     const body = (await response.json()) as EdgeExportResponse;
-    const store = body.data?.store;
+    const backup = body.data?.backup;
 
-    if (!body.ok || !isEdgeStoreFile(store)) {
+    if (body.ok && backup !== undefined) {
+      return {
+        ok: true,
+        source: "edge",
+        store: backup,
+        message: `Exported ${backup.syncStore.batches.length} batches, ${backup.syncStore.events.length} events and ${backup.conflictResolutions.resolutions.length} conflict resolutions from local edge.`
+      };
+    }
+
+    const legacyStore = body.data?.store;
+
+    if (!body.ok || !isEdgeStoreFile(legacyStore)) {
       return {
         ok: false,
         source: "edge",
         store: null,
-        message: "Edge export response did not contain a valid store payload."
+        message: "Edge export response did not contain a valid backup payload."
       };
     }
+
+    const legacyBackup: EdgeOfflineBackup = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      syncStore: legacyStore,
+      conflictResolutions: {
+        version: 1,
+        resolutions: body.data?.conflictResolutions?.resolutions ?? []
+      }
+    };
 
     return {
       ok: true,
       source: "edge",
-      store,
-      message: `Exported ${store.batches.length} batches and ${store.events.length} events from local edge.`
+      store: legacyBackup,
+      message: `Exported ${legacyStore.batches.length} batches and ${legacyStore.events.length} events from local edge.`
     };
   } catch {
     return {

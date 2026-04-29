@@ -17,9 +17,15 @@ export interface ConflictResolutionRecord {
   readonly resolvedAt: string;
 }
 
-interface ConflictResolutionFile {
+export interface ConflictResolutionFile {
   readonly version: 1;
+  readonly exportedAt?: string;
   readonly resolutions: ConflictResolutionRecord[];
+}
+
+export interface ConflictResolutionImportResult {
+  readonly importedResolutions: number;
+  readonly replacedExistingStore: boolean;
 }
 
 let cachedResolutionFile: ConflictResolutionFile | null = null;
@@ -75,6 +81,17 @@ function normalizeResolution(value: unknown): ConflictResolutionRecord | null {
 }
 
 function normalizeResolutionFile(value: unknown): ConflictResolutionFile | null {
+  if (Array.isArray(value)) {
+    const resolutions = value
+      .map((resolution) => normalizeResolution(resolution))
+      .filter((resolution): resolution is ConflictResolutionRecord => resolution !== null);
+
+    return {
+      version: 1,
+      resolutions
+    };
+  }
+
   if (!isRecord(value) || value["version"] !== 1 || !Array.isArray(value["resolutions"])) {
     return null;
   }
@@ -85,6 +102,7 @@ function normalizeResolutionFile(value: unknown): ConflictResolutionFile | null 
 
   return {
     version: 1,
+    ...(typeof value["exportedAt"] === "string" ? { exportedAt: value["exportedAt"] } : {}),
     resolutions
   };
 }
@@ -167,6 +185,63 @@ export function recordConflictResolution(input: {
   persistResolutionFile(file);
 
   return resolution;
+}
+
+export function exportConflictResolutionStore(now: string): ConflictResolutionFile {
+  const file = loadResolutionFile();
+
+  return {
+    version: 1,
+    exportedAt: now,
+    resolutions: [...file.resolutions]
+  };
+}
+
+export function importConflictResolutionStore(
+  value: unknown,
+  replaceExistingStore = true
+): ConflictResolutionImportResult {
+  const imported = normalizeResolutionFile(value);
+
+  if (imported === null) {
+    throw new Error("Invalid conflict resolution import payload.");
+  }
+
+  if (replaceExistingStore) {
+    cachedResolutionFile = {
+      version: 1,
+      resolutions: [...imported.resolutions]
+    };
+
+    persistResolutionFile(cachedResolutionFile);
+
+    return {
+      importedResolutions: imported.resolutions.length,
+      replacedExistingStore: true
+    };
+  }
+
+  const file = loadResolutionFile();
+  const existingEventIds = new Set(file.resolutions.map((resolution) => resolution.eventId));
+  const existingResolutionIds = new Set(file.resolutions.map((resolution) => resolution.resolutionId));
+
+  for (const resolution of imported.resolutions) {
+    if (
+      !existingEventIds.has(resolution.eventId) &&
+      !existingResolutionIds.has(resolution.resolutionId)
+    ) {
+      file.resolutions.push(resolution);
+      existingEventIds.add(resolution.eventId);
+      existingResolutionIds.add(resolution.resolutionId);
+    }
+  }
+
+  persistResolutionFile(file);
+
+  return {
+    importedResolutions: imported.resolutions.length,
+    replacedExistingStore: false
+  };
 }
 
 export function resetConflictResolutionStore(): void {

@@ -327,6 +327,89 @@ describe("@iyi/edge", () => {
     expect(body.data.resolutions).toHaveLength(1);
     expect(getConflictResolutions()).toHaveLength(1);
   });
+  it("exports and imports combined offline backup with conflict resolutions", () => {
+    createConflict();
+
+    routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/conflicts/resolve",
+      requestId: "request_resolve",
+      now: "2026-04-28T12:00:04.000Z",
+      body: {
+        eventId: "event_002",
+        decision: "manual_action_required",
+        note: "Reviewed before backup."
+      }
+    });
+
+    const exportResponse = routeEdgeRequest({
+      method: "GET",
+      pathname: "/sync/export",
+      requestId: "request_export_backup",
+      now: "2026-04-28T12:00:05.000Z"
+    });
+
+    const exportBody = JSON.parse(exportResponse.body) as {
+      ok: boolean;
+      data: {
+        backup: {
+          version: number;
+          syncStore: {
+            events: readonly unknown[];
+          };
+          conflictResolutions: {
+            resolutions: readonly {
+              eventId: string;
+            }[];
+          };
+        };
+      };
+    };
+
+    expect(exportResponse.statusCode).toBe(200);
+    expect(exportBody.ok).toBe(true);
+    expect(exportBody.data.backup.version).toBe(1);
+    expect(exportBody.data.backup.syncStore.events.length).toBeGreaterThan(0);
+    expect(exportBody.data.backup.conflictResolutions.resolutions).toHaveLength(1);
+    expect(exportBody.data.backup.conflictResolutions.resolutions[0]?.eventId).toBe("event_002");
+
+    resetEdgeMemoryStore();
+    resetConflictResolutionStore();
+
+    const importResponse = routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/import",
+      requestId: "request_import_backup",
+      now: "2026-04-28T12:00:06.000Z",
+      body: {
+        replaceExistingStore: true,
+        store: exportBody.data.backup
+      }
+    });
+
+    const importBody = JSON.parse(importResponse.body) as {
+      ok: boolean;
+      data: {
+        importResult: {
+          importedEvents: number;
+        };
+        conflictImportResult: {
+          importedResolutions: number;
+        };
+        resolutions: readonly {
+          eventId: string;
+        }[];
+      };
+    };
+
+    expect(importResponse.statusCode).toBe(200);
+    expect(importBody.ok).toBe(true);
+    expect(importBody.data.importResult.importedEvents).toBeGreaterThan(0);
+    expect(importBody.data.conflictImportResult.importedResolutions).toBe(1);
+    expect(importBody.data.resolutions).toHaveLength(1);
+    expect(importBody.data.resolutions[0]?.eventId).toBe("event_002");
+    expect(getConflictResolutions()).toHaveLength(1);
+  });
 
   it("does not duplicate supervisor conflict resolution for same event", () => {
     createConflict();

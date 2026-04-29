@@ -9,8 +9,10 @@ import {
 import { cooperSmokeSeed } from "@iyi/seed-data";
 import { reconcileSyncBatch } from "@iyi/sync-core";
 import {
+  exportConflictResolutionStore,
   getConflictResolutionFilePath,
   getConflictResolutions,
+  importConflictResolutionStore,
   recordConflictResolution,
   type ConflictResolutionDecision
 } from "./conflict-resolutions.js";
@@ -24,7 +26,8 @@ import {
   getSyncEventHistory,
   getSyncSummary,
   importEdgeStore,
-  recordSyncBatch
+  recordSyncBatch,
+  type EdgeStoreFile
 } from "./store.js";
 
 export interface EdgeRouteRequest {
@@ -39,6 +42,13 @@ export interface EdgeRouteResponse {
   readonly statusCode: number;
   readonly headers: Record<string, string>;
   readonly body: string;
+}
+
+interface EdgeOfflineBackup {
+  readonly version: 1;
+  readonly exportedAt: string;
+  readonly syncStore: EdgeStoreFile;
+  readonly conflictResolutions: ReturnType<typeof exportConflictResolutionStore>;
 }
 
 function jsonResponse(statusCode: number, body: unknown): EdgeRouteResponse {
@@ -65,6 +75,15 @@ function isSyncSubmitRequest(value: unknown): value is SyncSubmitRequest {
   }
 
   return isRecord(value["context"]) && isRecord(value["batch"]);
+}
+
+function isEdgeOfflineBackup(value: unknown): value is EdgeOfflineBackup {
+  return (
+    isRecord(value) &&
+    value["version"] === 1 &&
+    isRecord(value["syncStore"]) &&
+    isRecord(value["conflictResolutions"])
+  );
 }
 
 function getBooleanBodyValue(body: unknown, key: string, fallback: boolean): boolean {
@@ -103,6 +122,15 @@ function getStoreImportPayload(body: unknown): unknown {
   }
 
   return "store" in body ? body["store"] : body;
+}
+
+function createOfflineBackup(now: string): EdgeOfflineBackup {
+  return {
+    version: 1,
+    exportedAt: now,
+    syncStore: exportEdgeStore(now),
+    conflictResolutions: exportConflictResolutionStore(now)
+  };
 }
 
 function createManifest(now: string) {
@@ -144,12 +172,12 @@ function createManifest(now: string) {
       {
         method: "GET",
         path: "/sync/export",
-        description: "Export JSON-backed sync store for offline backup or transfer."
+        description: "Export combined offline backup with sync store and conflict resolutions."
       },
       {
         method: "POST",
         path: "/sync/import",
-        description: "Import JSON-backed sync store from offline backup or transfer."
+        description: "Import combined offline backup or legacy sync store."
       },
       {
         method: "GET",
@@ -201,15 +229,39 @@ function handleSyncBatch(request: EdgeRouteRequest): EdgeRouteResponse {
 function handleStoreImport(request: EdgeRouteRequest): EdgeRouteResponse {
   try {
     const replaceExistingStore = getBooleanBodyValue(request.body, "replaceExistingStore", true);
-    const storePayload = getStoreImportPayload(request.body);
-    const result = importEdgeStore(storePayload, replaceExistingStore);
+    const importPayload = getStoreImportPayload(request.body);
+
+    if (isEdgeOfflineBackup(importPayload)) {
+      const importResult = importEdgeStore(importPayload.syncStore, replaceExistingStore);
+      const conflictImportResult = importConflictResolutionStore(
+        importPayload.conflictResolutions,
+        replaceExistingStore
+      );
+
+      return jsonResponse(
+        200,
+        createApiSuccess(
+          {
+            importResult,
+            conflictImportResult,
+            summary: getSyncSummary(),
+            resolutions: getConflictResolutions()
+          },
+          request.requestId,
+          request.now
+        )
+      );
+    }
+
+    const importResult = importEdgeStore(importPayload, replaceExistingStore);
 
     return jsonResponse(
       200,
       createApiSuccess(
         {
-          importResult: result,
-          summary: getSyncSummary()
+          importResult,
+          summary: getSyncSummary(),
+          resolutions: getConflictResolutions()
         },
         request.requestId,
         request.now
@@ -341,11 +393,15 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
   }
 
   if (request.method === "GET" && request.pathname === "/sync/export") {
+    const backup = createOfflineBackup(request.now);
+
     return jsonResponse(
       200,
       createApiSuccess(
         {
-          store: exportEdgeStore(request.now)
+          backup,
+          store: backup.syncStore,
+          conflictResolutions: backup.conflictResolutions
         },
         request.requestId,
         request.now
