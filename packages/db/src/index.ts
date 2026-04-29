@@ -5,3 +5,5 @@ export * from "./migrations.js";
 export * from "./schema-plan.js";
 export * from "./drizzle-schema.js";
 export * from "./schema-v1.js";
+export * from "./records-v1.js";
+export * from "./repositories-v1.js";
