@@ -1,4 +1,6 @@
 import type {
+  CloudApiCreateStockpilePayloadContract,
+  CloudApiCreateStockpileRequestContract,
   CloudApiHealthPayloadContract,
   CloudApiStockpileSummaryContract,
   CloudApiSystemOverviewPayloadContract,
@@ -31,6 +33,13 @@ export interface CloudApiDashboardResult {
   readonly message: string;
 }
 
+export interface CreateCloudStockpileResult {
+  readonly ok: boolean;
+  readonly source: "api" | "unavailable";
+  readonly stockpile: CloudApiStockpileSummaryContract | null;
+  readonly message: string;
+}
+
 function getApiBaseUrl(): string {
   const maybeEnv = (import.meta as ImportMeta & {
     readonly env?: Readonly<Record<string, string | undefined>>;
@@ -56,6 +65,26 @@ async function requestApi<TData>(path: string): Promise<TData> {
 
   if (!body.ok || body.data === undefined) {
     throw new Error(body.error?.message ?? `API endpoint ${path} returned invalid payload.`);
+  }
+
+  return body.data;
+}
+
+async function postApi<TRequest, TData>(path: string, payload: TRequest): Promise<TData> {
+  const apiBaseUrl = getApiBaseUrl();
+  const response = await fetch(`${apiBaseUrl}${path}`, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const body = (await response.json()) as ApiEnvelope<TData>;
+
+  if (!response.ok || !body.ok || body.data === undefined) {
+    throw new Error(body.error?.message ?? `API endpoint ${path} responded with HTTP ${response.status}.`);
   }
 
   return body.data;
@@ -92,6 +121,35 @@ export async function loadCloudApiDashboardSnapshot(): Promise<CloudApiDashboard
       source: "unavailable",
       snapshot: null,
       message: `Cloud API unavailable at ${apiBaseUrl}. Start it with pnpm --filter @iyi/api dev.`
+    };
+  }
+}
+
+export async function createCloudApiStockpile(
+  request: CloudApiCreateStockpileRequestContract
+): Promise<CreateCloudStockpileResult> {
+  const apiBaseUrl = getApiBaseUrl();
+
+  try {
+    const payload = await postApi<
+      CloudApiCreateStockpileRequestContract,
+      CloudApiCreateStockpilePayloadContract
+    >("/stockpiles", request);
+
+    return {
+      ok: true,
+      source: "api",
+      stockpile: payload.stockpile,
+      message: `Created stockpile ${payload.stockpile.name}.`
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : `Cloud API unavailable at ${apiBaseUrl}.`;
+
+    return {
+      ok: false,
+      source: "unavailable",
+      stockpile: null,
+      message
     };
   }
 }

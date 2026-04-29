@@ -1,3 +1,4 @@
+import { StockpileCreatePanel } from "./components/StockpileCreatePanel.js";
 import {
   loadCloudApiDashboardSnapshot,
   type CloudApiDashboardSnapshot
@@ -470,6 +471,7 @@ function App() {
         ))}
       </section>
 
+      <StockpileCreatePanel snapshot={cloudApiSnapshot} onCreated={() => void handleRefreshCloudApi()} />
       <section className="cloud-api-panel">
         <div className="panel-header">
           <div>
