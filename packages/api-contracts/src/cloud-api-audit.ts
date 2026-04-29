@@ -51,3 +51,13 @@ export interface CloudApiAuditMutationEntryContract {
 export interface CloudApiAuditMutationAppendPayloadContract {
     readonly auditEntry: CloudApiAuditMutationEntryContract;
 }
+
+export interface CloudApiAuditMutationListPayloadContract {
+    readonly entries: readonly CloudApiAuditMutationEntryContract[];
+}
+
+export interface CloudApiAuditMutationSummaryPayloadContract {
+    readonly auditEntryCount: number;
+    readonly mutationCountsByType: Partial<Record<CloudApiAuditMutationTypeContract, number>>;
+    readonly latestEntry?: CloudApiAuditMutationEntryContract;
+}

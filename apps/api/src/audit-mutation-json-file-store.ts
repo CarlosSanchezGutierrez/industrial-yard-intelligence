@@ -1,7 +1,11 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-import type { CloudApiAuditMutationEntryContract } from "@iyi/api-contracts";
+import type {
+    CloudApiAuditMutationEntryContract,
+    CloudApiAuditMutationSummaryPayloadContract,
+    CloudApiAuditMutationTypeContract,
+} from "@iyi/api-contracts";
 
 type MutableJsonRecord = Record<string, unknown>;
 
@@ -25,18 +29,38 @@ function getString(record: MutableJsonRecord, keys: readonly string[]): string |
     return undefined;
 }
 
+function isAuditMutationEntry(value: unknown): value is CloudApiAuditMutationEntryContract {
+    if (!isRecord(value)) {
+        return false;
+    }
+
+    if (typeof value["id"] !== "string") {
+        return false;
+    }
+
+    if (!isRecord(value["context"])) {
+        return false;
+    }
+
+    if (!isRecord(value["mutation"])) {
+        return false;
+    }
+
+    return typeof value["mutation"]["type"] === "string";
+}
+
 function getRuntimeDbCandidatePaths(): readonly string[] {
     const configuredDataDirectory = process.env["IYI_API_DATA_DIR"];
 
-    const candidates = configuredDataDirectory
-        ? [join(configuredDataDirectory, "api-db.json")]
-        : [
-              join(process.cwd(), ".api-data", "api-db.json"),
-              join(process.cwd(), "apps", "api", ".api-data", "api-db.json"),
-              join(process.cwd(), "apps", "api", ".api-data", "api.json"),
-          ];
+    if (configuredDataDirectory) {
+        return [join(configuredDataDirectory, "api-db.json")];
+    }
 
-    return candidates;
+    return [
+        join(process.cwd(), ".api-data", "api-db.json"),
+        join(process.cwd(), "apps", "api", ".api-data", "api-db.json"),
+        join(process.cwd(), "apps", "api", ".api-data", "api.json"),
+    ];
 }
 
 function findExistingRuntimeDbPath(): string | null {
@@ -116,18 +140,40 @@ export function readCloudApiRuntimeStockpileStatus(stockpileId: string): string 
     return undefined;
 }
 
-export function readCloudApiRuntimeAuditEntryCount(): number {
+export function readCloudApiRuntimeAuditEntries(): readonly CloudApiAuditMutationEntryContract[] {
     const runtimeSnapshot = readRuntimeSnapshot();
 
     if (!runtimeSnapshot) {
-        return 0;
+        return [];
     }
 
     const auditEntries = runtimeSnapshot.snapshot["audit_entries"];
 
     if (!Array.isArray(auditEntries)) {
-        return 0;
+        return [];
     }
 
-    return auditEntries.length;
+    return auditEntries.filter(isAuditMutationEntry);
+}
+
+export function readCloudApiRuntimeAuditEntryCount(): number {
+    return readCloudApiRuntimeAuditEntries().length;
+}
+
+export function readCloudApiRuntimeAuditSummary(): CloudApiAuditMutationSummaryPayloadContract {
+    const entries = readCloudApiRuntimeAuditEntries();
+    const mutationCountsByType: Partial<Record<CloudApiAuditMutationTypeContract, number>> = {};
+
+    for (const entry of entries) {
+        const mutationType = entry.mutation.type;
+        mutationCountsByType[mutationType] = (mutationCountsByType[mutationType] ?? 0) + 1;
+    }
+
+    const latestEntry = entries.at(-1);
+
+    return {
+        auditEntryCount: entries.length,
+        mutationCountsByType,
+        ...(latestEntry !== undefined ? { latestEntry } : {}),
+    };
 }

@@ -3,11 +3,12 @@ import type { CloudApiAuditMutationPayloadContract } from "@iyi/api-contracts";
 import { createAuditMutationEntry } from "./audit-mutation-service.js";
 import {
     appendCloudApiAuditMutationEntryToRuntimeStore,
+    readCloudApiRuntimeAuditEntries,
+    readCloudApiRuntimeAuditSummary,
     readCloudApiRuntimeStockpileStatus,
 } from "./audit-mutation-json-file-store.js";
 
 type UnknownRequestRecord = Record<string, unknown>;
-type UnknownResponseRecord = Record<string, unknown>;
 type RouteCore<TRequest, TResponse> = (request: TRequest) => TResponse | Promise<TResponse>;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -122,6 +123,24 @@ function getRequestId(request: UnknownRequestRecord): string {
     return getString(request, ["requestId", "id", "correlationId"]) ?? "cloud_api_request";
 }
 
+function getRequestMethod(request: UnknownRequestRecord): string | undefined {
+    return getString(request, ["method"])?.toUpperCase();
+}
+
+function getRequestPathname(request: UnknownRequestRecord): string {
+    return getString(request, ["pathname", "path", "url"]) ?? "";
+}
+
+function createSuccessRouteResponse(data: unknown): unknown {
+    return {
+        statusCode: 200,
+        body: {
+            ok: true,
+            data,
+        },
+    };
+}
+
 function createStockpileCreatedMutation(
     request: UnknownRequestRecord,
     response: unknown,
@@ -171,7 +190,7 @@ function createStockpileStatusUpdatedMutation(
     response: unknown,
     previousStatus: string | undefined,
 ): CloudApiAuditMutationPayloadContract | null {
-    const pathname = getString(request, ["pathname", "path", "url"]) ?? "";
+    const pathname = getRequestPathname(request);
     const pathMatch = /^\/stockpiles\/([^/]+)\/status$/u.exec(pathname);
 
     if (!pathMatch?.[1]) {
@@ -202,8 +221,8 @@ function createStockpileStatusUpdatedMutation(
 }
 
 function getStatusUpdateStockpileId(request: UnknownRequestRecord): string | undefined {
-    const method = getString(request, ["method"])?.toUpperCase();
-    const pathname = getString(request, ["pathname", "path", "url"]) ?? "";
+    const method = getRequestMethod(request);
+    const pathname = getRequestPathname(request);
 
     if (method !== "PATCH") {
         return undefined;
@@ -223,8 +242,8 @@ function createMutationForRequest(
     response: unknown,
     previousStatus: string | undefined,
 ): CloudApiAuditMutationPayloadContract | null {
-    const method = getString(request, ["method"])?.toUpperCase();
-    const pathname = getString(request, ["pathname", "path", "url"]) ?? "";
+    const method = getRequestMethod(request);
+    const pathname = getRequestPathname(request);
 
     if (method === "POST" && pathname === "/stockpiles") {
         return createStockpileCreatedMutation(request, response);
@@ -237,11 +256,34 @@ function createMutationForRequest(
     return null;
 }
 
+function tryHandleAuditQuery(request: UnknownRequestRecord): unknown | null {
+    const method = getRequestMethod(request);
+    const pathname = getRequestPathname(request);
+
+    if (method === "GET" && pathname === "/audit/mutations") {
+        return createSuccessRouteResponse({
+            entries: readCloudApiRuntimeAuditEntries(),
+        });
+    }
+
+    if (method === "GET" && pathname === "/audit/summary") {
+        return createSuccessRouteResponse(readCloudApiRuntimeAuditSummary());
+    }
+
+    return null;
+}
+
 export function wrapCloudApiRouteRequestWithAudit<TRequest, TResponse>(
     coreRoute: RouteCore<TRequest, TResponse>,
 ): (request: TRequest) => Promise<Awaited<TResponse>> {
     return async (request: TRequest): Promise<Awaited<TResponse>> => {
         const requestRecord = isRecord(request) ? (request as UnknownRequestRecord) : {};
+        const auditQueryResponse = tryHandleAuditQuery(requestRecord);
+
+        if (auditQueryResponse) {
+            return auditQueryResponse as Awaited<TResponse>;
+        }
+
         const statusUpdateStockpileId = getStatusUpdateStockpileId(requestRecord);
         const previousStatus = statusUpdateStockpileId
             ? readCloudApiRuntimeStockpileStatus(statusUpdateStockpileId)

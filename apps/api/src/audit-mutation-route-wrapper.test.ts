@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -9,7 +10,7 @@ import { wrapCloudApiRouteRequestWithAudit } from "./audit-mutation-route-wrappe
 let tempDirectory: string | undefined;
 
 function createTempApiDataDir(snapshot: unknown): void {
-    tempDirectory = join(tmpdir(), `iyi-api-audit-${crypto.randomUUID()}`);
+    tempDirectory = join(tmpdir(), `iyi-api-audit-${randomUUID()}`);
     mkdirSync(tempDirectory, { recursive: true });
     process.env["IYI_API_DATA_DIR"] = tempDirectory;
     writeFileSync(join(tempDirectory, "api-db.json"), `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
@@ -21,6 +22,24 @@ function readSnapshot(): Record<string, unknown> {
     }
 
     return JSON.parse(readFileSync(join(tempDirectory, "api-db.json"), "utf8")) as Record<string, unknown>;
+}
+
+function getData(response: unknown): unknown {
+    if (response && typeof response === "object" && "body" in response) {
+        const body = (response as { body: unknown }).body;
+
+        if (typeof body === "string") {
+            return getData(JSON.parse(body) as unknown);
+        }
+
+        if (body && typeof body === "object" && "data" in body) {
+            return (body as { data: unknown }).data;
+        }
+
+        return body;
+    }
+
+    return response;
 }
 
 afterEach(() => {
@@ -171,5 +190,152 @@ describe("wrapCloudApiRouteRequestWithAudit", () => {
         const snapshot = readSnapshot();
 
         expect(snapshot["audit_entries"]).toEqual([]);
+    });
+
+    it("returns audit mutation entries from GET /audit/mutations", async () => {
+        createTempApiDataDir({
+            audit_entries: [
+                {
+                    id: "audit_001",
+                    context: {
+                        requestId: "request-create-001",
+                        occurredAt: "2026-01-01T00:00:00.000Z",
+                        source: "cloud_api",
+                        actor: {
+                            type: "service",
+                            id: "cloud_api",
+                        },
+                    },
+                    mutation: {
+                        type: "stockpile.created",
+                        stockpileId: "stockpile_001",
+                        stockpileName: "Coke pile A",
+                        status: "draft",
+                    },
+                },
+            ],
+            stockpiles: [],
+        });
+
+        const route = wrapCloudApiRouteRequestWithAudit(async () => ({
+            statusCode: 404,
+            body: {
+                ok: false,
+            },
+        }));
+
+        const response = await route({
+            method: "GET",
+            pathname: "/audit/mutations",
+            requestId: "request-audit-list-001",
+            now: new Date("2026-01-01T00:00:00.000Z"),
+        });
+
+        expect(getData(response)).toEqual({
+            entries: [
+                {
+                    id: "audit_001",
+                    context: {
+                        requestId: "request-create-001",
+                        occurredAt: "2026-01-01T00:00:00.000Z",
+                        source: "cloud_api",
+                        actor: {
+                            type: "service",
+                            id: "cloud_api",
+                        },
+                    },
+                    mutation: {
+                        type: "stockpile.created",
+                        stockpileId: "stockpile_001",
+                        stockpileName: "Coke pile A",
+                        status: "draft",
+                    },
+                },
+            ],
+        });
+    });
+
+    it("returns audit mutation summary from GET /audit/summary", async () => {
+        createTempApiDataDir({
+            audit_entries: [
+                {
+                    id: "audit_001",
+                    context: {
+                        requestId: "request-create-001",
+                        occurredAt: "2026-01-01T00:00:00.000Z",
+                        source: "cloud_api",
+                        actor: {
+                            type: "service",
+                            id: "cloud_api",
+                        },
+                    },
+                    mutation: {
+                        type: "stockpile.created",
+                        stockpileId: "stockpile_001",
+                        stockpileName: "Coke pile A",
+                        status: "draft",
+                    },
+                },
+                {
+                    id: "audit_002",
+                    context: {
+                        requestId: "request-status-001",
+                        occurredAt: "2026-01-01T00:05:00.000Z",
+                        source: "cloud_api",
+                        actor: {
+                            type: "service",
+                            id: "cloud_api",
+                        },
+                    },
+                    mutation: {
+                        type: "stockpile.status_updated",
+                        stockpileId: "stockpile_001",
+                        previousStatus: "draft",
+                        nextStatus: "operational",
+                    },
+                },
+            ],
+            stockpiles: [],
+        });
+
+        const route = wrapCloudApiRouteRequestWithAudit(async () => ({
+            statusCode: 404,
+            body: {
+                ok: false,
+            },
+        }));
+
+        const response = await route({
+            method: "GET",
+            pathname: "/audit/summary",
+            requestId: "request-audit-summary-001",
+            now: new Date("2026-01-01T00:00:00.000Z"),
+        });
+
+        expect(getData(response)).toEqual({
+            auditEntryCount: 2,
+            mutationCountsByType: {
+                "stockpile.created": 1,
+                "stockpile.status_updated": 1,
+            },
+            latestEntry: {
+                id: "audit_002",
+                context: {
+                    requestId: "request-status-001",
+                    occurredAt: "2026-01-01T00:05:00.000Z",
+                    source: "cloud_api",
+                    actor: {
+                        type: "service",
+                        id: "cloud_api",
+                    },
+                },
+                mutation: {
+                    type: "stockpile.status_updated",
+                    stockpileId: "stockpile_001",
+                    previousStatus: "draft",
+                    nextStatus: "operational",
+                },
+            },
+        });
     });
 });

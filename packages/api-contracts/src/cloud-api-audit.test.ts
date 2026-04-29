@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import type {
     CloudApiAuditMutationAppendPayloadContract,
     CloudApiAuditMutationEntryContract,
+    CloudApiAuditMutationListPayloadContract,
+    CloudApiAuditMutationSummaryPayloadContract,
 } from "./cloud-api-audit.js";
 
 describe("Cloud API audit contracts", () => {
@@ -63,5 +65,42 @@ describe("Cloud API audit contracts", () => {
             previousStatus: "operational",
             nextStatus: "validated",
         });
+    });
+
+    it("models audit mutation list and summary payloads", () => {
+        const entry: CloudApiAuditMutationEntryContract = {
+            id: "audit_stockpile_status_001",
+            context: {
+                requestId: "request_002",
+                occurredAt: "2026-01-01T00:05:00.000Z",
+                source: "cloud_api",
+                actor: {
+                    type: "service",
+                    id: "cloud_api",
+                },
+            },
+            mutation: {
+                type: "stockpile.status_updated",
+                stockpileId: "stockpile_001",
+                previousStatus: "draft",
+                nextStatus: "operational",
+            },
+        };
+
+        const listPayload: CloudApiAuditMutationListPayloadContract = {
+            entries: [entry],
+        };
+
+        const summaryPayload: CloudApiAuditMutationSummaryPayloadContract = {
+            auditEntryCount: 1,
+            mutationCountsByType: {
+                "stockpile.status_updated": 1,
+            },
+            latestEntry: entry,
+        };
+
+        expect(listPayload.entries).toHaveLength(1);
+        expect(summaryPayload.auditEntryCount).toBe(1);
+        expect(summaryPayload.latestEntry?.id).toBe("audit_stockpile_status_001");
     });
 });

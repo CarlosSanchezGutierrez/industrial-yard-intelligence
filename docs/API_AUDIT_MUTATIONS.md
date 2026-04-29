@@ -35,3 +35,18 @@ The next implementation step is to persist these entries into the shared DB `aud
 The local snapshot adapter is documented in:
 
 `docs/API_AUDIT_MUTATION_STORE.md`
+## Query endpoints
+
+The Cloud API exposes mutation audit reads through:
+
+GET /audit/mutations
+
+Returns all runtime audit mutation entries.
+
+GET /audit/summary
+
+Returns:
+
+- audit entry count
+- mutation counts by type
+- latest audit entry
