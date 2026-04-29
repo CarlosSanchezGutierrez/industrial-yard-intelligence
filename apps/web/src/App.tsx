@@ -7,7 +7,9 @@ import {
   importEdgeSyncStore,
   loadCooperSmokeSeed,
   loadEdgeSyncSnapshot,
+  resolveSyncConflict,
   submitDemoSyncBatch,
+  type EdgeConflictResolution,
   type EdgeSyncEvent,
   type EdgeSyncSummary,
   type SmokeSeedSource,
@@ -83,14 +85,17 @@ function App() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [edgeSummary, setEdgeSummary] = useState<EdgeSyncSummary | null>(null);
   const [edgeEvents, setEdgeEvents] = useState<readonly EdgeSyncEvent[]>([]);
+  const [conflictResolutions, setConflictResolutions] = useState<readonly EdgeConflictResolution[]>([]);
   const [edgeMonitorMessage, setEdgeMonitorMessage] = useState("Esperando conexión al edge.");
   const [transferMessage, setTransferMessage] = useState("Exporta o restaura el historial local del edge como JSON.");
   const [isTransferring, setIsTransferring] = useState(false);
+  const [resolvingConflictEventId, setResolvingConflictEventId] = useState<string | null>(null);
 
   async function refreshEdgeMonitor(): Promise<void> {
     const snapshot = await loadEdgeSyncSnapshot();
     setEdgeSummary(snapshot.summary);
     setEdgeEvents(snapshot.events);
+    setConflictResolutions(snapshot.conflictResolutions);
     setEdgeMonitorMessage(snapshot.message);
   }
 
@@ -115,6 +120,7 @@ function App() {
 
       setEdgeSummary(snapshot.summary);
       setEdgeEvents(snapshot.events);
+      setConflictResolutions(snapshot.conflictResolutions);
       setEdgeMonitorMessage(snapshot.message);
     });
 
@@ -129,6 +135,14 @@ function App() {
     setSyncResult(result);
     await refreshEdgeMonitor();
     setIsSyncing(false);
+  }
+
+  async function handleResolveConflict(eventId: string): Promise<void> {
+    setResolvingConflictEventId(eventId);
+    const result = await resolveSyncConflict(eventId);
+    setEdgeMonitorMessage(result.message);
+    await refreshEdgeMonitor();
+    setResolvingConflictEventId(null);
   }
 
   async function handleExportStore(): Promise<void> {
@@ -179,7 +193,10 @@ function App() {
   const movements = seed.movements;
   const recommendations = seed.recommendations;
   const scenarios = seed.scenarios;
-  const conflictEvents = edgeEvents.filter((event) => event.status === "conflict");
+  const resolvedConflictEventIds = new Set(conflictResolutions.map((resolution) => resolution.eventId));
+  const conflictEvents = edgeEvents.filter(
+    (event) => event.status === "conflict" && !resolvedConflictEventIds.has(event.eventId)
+  );
 
   return (
     <main className="app-shell" style={applyThemeVariables()}>
@@ -394,27 +411,6 @@ function App() {
             <strong>{edgeSummary?.conflicts ?? 0}</strong>
           </article>
         </div>
-
-        <div className="edge-events-list">
-          {edgeEvents.length === 0 ? (
-            <div className="empty-state">Sin eventos recibidos en esta sesión del edge.</div>
-          ) : (
-            edgeEvents.slice(0, 5).map((event) => (
-              <article className="edge-event-card" key={`${event.eventId}-${event.receivedAtEdge}`}>
-                <div>
-                  <strong>{event.eventType}</strong>
-                  <span>
-                    {event.aggregateType} · {event.aggregateId}
-                  </span>
-                </div>
-                <div>
-                  <strong>{event.status}</strong>
-                  <span>{event.receivedAtEdge}</span>
-                </div>
-              </article>
-            ))
-          )}
-        </div>
       </section>
 
       <section className="conflict-review-panel">
@@ -445,6 +441,13 @@ function App() {
                 <div className="conflict-card-side">
                   <span>{event.validationState}</span>
                   <strong>{event.receivedAtEdge}</strong>
+                  <button
+                    className="conflict-resolve-button"
+                    disabled={resolvingConflictEventId === event.eventId}
+                    onClick={() => void handleResolveConflict(event.eventId)}
+                  >
+                    {resolvingConflictEventId === event.eventId ? "Revisando..." : "Marcar revisado"}
+                  </button>
                 </div>
               </article>
             ))}

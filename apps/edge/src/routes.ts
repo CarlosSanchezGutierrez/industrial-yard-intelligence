@@ -9,6 +9,12 @@ import {
 import { cooperSmokeSeed } from "@iyi/seed-data";
 import { reconcileSyncBatch } from "@iyi/sync-core";
 import {
+  getConflictResolutionFilePath,
+  getConflictResolutions,
+  recordConflictResolution,
+  type ConflictResolutionDecision
+} from "./conflict-resolutions.js";
+import {
   exportEdgeStore,
   getAggregateVersions,
   getEdgeStoreFilePath,
@@ -69,6 +75,28 @@ function getBooleanBodyValue(body: unknown, key: string, fallback: boolean): boo
   return typeof body[key] === "boolean" ? body[key] : fallback;
 }
 
+function getStringBodyValue(body: unknown, key: string): string | undefined {
+  if (!isRecord(body)) {
+    return undefined;
+  }
+
+  return typeof body[key] === "string" ? body[key] : undefined;
+}
+
+function getDecisionBodyValue(body: unknown): ConflictResolutionDecision | undefined {
+  const decision = getStringBodyValue(body, "decision");
+
+  if (
+    decision === "accepted_after_review" ||
+    decision === "rejected_after_review" ||
+    decision === "manual_action_required"
+  ) {
+    return decision;
+  }
+
+  return undefined;
+}
+
 function getStoreImportPayload(body: unknown): unknown {
   if (!isRecord(body)) {
     return body;
@@ -86,6 +114,7 @@ function createManifest(now: string) {
     internetRequired: false,
     persistence: "json_file_development_store",
     storeFile: getEdgeStoreFilePath(),
+    conflictResolutionFile: getConflictResolutionFilePath(),
     routes: [
       {
         method: "GET",
@@ -121,6 +150,16 @@ function createManifest(now: string) {
         method: "POST",
         path: "/sync/import",
         description: "Import JSON-backed sync store from offline backup or transfer."
+      },
+      {
+        method: "GET",
+        path: "/sync/conflicts/resolutions",
+        description: "List supervisor conflict resolutions."
+      },
+      {
+        method: "POST",
+        path: "/sync/conflicts/resolve",
+        description: "Mark a conflict event as reviewed by supervisor."
       }
     ]
   };
@@ -186,6 +225,42 @@ function handleStoreImport(request: EdgeRouteRequest): EdgeRouteResponse {
       )
     );
   }
+}
+
+function handleConflictResolution(request: EdgeRouteRequest): EdgeRouteResponse {
+  const eventId = getStringBodyValue(request.body, "eventId");
+
+  if (eventId === undefined || eventId.trim().length === 0) {
+    return jsonResponse(
+      400,
+      createApiFailure(
+        createApiError("bad_request", "POST /sync/conflicts/resolve requires eventId."),
+        request.requestId,
+        request.now
+      )
+    );
+  }
+
+  const resolution = recordConflictResolution({
+    eventId,
+    decision: getDecisionBodyValue(request.body),
+    note: getStringBodyValue(request.body, "note"),
+    resolvedByUserId: getStringBodyValue(request.body, "resolvedByUserId"),
+    resolvedByDeviceId: getStringBodyValue(request.body, "resolvedByDeviceId"),
+    resolvedAt: request.now
+  });
+
+  return jsonResponse(
+    200,
+    createApiSuccess(
+      {
+        resolution,
+        resolutions: getConflictResolutions()
+      },
+      request.requestId,
+      request.now
+    )
+  );
 }
 
 export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
@@ -275,6 +350,23 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
 
   if (request.method === "POST" && request.pathname === "/sync/import") {
     return handleStoreImport(request);
+  }
+
+  if (request.method === "GET" && request.pathname === "/sync/conflicts/resolutions") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          resolutions: getConflictResolutions()
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  }
+
+  if (request.method === "POST" && request.pathname === "/sync/conflicts/resolve") {
+    return handleConflictResolution(request);
   }
 
   return jsonResponse(
