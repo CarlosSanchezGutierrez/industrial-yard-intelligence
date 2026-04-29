@@ -12,6 +12,7 @@ import { YardOperationsMapPanel } from "./YardOperationsMapPanel.js";
 
 import { RealGpsWorkspace } from "./RealGpsWorkspace.js";
 import { GpsBackendSyncPanel } from "./GpsBackendSyncPanel.js";
+import { GpsDeviceModeDemoPanel } from "./GpsDeviceModeDemoPanel.js";
 const views = [
     { id: "inicio", label: "Inicio", short: "Centro", description: "Estado general del patio." },
     { id: "patio", label: "Patio", short: "Mapa", description: "Mapa operativo, zonas y objetos." },
@@ -1115,6 +1116,9 @@ function CapturaView() {
             </section>
             <section className="nmk-panel nmk-span-2">
                 <GpsBackendSyncPanel />
+            </section>
+            <section className="nmk-panel nmk-span-2">
+                <GpsDeviceModeDemoPanel />
             </section>
 
             <section className="nmk-panel">
