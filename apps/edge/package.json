@@ -1,28 +1,29 @@
 {
-    "name":  "@iyi/edge",
-    "version":  "0.0.0",
-    "private":  true,
-    "type":  "module",
-    "description":  "Local edge server runtime for Industrial Yard Intelligence.",
-    "main":  "./dist/server.js",
-    "types":  "./dist/server.d.ts",
-    "scripts":  {
-                    "dev":  "tsx src/server.ts",
-                    "start":  "node dist/server.js",
-                    "build":  "tsc -p tsconfig.json",
-                    "typecheck":  "tsc -p tsconfig.json --noEmit",
-                    "test":  "vitest run --config vitest.config.ts"
-                },
-    "dependencies":  {
-                         "@iyi/api-contracts":  "workspace:*",
-                         "@iyi/audit":  "workspace:^",
-                         "@iyi/kernel":  "workspace:*",
-                         "@iyi/media":  "workspace:^",
-                         "@iyi/seed-data":  "workspace:*",
-                         "@iyi/sync-core":  "workspace:*",
-                         "@iyi/sync-protocol":  "workspace:*"
-                     },
-    "devDependencies":  {
-                            "tsx":  "latest"
-                        }
+    "name": "@iyi/edge",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "description": "Local edge server runtime for Industrial Yard Intelligence.",
+    "main": "./dist/server.js",
+    "types": "./dist/server.d.ts",
+    "scripts": {
+        "dev": "tsx src/server.ts",
+        "start": "node dist/server.js",
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "vitest run --config vitest.config.ts"
+    },
+    "dependencies": {
+        "@iyi/api-contracts": "workspace:*",
+        "@iyi/audit": "workspace:^",
+        "@iyi/db": "workspace:^",
+        "@iyi/kernel": "workspace:*",
+        "@iyi/media": "workspace:^",
+        "@iyi/seed-data": "workspace:*",
+        "@iyi/sync-core": "workspace:*",
+        "@iyi/sync-protocol": "workspace:*"
+    },
+    "devDependencies": {
+        "tsx": "latest"
+    }
 }

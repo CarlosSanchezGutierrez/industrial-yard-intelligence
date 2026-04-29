@@ -29,6 +29,9 @@ importers:
       '@iyi/audit':
         specifier: workspace:^
         version: link:../../packages/audit
+      '@iyi/db':
+        specifier: workspace:^
+        version: link:../../packages/db
       '@iyi/kernel':
         specifier: workspace:*
         version: link:../../packages/kernel

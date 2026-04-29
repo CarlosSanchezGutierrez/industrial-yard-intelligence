@@ -1,3 +1,4 @@
+import { getEdgeDbSnapshot, getEdgeDbStoreFilePath, getEdgeDbSummary, saveEdgeDbSnapshot } from "./db-projection.js";
 import { createHash } from "node:crypto";
 import {
   createApiError,
@@ -211,7 +212,10 @@ function createManifest(now: string) {
       { method: "GET", path: "/admin/demo-package", description: "Export executive report plus full offline backup package." },
       { method: "GET", path: "/admin/demo-package/verify", description: "Verify current demo package SHA-256 integrity." },
       { method: "POST", path: "/admin/demo-package/verify", description: "Verify uploaded demo package SHA-256 integrity." },
-      { method: "POST", path: "/admin/demo-package/import", description: "Import uploaded verified demo package into local edge state." }
+      { method: "POST", path: "/admin/demo-package/import", description: "Import uploaded verified demo package into local edge state." },
+      { method: "GET", path: "/db/summary", description: "Show unified DB projection summary." },
+      { method: "GET", path: "/db/snapshot", description: "Export unified DB projection snapshot." },
+      { method: "POST", path: "/db/snapshot/save", description: "Persist unified DB projection snapshot to local JSON file." }
     ]
   };
 }
