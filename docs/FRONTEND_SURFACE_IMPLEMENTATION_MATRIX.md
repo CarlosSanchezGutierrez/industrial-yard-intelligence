@@ -317,3 +317,18 @@ Action taken:
 - Added executive dashboard, map, materials table, capture workspace, equipment board, timeline filters, analysis view, sync view and internal mode.
 - Preserved existing architecture components through controlled drawers.
 - Kept technical/system concepts away from the normal operations story.
+## P0.3 interaction polish applied
+
+Action taken:
+
+- Added command deck to Inicio.
+- Added material search.
+- Added material status filtering.
+- Added material detail panel.
+- Added material action buttons.
+- Added polish CSS layer:
+  - `apps/web/src/styles/namiki-polish-p0-3.css`
+
+Purpose:
+
+Make the UI feel like an actual professional operations console, not just a visual dashboard.

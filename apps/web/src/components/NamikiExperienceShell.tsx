@@ -276,34 +276,144 @@ function OperationalMap() {
 }
 
 function MaterialTable() {
+    const [query, setQuery] = useState("");
+    const [status, setStatus] = useState("Todos");
+    const [selectedName, setSelectedName] = useState(materialRows[0]?.name ?? "");
+
+    const statusOptions = useMemo(
+        () => ["Todos", ...Array.from(new Set(materialRows.map((row) => row.status)))],
+        [],
+    );
+
+    const filteredRows = useMemo(() => {
+        const normalizedQuery = query.trim().toLowerCase();
+
+        return materialRows.filter((row) => {
+            const matchesStatus = status === "Todos" || row.status === status;
+            const matchesQuery =
+                normalizedQuery.length === 0 ||
+                row.name.toLowerCase().includes(normalizedQuery) ||
+                row.zone.toLowerCase().includes(normalizedQuery) ||
+                row.owner.toLowerCase().includes(normalizedQuery) ||
+                row.priority.toLowerCase().includes(normalizedQuery);
+
+            return matchesStatus && matchesQuery;
+        });
+    }, [query, status]);
+
+    const selectedMaterial =
+        materialRows.find((row) => row.name === selectedName) ??
+        filteredRows[0] ??
+        materialRows[0];
+
+    if (!selectedMaterial) {
+        return (
+            <div className="nmk-empty-state">
+                <h3>Sin materiales</h3>
+                <p>No hay materiales disponibles para mostrar.</p>
+            </div>
+        );
+    }
+
     return (
-        <div className="nmk-table-wrap">
-            <table className="nmk-table">
-                <thead>
-                    <tr>
-                        <th>Material</th>
-                        <th>Zona</th>
-                        <th>Toneladas</th>
-                        <th>Estado</th>
-                        <th>Prioridad</th>
-                        <th>Responsable</th>
-                        <th>Hora</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {materialRows.map((row) => (
-                        <tr key={row.name}>
-                            <td>{row.name}</td>
-                            <td>{row.zone}</td>
-                            <td>{row.tons.toLocaleString("es-MX")} t</td>
-                            <td><StatusPill value={row.status} /></td>
-                            <td>{row.priority}</td>
-                            <td>{row.owner}</td>
-                            <td>{row.updated}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+        <div className="nmk-material-workspace">
+            <div className="nmk-material-controls">
+                <label className="nmk-field">
+                    <span>Buscar</span>
+                    <input
+                        onChange={(event) => setQuery(event.target.value)}
+                        placeholder="Material, zona, responsable..."
+                        type="search"
+                        value={query}
+                    />
+                </label>
+
+                <label className="nmk-field">
+                    <span>Estado</span>
+                    <select
+                        onChange={(event) => setStatus(event.target.value)}
+                        value={status}
+                    >
+                        {statusOptions.map((option) => (
+                            <option key={option} value={option}>
+                                {option}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+            </div>
+
+            <div className="nmk-material-layout">
+                <div className="nmk-table-wrap">
+                    <table className="nmk-table">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Zona</th>
+                                <th>Toneladas</th>
+                                <th>Estado</th>
+                                <th>Prioridad</th>
+                                <th>Responsable</th>
+                                <th>Hora</th>
+                                <th />
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredRows.map((row) => (
+                                <tr key={row.name}>
+                                    <td>{row.name}</td>
+                                    <td>{row.zone}</td>
+                                    <td>{row.tons.toLocaleString("es-MX")} t</td>
+                                    <td><StatusPill value={row.status} /></td>
+                                    <td>{row.priority}</td>
+                                    <td>{row.owner}</td>
+                                    <td>{row.updated}</td>
+                                    <td>
+                                        <button
+                                            className="nmk-link-button"
+                                            onClick={() => setSelectedName(row.name)}
+                                            type="button"
+                                        >
+                                            Detalle
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+
+                <aside className="nmk-material-detail">
+                    <p>Detalle del material</p>
+                    <h3>{selectedMaterial.name}</h3>
+
+                    <div className="nmk-detail-grid">
+                        <span>Zona</span>
+                        <strong>{selectedMaterial.zone}</strong>
+
+                        <span>Toneladas</span>
+                        <strong>{selectedMaterial.tons.toLocaleString("es-MX")} t</strong>
+
+                        <span>Estado</span>
+                        <strong>{selectedMaterial.status}</strong>
+
+                        <span>Prioridad</span>
+                        <strong>{selectedMaterial.priority}</strong>
+
+                        <span>Responsable</span>
+                        <strong>{selectedMaterial.owner}</strong>
+
+                        <span>Actualizado</span>
+                        <strong>{selectedMaterial.updated}</strong>
+                    </div>
+
+                    <div className="nmk-detail-actions">
+                        <button type="button">Registrar evidencia</button>
+                        <button type="button">Ver historial</button>
+                        <button type="button">Enviar a revisión</button>
+                    </div>
+                </aside>
+            </div>
         </div>
     );
 }
@@ -348,6 +458,60 @@ function TimelineBoard() {
     );
 }
 
+function ExperienceCommandDeck({
+    goToView,
+}: {
+    readonly goToView: (view: ViewId) => void;
+}) {
+    const cards: ReadonlyArray<{
+        readonly title: string;
+        readonly text: string;
+        readonly target: ViewId;
+        readonly meta: string;
+    }> = [
+        {
+            title: "Patio operativo",
+            text: "Mapa, muelles, vías, bandas, zonas, materiales y equipo.",
+            target: "patio",
+            meta: "Mapa",
+        },
+        {
+            title: "Materiales",
+            text: "Inventario, toneladas, estado, prioridad y responsable.",
+            target: "materiales",
+            meta: "Control",
+        },
+        {
+            title: "Captura en campo",
+            text: "GPS, evidencia, perímetros, drones RTK y medición.",
+            target: "captura",
+            meta: "Campo",
+        },
+        {
+            title: "Análisis",
+            text: "Comparación, demanda, saturación y recomendaciones.",
+            target: "analisis",
+            meta: "Decisión",
+        },
+    ];
+
+    return (
+        <section className="nmk-command-deck">
+            {cards.map((card) => (
+                <button
+                    className="nmk-command-card"
+                    key={card.title}
+                    onClick={() => goToView(card.target)}
+                    type="button"
+                >
+                    <span>{card.meta}</span>
+                    <strong>{card.title}</strong>
+                    <p>{card.text}</p>
+                </button>
+            ))}
+        </section>
+    );
+}
 function ExecutiveDashboard({
     liveSummary,
     goToView,
@@ -373,6 +537,8 @@ function ExecutiveDashboard({
                     <button onClick={() => goToView("analisis")} type="button">Ver análisis</button>
                 </div>
             </section>
+
+            <ExperienceCommandDeck goToView={goToView} />
 
             <section className="nmk-metric-grid">
                 <MetricCard label="Materiales visibles" value={String(Math.max(liveSummary.stockpileCount, materialRows.length))} text="Pilas y registros operativos." tone="info" />

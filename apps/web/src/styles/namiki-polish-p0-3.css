@@ -1,0 +1,228 @@
+.nmk-command-deck {
+    display: grid;
+    gap: 12px;
+}
+
+@media (min-width: 860px) {
+    .nmk-command-deck {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.nmk-command-card {
+    min-height: 140px;
+    padding: 14px;
+    border: 1px solid var(--nmk-border);
+    border-radius: var(--nmk-radius);
+    color: var(--nmk-text);
+    background:
+        linear-gradient(180deg, rgba(16, 24, 39, 0.98), rgba(8, 13, 24, 0.98));
+    text-align: left;
+    cursor: pointer;
+    transition:
+        transform 160ms ease,
+        border-color 160ms ease,
+        background 160ms ease;
+}
+
+.nmk-command-card:hover {
+    border-color: var(--nmk-border-strong);
+    transform: translateY(-1px);
+}
+
+.nmk-command-card span {
+    display: inline-flex;
+    width: fit-content;
+    padding: 4px 8px;
+    border: 1px solid rgba(56, 189, 248, 0.24);
+    border-radius: 999px;
+    color: var(--nmk-blue);
+    background: rgba(8, 47, 73, 0.38);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.nmk-command-card strong {
+    display: block;
+    margin-top: 14px;
+    color: var(--nmk-text);
+    font-size: 17px;
+    font-weight: 650;
+}
+
+.nmk-command-card p {
+    margin: 8px 0 0;
+    color: var(--nmk-soft);
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.nmk-material-workspace {
+    display: grid;
+    gap: 12px;
+}
+
+.nmk-material-controls {
+    display: grid;
+    gap: 10px;
+}
+
+@media (min-width: 760px) {
+    .nmk-material-controls {
+        grid-template-columns: minmax(0, 1fr) 220px;
+    }
+}
+
+.nmk-field {
+    display: grid;
+    gap: 6px;
+}
+
+.nmk-field span {
+    color: var(--nmk-soft);
+    font-size: 12px;
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.nmk-field input,
+.nmk-field select {
+    width: 100%;
+    min-height: 40px;
+    border: 1px solid var(--nmk-border);
+    border-radius: var(--nmk-radius-sm);
+    color: var(--nmk-text);
+    background: #020617;
+    padding: 0 12px;
+    outline: none;
+}
+
+.nmk-field input:focus,
+.nmk-field select:focus {
+    border-color: var(--nmk-border-strong);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+}
+
+.nmk-material-layout {
+    display: grid;
+    gap: 12px;
+}
+
+@media (min-width: 1180px) {
+    .nmk-material-layout {
+        grid-template-columns: minmax(0, 1fr) 360px;
+        align-items: start;
+    }
+}
+
+.nmk-link-button {
+    min-height: 30px;
+    padding: 0 10px;
+    border: 1px solid rgba(56, 189, 248, 0.26);
+    border-radius: 999px;
+    color: var(--nmk-blue);
+    background: rgba(8, 47, 73, 0.38);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.nmk-material-detail {
+    padding: 14px;
+    border: 1px solid var(--nmk-border);
+    border-radius: var(--nmk-radius);
+    background:
+        linear-gradient(180deg, rgba(16, 24, 39, 0.98), rgba(8, 13, 24, 0.98));
+}
+
+.nmk-material-detail > p {
+    margin: 0;
+    color: var(--nmk-blue);
+    font-size: 12px;
+    font-weight: 750;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.nmk-material-detail h3 {
+    margin: 8px 0 14px;
+    color: var(--nmk-text);
+    font-size: 22px;
+    font-weight: 650;
+}
+
+.nmk-detail-grid {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--nmk-border);
+}
+
+.nmk-detail-grid span {
+    color: var(--nmk-soft);
+    font-size: 13px;
+}
+
+.nmk-detail-grid strong {
+    color: var(--nmk-text);
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.nmk-detail-actions {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.nmk-detail-actions button {
+    min-height: 38px;
+    border: 1px solid rgba(56, 189, 248, 0.26);
+    border-radius: 999px;
+    color: var(--nmk-text);
+    background: #075985;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.nmk-empty-state {
+    padding: 18px;
+    border: 1px solid var(--nmk-border);
+    border-radius: var(--nmk-radius);
+    color: var(--nmk-text);
+    background: var(--nmk-panel-2);
+}
+
+.nmk-empty-state h3 {
+    margin: 0;
+    color: var(--nmk-text);
+    font-size: 18px;
+}
+
+.nmk-empty-state p {
+    margin: 8px 0 0;
+    color: var(--nmk-soft);
+}
+
+.nmk-table td:last-child,
+.nmk-table th:last-child {
+    text-align: right;
+}
+
+@media (max-width: 760px) {
+    .nmk-command-card {
+        min-height: auto;
+    }
+
+    .nmk-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nmk-table td:last-child,
+    .nmk-table th:last-child {
+        text-align: left;
+    }
+}
