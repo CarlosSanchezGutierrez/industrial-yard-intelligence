@@ -149,6 +149,21 @@ export interface CloudApiAdminDbResetPayloadContract {
 export const cloudApiRouteDefinitions = [
     {
         method: "GET",
+        path: "/sync/status",
+        description: "Describe Cloud Edge sync capabilities.",
+    },
+    {
+        method: "POST",
+        path: "/sync/preview",
+        description: "Preview a Cloud Edge sync package without applying records.",
+    },
+    {
+        method: "POST",
+        path: "/sync/ingest",
+        description: "Ingest a Cloud Edge sync package with explicit mode and conflict policy.",
+    },
+    {
+        method: "GET",
         path: "/audit/stockpiles/:id",
         description: "List Cloud API mutation audit entries for a stockpile.",
     },

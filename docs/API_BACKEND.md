@@ -141,3 +141,14 @@ The first mutation types are:
 
 - `stockpile.created`
 - `stockpile.status_updated`
+## Cloud Edge sync contracts
+
+Cloud Edge sync route contracts are documented in:
+
+`docs/CLOUD_EDGE_SYNC.md`
+
+Initial route definitions:
+
+- `GET /sync/status`
+- `POST /sync/preview`
+- `POST /sync/ingest`
