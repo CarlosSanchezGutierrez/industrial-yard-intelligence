@@ -152,3 +152,12 @@ Included diagrams:
 - Edge-to-cloud sync skeleton
 - local runtime ports
 - architecture readiness gate
+## Demo and investor narrative
+
+Demo operator script:
+
+`docs/DEMO_OPERATOR_V1.md`
+
+Investor technical narrative:
+
+`docs/INVESTOR_TECHNICAL_NARRATIVE.md`

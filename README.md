@@ -118,3 +118,13 @@ Architecture decision records live under:
 Architecture v1 diagrams:
 
 `docs/ARCHITECTURE_V1_DIAGRAMS.md`
+## Demo operator
+
+Run the v1 demo operator guide with:
+
+pnpm demo:operator
+
+Docs:
+
+- `docs/DEMO_OPERATOR_V1.md`
+- `docs/INVESTOR_TECHNICAL_NARRATIVE.md`

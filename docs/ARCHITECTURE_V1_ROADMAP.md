@@ -44,3 +44,10 @@ Recommended order:
 Architecture v1 diagrams are now available in:
 
 `docs/ARCHITECTURE_V1_DIAGRAMS.md`
+## Demo operator check
+
+Run:
+
+pnpm demo:operator
+
+This prints the recommended architecture demo flow and validates that demo-facing docs/scripts exist.
