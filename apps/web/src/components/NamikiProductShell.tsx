@@ -14,44 +14,58 @@ const pages = [
     {
         id: "inicio",
         label: "Inicio",
-        title: "Patio industrial bajo control",
-        subtitle: "Una vista clara para materiales, zonas, historial, sincronización y GPS.",
-        description: "Resumen ejecutivo del sistema.",
+        title: "Control operativo del patio",
+        subtitle: "Materiales, zonas, equipos, evidencias y movimientos en una interfaz oscura y ordenada.",
+        description: "Vista general para presentar el sistema.",
+    },
+    {
+        id: "patio",
+        label: "Patio",
+        title: "Universo del patio industrial",
+        subtitle: "Define áreas, rutas, zonas de descarga, básculas, bodegas y espacios de almacenamiento.",
+        description: "Mapa conceptual y áreas de trabajo.",
     },
     {
         id: "materiales",
         label: "Materiales",
-        title: "Materiales, pilas y estados",
-        subtitle: "Consulta qué hay en el patio, dónde está y qué necesita revisión.",
-        description: "Inventario operativo y flujo de trabajo.",
+        title: "Materiales y pilas",
+        subtitle: "Consulta material, zona, estado, cantidad, prioridad y responsable.",
+        description: "Inventario operativo del patio.",
     },
     {
-        id: "mapa",
-        label: "Mapa y GPS",
-        title: "Mapa, zonas y perímetros",
-        subtitle: "Define el patio, sus áreas internas y prepara captura GPS real.",
-        description: "Vista espacial del patio industrial.",
+        id: "captura",
+        label: "Captura",
+        title: "Captura en campo",
+        subtitle: "GPS, evidencia fotográfica, medición, drones, palos topográficos y observaciones.",
+        description: "Herramientas para levantar información.",
+    },
+    {
+        id: "equipo",
+        label: "Equipo",
+        title: "Equipo y recursos",
+        subtitle: "Maquinaria, básculas, drones, cuadrillas, sensores y herramientas de medición.",
+        description: "Recursos físicos de operación.",
     },
     {
         id: "historial",
         label: "Historial",
-        title: "Historial de cambios",
-        subtitle: "Registro entendible para supervisores: qué cambió, cuándo y sobre qué material.",
-        description: "Trazabilidad operativa.",
+        title: "Historial operativo",
+        subtitle: "Cambios, validaciones, movimientos, evidencias y responsables.",
+        description: "Trazabilidad entendible.",
     },
     {
         id: "envios",
         label: "Envíos",
-        title: "Envío y sincronización",
-        subtitle: "Captura en campo primero; sincroniza después cuando el sistema esté listo.",
-        description: "Trabajo local y envío controlado.",
+        title: "Envíos y trabajo sin internet",
+        subtitle: "Captura local, revisión y envío controlado cuando haya conexión.",
+        description: "Flujo campo → oficina.",
     },
     {
-        id: "sistema",
-        label: "Sistema",
-        title: "Estado del sistema",
-        subtitle: "Área técnica separada para revisar API, Edge, reset y pruebas internas.",
-        description: "Panel técnico para desarrollo.",
+        id: "interno",
+        label: "Modo interno",
+        title: "Validación interna del sistema",
+        subtitle: "Herramientas técnicas escondidas para no confundir a operadores ni supervisores.",
+        description: "Solo para desarrollo y pruebas.",
     },
 ] as const;
 
@@ -63,59 +77,140 @@ const materialCards = [
         zone: "Patio A",
         status: "Operativo",
         amount: "12,400 t",
-        note: "Material visible y listo para operación.",
+        priority: "Normal",
+        owner: "Supervisor patio",
     },
     {
         name: "Clinker",
         zone: "Patio B",
         status: "Revisión",
         amount: "8,600 t",
-        note: "Requiere validación de supervisor.",
+        priority: "Alta",
+        owner: "Calidad",
     },
     {
         name: "Chatarra HMS",
         zone: "Zona acero",
         status: "Operativo",
         amount: "3,200 t",
-        note: "Material registrado dentro del patio.",
+        priority: "Normal",
+        owner: "Operación",
+    },
+    {
+        name: "Fluorita MT",
+        zone: "Patio C",
+        status: "Validado",
+        amount: "5,400 t",
+        priority: "Baja",
+        owner: "Supervisor turno",
     },
 ] as const;
 
-const valueCards = [
+const yardAreas = [
     {
-        title: "Ubicación del material",
-        text: "Saber dónde está cada pila sin buscar en notas, fotos o mensajes.",
+        title: "Muelle 1",
+        text: "Entrada de material desde embarcación.",
     },
     {
-        title: "Estado operativo",
-        text: "Ver si el material está operativo, pendiente o en revisión.",
+        title: "Muelle 2",
+        text: "Descarga alterna y apoyo operativo.",
     },
     {
-        title: "Historial consultable",
-        text: "Tener evidencia de cambios sin depender de memoria o llamadas.",
+        title: "Patio A",
+        text: "Almacenamiento principal de granel.",
     },
     {
-        title: "Base para GPS",
-        text: "Preparar el salto a ubicación real, áreas y perímetros desde celular.",
+        title: "Patio B",
+        text: "Zona para material en revisión.",
+    },
+    {
+        title: "Básculas",
+        text: "Control de peso y validación.",
+    },
+    {
+        title: "Bodega",
+        text: "Resguardo y carga general.",
     },
 ] as const;
 
-const operationSteps = [
+const captureTools = [
     {
-        title: "1. Llega material",
+        title: "GPS del celular",
+        text: "Ubicar al operador y registrar puntos del patio.",
+    },
+    {
+        title: "Dibujo de perímetros",
+        text: "Marcar áreas de descarga, almacenamiento o restricción.",
+    },
+    {
+        title: "Fotos de evidencia",
+        text: "Guardar imágenes del estado del material.",
+    },
+    {
+        title: "Palos topográficos",
+        text: "Apoyar mediciones físicas de volumen y forma.",
+    },
+    {
+        title: "Drones",
+        text: "Capturar vista superior para validar pilas y áreas.",
+    },
+    {
+        title: "Notas de campo",
+        text: "Agregar observaciones rápidas del operador.",
+    },
+] as const;
+
+const equipmentCards = [
+    {
+        title: "Payloader",
+        text: "Movimiento y acomodo de material.",
+    },
+    {
+        title: "Grúas",
+        text: "Apoyo en descarga y maniobras.",
+    },
+    {
+        title: "Básculas",
+        text: "Peso de entrada, salida y validación.",
+    },
+    {
+        title: "Drones",
+        text: "Inspección visual y ortomosaico futuro.",
+    },
+    {
+        title: "Palos topográficos",
+        text: "Medición física de referencia.",
+    },
+    {
+        title: "Cuadrillas",
+        text: "Operadores, supervisores y apoyo de patio.",
+    },
+] as const;
+
+const workflowCards = [
+    {
+        title: "1. Descargar",
         text: "El material entra por muelle o transporte interno.",
     },
     {
-        title: "2. Se registra",
-        text: "Se guarda tipo, zona, cantidad y estado.",
+        title: "2. Registrar",
+        text: "Se captura tipo, zona, cantidad y evidencia.",
     },
     {
-        title: "3. Se revisa",
-        text: "Supervisor valida cambios importantes.",
+        title: "3. Medir",
+        text: "Se valida volumen con GPS, medición física o dron.",
     },
     {
-        title: "4. Queda historial",
-        text: "La operación deja rastro consultable.",
+        title: "4. Revisar",
+        text: "Supervisor aprueba o marca pendiente.",
+    },
+    {
+        title: "5. Mover",
+        text: "Se actualiza ubicación o estado si cambia.",
+    },
+    {
+        title: "6. Cerrar",
+        text: "El historial queda listo para consulta.",
     },
 ] as const;
 
@@ -215,35 +310,84 @@ function InicioPage({
 }) {
     return (
         <div className="namiki-page-grid">
-            <section className="namiki-hero-panel">
+            <section className="namiki-hero-panel namiki-span-2">
                 <PageHeader
                     eyebrow="Modelo Namiki"
-                    title="Control visual para patios industriales."
-                    subtitle="Una interfaz sobria para ver materiales, consultar zonas, revisar historial y preparar GPS real."
+                    title="Sistema operativo visual para patio industrial."
+                    subtitle="No es solo una pantalla bonita: organiza materiales, zonas, equipos, evidencias, historial, envíos y preparación GPS."
                 />
 
                 <div className="namiki-action-row">
-                    <button onClick={() => goToPage("materiales")} type="button">Materiales</button>
-                    <button onClick={() => goToPage("mapa")} type="button">Mapa y GPS</button>
+                    <button onClick={() => goToPage("patio")} type="button">Ver patio</button>
+                    <button onClick={() => goToPage("materiales")} type="button">Ver materiales</button>
+                    <button onClick={() => goToPage("captura")} type="button">Captura en campo</button>
                     <button onClick={() => goToPage("historial")} type="button">Historial</button>
-                </div>
-            </section>
-
-            <section className="namiki-side-panel">
-                <h2>Qué resuelve</h2>
-                <div className="namiki-card-stack">
-                    {valueCards.map((card) => (
-                        <ProductCard key={card.title} title={card.title} text={card.text} />
-                    ))}
                 </div>
             </section>
 
             <section className="namiki-wide-panel">
                 <div className="namiki-stat-grid">
-                    <StatCard label="Materiales visibles" value="7" text="Pilas y materiales de ejemplo." />
-                    <StatCard label="Zonas iniciales" value="5" text="Áreas listas para configurar." />
-                    <StatCard label="Siguiente módulo" value="GPS" text="Ubicación y perímetros reales." />
+                    <StatCard label="Materiales" value="7" text="Pilas visibles para demo." />
+                    <StatCard label="Zonas" value="5" text="Áreas base del patio." />
+                    <StatCard label="Herramientas" value="GPS + drones" text="Preparado para campo." />
+                    <StatCard label="Historial" value="Activo" text="Cambios y evidencia." />
                 </div>
+            </section>
+
+            <section className="namiki-side-panel">
+                <h2>Capacidades visibles</h2>
+                <div className="namiki-card-stack">
+                    <ProductCard title="Materiales y pilas" text="Inventario visual por zona, estado y prioridad." />
+                    <ProductCard title="Mapa del patio" text="Universo del patio, áreas internas y objetos." />
+                    <ProductCard title="Captura GPS" text="Ubicación real y perímetros desde celular." />
+                    <ProductCard title="Evidencia" text="Fotos, notas y mediciones asociadas al material." />
+                </div>
+            </section>
+
+            <section className="namiki-side-panel">
+                <h2>Flujo de trabajo</h2>
+                <div className="namiki-card-stack">
+                    {workflowCards.slice(0, 4).map((card) => (
+                        <ProductCard key={card.title} title={card.title} text={card.text} />
+                    ))}
+                </div>
+            </section>
+        </div>
+    );
+}
+
+function PatioPage() {
+    return (
+        <div className="namiki-page-grid">
+            <section className="namiki-hero-panel">
+                <PageHeader
+                    eyebrow="Patio"
+                    title="Universo físico del patio."
+                    subtitle="Aquí se explica el terreno operativo: muelles, patios, básculas, bodegas, rutas y zonas de material."
+                />
+
+                <div className="namiki-map-preview">
+                    <div className="namiki-map-zone namiki-map-zone-a">Muelle 1</div>
+                    <div className="namiki-map-zone namiki-map-zone-b">Patio A</div>
+                    <div className="namiki-map-zone namiki-map-zone-c">Báscula</div>
+                    <div className="namiki-map-zone namiki-map-zone-d">Bodega</div>
+                    <div className="namiki-map-pin">GPS</div>
+                </div>
+            </section>
+
+            <section className="namiki-side-panel">
+                <h2>Áreas configurables</h2>
+                <div className="namiki-card-stack">
+                    {yardAreas.map((area) => (
+                        <ProductCard key={area.title} title={area.title} text={area.text} />
+                    ))}
+                </div>
+            </section>
+
+            <section className="namiki-wide-panel">
+                <ProductDrawer title="Mapa operativo construido" description="Conserva la vista de patio que ya existía en el proyecto.">
+                    <YardOperationsMapPanel />
+                </ProductDrawer>
             </section>
         </div>
     );
@@ -254,9 +398,9 @@ function MaterialesPage() {
         <div className="namiki-page-grid">
             <section className="namiki-hero-panel">
                 <PageHeader
-                    eyebrow="Operación"
-                    title="Materiales visibles."
-                    subtitle="La operación puede ver qué hay en patio, dónde está y qué requiere atención."
+                    eyebrow="Materiales"
+                    title="Materiales y pilas visibles."
+                    subtitle="La operación puede ver qué hay en patio, dónde está, cuánto hay y qué requiere atención."
                 />
 
                 <div className="namiki-material-grid">
@@ -268,33 +412,28 @@ function MaterialesPage() {
                             </div>
                             <strong>{material.amount}</strong>
                             <span>{material.status}</span>
-                            <p>{material.note}</p>
+                            <p>Prioridad: {material.priority}</p>
+                            <p>Responsable: {material.owner}</p>
                         </article>
                     ))}
                 </div>
             </section>
 
             <section className="namiki-side-panel">
-                <h2>Flujo operativo</h2>
+                <h2>Operación del material</h2>
                 <div className="namiki-card-stack">
-                    {operationSteps.map((step) => (
-                        <ProductCard key={step.title} title={step.title} text={step.text} />
+                    {workflowCards.map((card) => (
+                        <ProductCard key={card.title} title={card.title} text={card.text} />
                     ))}
                 </div>
             </section>
 
             <section className="namiki-wide-panel">
-                <ProductDrawer
-                    title="Panel real de materiales"
-                    description="Muestra el resumen conectado al flujo técnico existente."
-                >
+                <ProductDrawer title="Resumen real de materiales" description="Abre el panel construido para stockpiles y estado operativo.">
                     <StockpileDemoSummaryPanel />
                 </ProductDrawer>
 
-                <ProductDrawer
-                    title="Panel de avance operativo"
-                    description="Muestra el flujo guiado que ya existe en la arquitectura."
-                >
+                <ProductDrawer title="Avance operativo" description="Abre el flujo guiado construido para operador y supervisor.">
                     <OperatorWorkflowProgressPanel />
                 </ProductDrawer>
             </section>
@@ -302,47 +441,57 @@ function MaterialesPage() {
     );
 }
 
-function MapaPage() {
+function CapturaPage() {
     return (
         <div className="namiki-page-grid">
             <section className="namiki-hero-panel">
                 <PageHeader
-                    eyebrow="Mapa y GPS"
-                    title="Patio configurable."
-                    subtitle="Primero se define el patio. Después se crean zonas, pilas, rutas y puntos de evidencia."
+                    eyebrow="Captura en campo"
+                    title="Levantamiento físico-digital."
+                    subtitle="Todo lo que el operador o supervisor puede capturar desde celular, laptop o herramientas de medición."
                 />
 
-                <div className="namiki-map-preview">
-                    <div className="namiki-map-zone namiki-map-zone-a">Patio A</div>
-                    <div className="namiki-map-zone namiki-map-zone-b">Clinker</div>
-                    <div className="namiki-map-zone namiki-map-zone-c">Báscula</div>
-                    <div className="namiki-map-pin">GPS</div>
+                <div className="namiki-card-grid">
+                    {captureTools.map((tool) => (
+                        <ProductCard key={tool.title} title={tool.title} text={tool.text} />
+                    ))}
                 </div>
             </section>
 
             <section className="namiki-side-panel">
-                <h2>Orden correcto</h2>
+                <h2>Orden recomendado</h2>
                 <div className="namiki-card-stack">
-                    <ProductCard title="1. Patio completo" text="Delimitar el universo de trabajo." />
-                    <ProductCard title="2. Zonas internas" text="Separar descarga, almacén, revisión y básculas." />
-                    <ProductCard title="3. Objetos" text="Registrar pilas, evidencias y movimientos." />
+                    <ProductCard title="1. Pedir ubicación" text="El dispositivo obtiene posición aproximada." />
+                    <ProductCard title="2. Marcar punto" text="Se registra dónde está el material o evidencia." />
+                    <ProductCard title="3. Dibujar área" text="Se delimita perímetro de pila, zona o patio." />
+                    <ProductCard title="4. Guardar evidencia" text="Fotos, notas y medición quedan relacionadas." />
                 </div>
             </section>
 
             <section className="namiki-wide-panel">
-                <ProductDrawer
-                    title="Mapa operativo existente"
-                    description="Conserva la vista de patio que ya estaba construida."
-                >
-                    <YardOperationsMapPanel />
-                </ProductDrawer>
-
-                <ProductDrawer
-                    title="Preparación GPS"
-                    description="Explica el siguiente módulo: ubicación real y perímetros."
-                >
+                <ProductDrawer title="Preparación de GPS y perímetros" description="Abre el panel visual del siguiente módulo GPS.">
                     <PremiumGpsPreviewPanel />
                 </ProductDrawer>
+            </section>
+        </div>
+    );
+}
+
+function EquipoPage() {
+    return (
+        <div className="namiki-page-grid">
+            <section className="namiki-hero-panel namiki-span-2">
+                <PageHeader
+                    eyebrow="Equipo"
+                    title="Recursos que participan en el patio."
+                    subtitle="El sistema no solo registra materiales; también debe entender equipo, herramientas y responsables."
+                />
+
+                <div className="namiki-card-grid">
+                    {equipmentCards.map((equipment) => (
+                        <ProductCard key={equipment.title} title={equipment.title} text={equipment.text} />
+                    ))}
+                </div>
             </section>
         </div>
     );
@@ -354,22 +503,20 @@ function HistorialPage() {
             <section className="namiki-hero-panel">
                 <PageHeader
                     eyebrow="Historial"
-                    title="Cambios importantes."
-                    subtitle="Supervisión puede revisar eventos clave sin leer logs técnicos."
+                    title="Cambios importantes y evidencia."
+                    subtitle="Supervisión ve eventos claros sin leer mensajes técnicos."
                 />
 
                 <div className="namiki-card-stack">
-                    <ProductCard title="Descarga registrada" text="El material entró al patio." />
-                    <ProductCard title="Estado actualizado" text="Una pila pasó a revisión." />
-                    <ProductCard title="Validación de supervisor" text="El estado quedó confirmado." />
+                    <ProductCard title="Descarga registrada" text="Material entró al patio y quedó asociado a una zona." />
+                    <ProductCard title="Estado actualizado" text="Una pila cambió a revisión, operativo o validado." />
+                    <ProductCard title="Evidencia agregada" text="Foto, nota o medición se relaciona con el material." />
+                    <ProductCard title="Supervisor validó" text="Queda registro del responsable de la revisión." />
                 </div>
             </section>
 
             <section className="namiki-wide-panel">
-                <ProductDrawer
-                    title="Panel real de historial"
-                    description="Abre el timeline de auditoría que ya existe."
-                >
+                <ProductDrawer title="Timeline real de auditoría" description="Abre el panel de historial que ya estaba construido.">
                     <AuditTimelineStoryPanel />
                 </ProductDrawer>
             </section>
@@ -383,22 +530,19 @@ function EnviosPage() {
             <section className="namiki-hero-panel">
                 <PageHeader
                     eyebrow="Envíos"
-                    title="Trabajo local, envío controlado."
-                    subtitle="Diseñado para capturar en campo aunque la conexión no sea perfecta."
+                    title="Trabajo local y sincronización."
+                    subtitle="Captura en campo primero; envío controlado después. Útil cuando la conexión no es perfecta."
                 />
 
                 <div className="namiki-stat-grid">
-                    <StatCard label="Campo" value="Local" text="Captura primero." />
-                    <StatCard label="Nube" value="Preview" text="Revisión antes de aplicar." />
-                    <StatCard label="Riesgo" value="Controlado" text="Sin cambios ciegos." />
+                    <StatCard label="Campo" value="Local" text="Captura aunque no haya internet estable." />
+                    <StatCard label="Revisión" value="Preview" text="Se revisa antes de aplicar cambios." />
+                    <StatCard label="Riesgo" value="Controlado" text="Evita cambios ciegos o duplicados." />
                 </div>
             </section>
 
             <section className="namiki-wide-panel">
-                <ProductDrawer
-                    title="Panel real de sincronización"
-                    description="Conserva export, preview y apply bloqueado."
-                >
+                <ProductDrawer title="Panel real de envíos" description="Abre el flujo de sincronización construido para edge y cloud.">
                     <SyncDemoStoryPanel />
                 </ProductDrawer>
             </section>
@@ -406,35 +550,29 @@ function EnviosPage() {
     );
 }
 
-function SistemaPage() {
+function InternoPage() {
     return (
         <div className="namiki-page-grid">
             <section className="namiki-hero-panel">
                 <PageHeader
-                    eyebrow="Sistema"
-                    title="Herramientas internas."
-                    subtitle="Esta sección es para validar que la demo y servicios sigan respondiendo."
+                    eyebrow="Modo interno"
+                    title="Herramientas técnicas ocultas."
+                    subtitle="Esto no es para operador final. Solo sirve para validar que la demo y los servicios respondan."
                 />
 
                 <div className="namiki-card-stack">
-                    <ProductCard title="API" text="Servicio que entrega información del patio." />
-                    <ProductCard title="Edge" text="Base para captura local." />
-                    <ProductCard title="Web" text="Interfaz para operar y presentar." />
+                    <ProductCard title="Estado de servicios" text="Verifica que el sistema local esté activo." />
+                    <ProductCard title="Reset de demo" text="Regresa datos de prueba a un estado limpio." />
+                    <ProductCard title="Validación interna" text="Apoyo para desarrollo y pruebas." />
                 </div>
             </section>
 
             <section className="namiki-wide-panel">
-                <ProductDrawer
-                    title="Estado del sistema"
-                    description="Valida Cloud API, Edge y conexión local."
-                >
+                <ProductDrawer title="Estado interno del sistema" description="Solo para pruebas internas.">
                     <RuntimeConnectionStatusPanel />
                 </ProductDrawer>
 
-                <ProductDrawer
-                    title="Reset de demo"
-                    description="Permite regresar datos demo a un estado limpio."
-                >
+                <ProductDrawer title="Reset interno de demo" description="Solo usar antes de una demostración controlada.">
                     <DemoDataResetPanel />
                 </ProductDrawer>
             </section>
@@ -447,12 +585,20 @@ function renderPage(pageId: ProductPageId, goToPage: (pageId: ProductPageId) => 
         return <InicioPage goToPage={goToPage} />;
     }
 
+    if (pageId === "patio") {
+        return <PatioPage />;
+    }
+
     if (pageId === "materiales") {
         return <MaterialesPage />;
     }
 
-    if (pageId === "mapa") {
-        return <MapaPage />;
+    if (pageId === "captura") {
+        return <CapturaPage />;
+    }
+
+    if (pageId === "equipo") {
+        return <EquipoPage />;
     }
 
     if (pageId === "historial") {
@@ -463,7 +609,7 @@ function renderPage(pageId: ProductPageId, goToPage: (pageId: ProductPageId) => 
         return <EnviosPage />;
     }
 
-    return <SistemaPage />;
+    return <InternoPage />;
 }
 
 export function NamikiProductShell() {

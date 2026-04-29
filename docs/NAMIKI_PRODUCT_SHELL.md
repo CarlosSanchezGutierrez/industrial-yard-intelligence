@@ -2,28 +2,47 @@
 
 ## Purpose
 
-This shell organizes the existing architecture into a clean, dark product interface.
+This shell organizes the existing project into an operational product interface.
 
 ## UX direction
 
-- Everything dark by default.
-- White/light text only.
+- Black/dark interface.
+- White text only.
 - No white panels.
-- Dropdown menu instead of sticky oversized tabs.
-- Internal pages instead of long scroll navigation.
-- Existing technical work remains accessible inside expandable panels.
-- Language is operational, not software-heavy.
+- Menu instead of endless scroll.
+- Functions visible through operational pages.
+- Technical/computing concepts hidden in internal mode.
 
 ## Pages
 
 - Inicio
+- Patio
 - Materiales
-- Mapa y GPS
+- Captura
+- Equipo
 - Historial
 - Envíos
-- Sistema
+- Modo interno
 
-## Existing features preserved
+## Capabilities surfaced
+
+- Yard areas
+- Stockpiles and materials
+- Material states
+- Operator workflow
+- GPS preparation
+- Perimeter drawing preparation
+- Evidence capture preparation
+- Drones
+- Topographic poles
+- Machinery
+- Weighbridges
+- Audit/history
+- Offline/local capture concept
+- Sync/export concept
+- Internal runtime checks
+
+## Existing components preserved
 
 - Stockpile demo summary
 - Operator workflow progress
@@ -37,12 +56,12 @@ This shell organizes the existing architecture into a clean, dark product interf
 ## Main files
 
 - `apps/web/src/components/NamikiProductShell.tsx`
-- `apps/web/src/styles/namiki-product-shell.css`
+- `apps/web/src/styles/zz-namiki-black-operations.css`
 
 ## Next work
 
-- Add real browser geolocation
-- Add real map component
-- Add perimeter drawing
+- Real browser geolocation
+- Real map component
+- Perimeter drawing
 - Save yard zones
 - Link stockpiles to map zones

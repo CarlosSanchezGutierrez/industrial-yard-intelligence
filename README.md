@@ -345,3 +345,13 @@ Main files:
 
 - `apps/web/src/components/NamikiProductShell.tsx`
 - `apps/web/src/styles/namiki-product-shell.css`
+## Namiki operational product shell
+
+Document:
+
+`docs/NAMIKI_PRODUCT_SHELL.md`
+
+Main files:
+
+- `apps/web/src/components/NamikiProductShell.tsx`
+- `apps/web/src/styles/zz-namiki-black-operations.css`
