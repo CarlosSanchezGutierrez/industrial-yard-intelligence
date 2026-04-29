@@ -51,3 +51,8 @@ Run:
 pnpm demo:operator
 
 This prints the recommended architecture demo flow and validates that demo-facing docs/scripts exist.
+## Current status
+
+Current architecture status:
+
+`docs/ARCHITECTURE_V1_STATUS.md`

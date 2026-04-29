@@ -161,3 +161,12 @@ Demo operator script:
 Investor technical narrative:
 
 `docs/INVESTOR_TECHNICAL_NARRATIVE.md`
+## Architecture status
+
+Current v1 status report:
+
+`docs/ARCHITECTURE_V1_STATUS.md`
+
+Status command:
+
+`pnpm architecture:status`

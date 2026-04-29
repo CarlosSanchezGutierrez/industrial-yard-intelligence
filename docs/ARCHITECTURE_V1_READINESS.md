@@ -60,3 +60,12 @@ After this check, build, test, typecheck, smoke scripts and ci-local pass, the a
 Architecture diagrams are documented in:
 
 `docs/ARCHITECTURE_V1_DIAGRAMS.md`
+## Status report
+
+Architecture v1 status report:
+
+`docs/ARCHITECTURE_V1_STATUS.md`
+
+Command:
+
+`pnpm architecture:status`

@@ -128,3 +128,12 @@ Docs:
 
 - `docs/DEMO_OPERATOR_V1.md`
 - `docs/INVESTOR_TECHNICAL_NARRATIVE.md`
+## Architecture v1 status
+
+Run:
+
+pnpm architecture:status
+
+Status document:
+
+`docs/ARCHITECTURE_V1_STATUS.md`
