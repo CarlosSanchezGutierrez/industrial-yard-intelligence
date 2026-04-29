@@ -122,12 +122,13 @@ function buildAddressSummary(result: ReverseGeocodeResult | null): AddressSummar
     const country = address.country ?? "—";
     const postalCode = address.postcode ?? "—";
 
+    const fallbackFull = [street, neighborhood, city, state, country, postalCode]
+        .filter((value) => value && value !== "—")
+        .join(", ");
+
     const full =
         result.display_name ??
-        [street, neighborhood, city, state, country, postalCode]
-            .filter((value) => value && value !== "—")
-            .join(", ") ||
-        "Dirección interpretada sin detalle suficiente";
+        (fallbackFull.length > 0 ? fallbackFull : "Dirección interpretada sin detalle suficiente");
 
     return {
         full,
