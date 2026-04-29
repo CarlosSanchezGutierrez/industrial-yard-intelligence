@@ -276,3 +276,13 @@ pnpm phase2:close
 Document:
 
 docs/PHASE_2_DEMO_POLISH_CLOSURE.md
+## Phase 2.5 premium UI shell
+
+Document:
+
+`docs/PHASE_2_5_PREMIUM_UI.md`
+
+Main files:
+
+- `apps/web/src/components/PremiumCockpitHero.tsx`
+- `apps/web/src/styles/premium-cockpit.css`

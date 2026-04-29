@@ -261,3 +261,17 @@ docs/PHASE_2_DEMO_POLISH_CLOSURE.md
 Current static closure status:
 
 PHASE_2_DEMO_POLISH_CLOSED_FOR_DEMO
+## Phase 2.5 premium UI shell
+
+Document:
+
+`docs/PHASE_2_5_PREMIUM_UI.md`
+
+Added:
+
+- `PremiumCockpitHero`
+- `premium-cockpit.css`
+
+Purpose:
+
+Improve perceived SaaS/product quality before adding GPS/map/perimeter capture.
