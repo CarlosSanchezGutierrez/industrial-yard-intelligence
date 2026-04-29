@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { routeApiRequest } from "./routes.js";
 
+import { tryHandleGpsCaptureRoute } from "./gps-capture-routes.js";
 function getPort(): number {
   const value = process.env["IYI_API_PORT"] ?? process.env["PORT"] ?? "8788";
   const port = Number.parseInt(value, 10);
@@ -47,7 +48,10 @@ function writeResponse(
   response.end(body);
 }
 
-const server = createServer((request, response) => {
+const server = createServer(async (request, response) => {
+    if (await tryHandleGpsCaptureRoute(request, response)) {
+        return;
+    }
   void (async () => {
     const requestUrl = new URL(request.url ?? "/", "http://localhost");
     const body = await readJsonBody(request);

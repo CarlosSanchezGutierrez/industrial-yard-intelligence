@@ -430,3 +430,18 @@ Files:
 - `apps/web/src/components/RealGpsWorkspace.tsx`
 - `apps/web/src/styles/namiki-polish-p0-9-gps-audit.css`
 - `docs/NAMIKI_UX_POLISH_P0_9.md`
+## P1.0A GPS backend persistence applied
+
+Action taken:
+
+- Added GPS capture API routes.
+- Added durable local JSON storage for GPS capture packages.
+- Added GPS API smoke test script.
+- Added `pnpm gps:smoke`.
+
+Files:
+
+- `apps/api/src/gps-capture-routes.ts`
+- `apps/api/src/server.ts`
+- `scripts/gps-capture-api-smoke.ps1`
+- `docs/NAMIKI_GPS_BACKEND_P1_0.md`
