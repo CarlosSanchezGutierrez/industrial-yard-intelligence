@@ -17,7 +17,10 @@
                     "test":  "pnpm -r --if-present build \u0026\u0026 pnpm -r --if-present test",
                     "build":  "pnpm -r --if-present build",
                     "demo:smoke":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo-smoke.ps1",
-                    "demo:smoke:edge":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo-smoke.ps1 -EdgeBaseUrl http://localhost:8787"
+                    "demo:smoke:edge":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo-smoke.ps1 -EdgeBaseUrl http://localhost:8787",
+                    "ci:local":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ci-local.ps1",
+                    "ci:local:dirty":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ci-local.ps1 -SkipGitStatus",
+                    "ci:local:fast":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ci-local.ps1 -SkipInstall -SkipGitStatus"
                 },
     "keywords":  [
                      "industrial",
