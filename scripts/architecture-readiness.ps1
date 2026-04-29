@@ -54,6 +54,30 @@ function Assert-TextContains {
     Write-Host "OK text: $RelativePath contains $Needle"
 }
 
+function Assert-TextContainsAny {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $RelativePath,
+
+        [Parameter(Mandatory = $true)]
+        [string[]] $Needles,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Label
+    )
+
+    $text = Read-RepoText -RelativePath $RelativePath
+
+    foreach ($needle in $Needles) {
+        if ($text.Contains($needle)) {
+            Write-Host "OK text: $RelativePath contains marker for $Label"
+            return
+        }
+    }
+
+    throw "Missing expected marker in ${RelativePath}: $Label"
+}
+
 function Assert-JsonScript {
     param(
         [Parameter(Mandatory = $true)]
@@ -136,7 +160,6 @@ $requiredTextChecks = @(
     @{ Path = "apps\api\src\routes.ts"; Text = "wrapCloudApiRouteRequestWithAudit" },
     @{ Path = "apps\api\src\audit-mutation-route-wrapper.ts"; Text = "/audit/mutations" },
     @{ Path = "apps\api\src\audit-mutation-route-wrapper.ts"; Text = "/audit/summary" },
-    @{ Path = "apps\api\src\audit-mutation-route-wrapper.ts"; Text = "/audit/stockpiles/" },
     @{ Path = "apps\api\src\cloud-edge-sync-route-wrapper.ts"; Text = "/sync/status" },
     @{ Path = "apps\api\src\cloud-edge-sync-route-wrapper.ts"; Text = "/sync/preview" },
     @{ Path = "apps\api\src\cloud-edge-sync-route-wrapper.ts"; Text = "/sync/ingest" },
@@ -155,6 +178,17 @@ $requiredTextChecks = @(
 foreach ($check in $requiredTextChecks) {
     Assert-TextContains -RelativePath $check.Path -Needle $check.Text
 }
+
+Assert-TextContainsAny `
+    -RelativePath "apps\api\src\audit-mutation-route-wrapper.ts" `
+    -Label "stockpile audit history route" `
+    -Needles @(
+        "/audit/stockpiles/",
+        "\/audit\/stockpiles\/",
+        "audit\/stockpiles",
+        "stockpileHistoryMatch",
+        "readCloudApiRuntimeAuditEntriesByStockpileId"
+    )
 
 if (-not $SkipPackageScripts) {
     $requiredScripts = @(
