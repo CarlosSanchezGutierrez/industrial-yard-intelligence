@@ -102,3 +102,19 @@ Runtime route used:
 Purpose:
 
 Before a live demo, reset Cloud API JSON data back to the seed baseline without manually deleting `.api-data`.
+## Industrial value snapshot panel
+
+`IndustrialValueSnapshotPanel` adds an executive/business-value layer to the cockpit.
+
+Location:
+
+`apps/web/src/components/IndustrialValueSnapshotPanel.tsx`
+
+Purpose:
+
+Translate the technical demo into business value:
+
+- stockpiles become traceable operational assets
+- audit becomes visible
+- edge-first architecture supports industrial environments
+- SaaS-ready package boundaries support future scaling

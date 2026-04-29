@@ -50,6 +50,7 @@ import { DemoNavigationPanel } from "./components/DemoNavigationPanel.js";
 import { OperatorWorkflowProgressPanel } from "./components/OperatorWorkflowProgressPanel.js";
 import { RuntimeConnectionStatusPanel } from "./components/RuntimeConnectionStatusPanel.js";
 import { DemoDataResetPanel } from "./components/DemoDataResetPanel.js";
+import { IndustrialValueSnapshotPanel } from "./components/IndustrialValueSnapshotPanel.js";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
@@ -442,6 +443,7 @@ function App() {
             <OperatorWorkflowProgressPanel />
             <RuntimeConnectionStatusPanel />
             <DemoDataResetPanel />
+            <IndustrialValueSnapshotPanel />
       <nav className="top-nav">
         <div>
           <strong>Industrial Yard Intelligence</strong>

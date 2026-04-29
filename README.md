@@ -201,3 +201,8 @@ The cockpit includes live local stack status cards:
 The cockpit includes a Cloud API demo reset panel:
 
 `apps/web/src/components/DemoDataResetPanel.tsx`
+## Phase 2 industrial value snapshot
+
+The cockpit includes an executive value panel:
+
+`apps/web/src/components/IndustrialValueSnapshotPanel.tsx`
