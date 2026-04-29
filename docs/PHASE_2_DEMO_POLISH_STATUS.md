@@ -161,3 +161,16 @@ pnpm phase2:presenter
 Purpose:
 
 Provide the final talk track for presenting the Phase 2 cockpit.
+## Closure
+
+Document:
+
+docs/PHASE_2_DEMO_POLISH_CLOSURE.md
+
+Command:
+
+pnpm phase2:close
+
+Status:
+
+PHASE_2_DEMO_POLISH_CLOSED_FOR_DEMO

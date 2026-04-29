@@ -70,3 +70,10 @@ Run:
 pnpm phase2:presenter -- -CheckOnly
 
 This validates the live demo presenter script and required cockpit presentation assets.
+## Closure check
+
+Run:
+
+pnpm phase2:close -- -CheckOnly
+
+This validates the Phase 2 static closure package.

@@ -248,3 +248,16 @@ docs/PHASE_2_DEMO_PRESENTER_SCRIPT.md
 Purpose:
 
 Give the presenter an exact talk track for the cockpit demo.
+## Phase 2 closure
+
+Run:
+
+pnpm phase2:close
+
+Closure document:
+
+docs/PHASE_2_DEMO_POLISH_CLOSURE.md
+
+Current static closure status:
+
+PHASE_2_DEMO_POLISH_CLOSED_FOR_DEMO

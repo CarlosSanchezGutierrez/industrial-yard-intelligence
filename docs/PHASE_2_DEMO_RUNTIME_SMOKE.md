@@ -51,3 +51,8 @@ pnpm phase2:presenter
 Then follow:
 
 docs/PHASE_2_DEMO_PRESENTER_SCRIPT.md
+## Static closure before runtime smoke
+
+Before running this runtime smoke, validate static closure:
+
+pnpm phase2:close -- -CheckOnly

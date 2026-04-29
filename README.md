@@ -267,3 +267,12 @@ pnpm phase2:presenter
 Document:
 
 docs/PHASE_2_DEMO_PRESENTER_SCRIPT.md
+## Phase 2 demo polish closure
+
+Run:
+
+pnpm phase2:close
+
+Document:
+
+docs/PHASE_2_DEMO_POLISH_CLOSURE.md

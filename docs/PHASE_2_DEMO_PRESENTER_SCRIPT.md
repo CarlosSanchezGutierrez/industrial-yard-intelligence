@@ -232,3 +232,12 @@ Trazabilidad, menos registros manuales, visibilidad operacional, auditoria y una
 Answer:
 
 Reducir clutter visual, cerrar presentacion final, definir auth/roles, plan Postgres, plan mobile GPS/evidencia y disenar sync apply real.
+## Final static closure before presenting
+
+Run:
+
+pnpm phase2:close
+
+Then start the local stack and run:
+
+pnpm phase2:runtime
