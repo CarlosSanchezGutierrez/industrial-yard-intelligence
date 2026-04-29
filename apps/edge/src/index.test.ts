@@ -1,6 +1,12 @@
 import { existsSync } from "node:fs";
 import { beforeEach, describe, expect, it } from "vitest";
-import { getEdgeStoreFilePath, resetEdgeMemoryStore, routeEdgeRequest } from "./index.js";
+import {
+  getConflictResolutions,
+  getEdgeStoreFilePath,
+  resetConflictResolutionStore,
+  resetEdgeMemoryStore,
+  routeEdgeRequest
+} from "./index.js";
 import {
   asAggregateId,
   asDeviceId,
@@ -78,9 +84,22 @@ function submitSyncEvent(
   });
 }
 
+function createConflict(): void {
+  submitSyncEvent("001", "001", 0);
+
+  routeEdgeRequest({
+    method: "POST",
+    pathname: "/sync/batches",
+    requestId: "request_conflict",
+    now: "2026-04-28T12:00:02.000Z",
+    body: createSyncRequest("002", "002", 0)
+  });
+}
+
 describe("@iyi/edge", () => {
   beforeEach(() => {
     resetEdgeMemoryStore();
+    resetConflictResolutionStore();
   });
 
   it("returns an edge manifest at root", () => {
@@ -98,6 +117,7 @@ describe("@iyi/edge", () => {
         internetRequired: boolean;
         persistence: string;
         storeFile: string;
+        conflictResolutionFile: string;
         routes: readonly {
           path: string;
         }[];
@@ -110,8 +130,11 @@ describe("@iyi/edge", () => {
     expect(body.data.internetRequired).toBe(false);
     expect(body.data.persistence).toBe("json_file_development_store");
     expect(body.data.storeFile).toContain("sync-store.json");
+    expect(body.data.conflictResolutionFile).toContain("conflict-resolutions.json");
     expect(body.data.routes.some((route) => route.path === "/sync/export")).toBe(true);
     expect(body.data.routes.some((route) => route.path === "/sync/import")).toBe(true);
+    expect(body.data.routes.some((route) => route.path === "/sync/conflicts/resolve")).toBe(true);
+    expect(body.data.routes.some((route) => route.path === "/sync/conflicts/resolutions")).toBe(true);
   });
 
   it("reconciles, stores sync batches, writes JSON file, and exports aggregate versions", () => {
@@ -237,6 +260,143 @@ describe("@iyi/edge", () => {
     expect(body.ok).toBe(true);
     expect(body.data.result.results[0]?.status).toBe("conflict");
     expect(body.data.result.results[0]?.conflict?.conflictType).toBe("status_conflict");
+  });
+
+  it("lists empty conflict resolutions before supervisor review", () => {
+    const response = routeEdgeRequest({
+      method: "GET",
+      pathname: "/sync/conflicts/resolutions",
+      requestId: "request_resolutions",
+      now: "2026-04-28T12:00:03.000Z"
+    });
+
+    const body = JSON.parse(response.body) as {
+      ok: boolean;
+      data: {
+        resolutions: readonly unknown[];
+      };
+    };
+
+    expect(response.statusCode).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.data.resolutions).toHaveLength(0);
+  });
+
+  it("records supervisor conflict resolution", () => {
+    createConflict();
+
+    const response = routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/conflicts/resolve",
+      requestId: "request_resolve",
+      now: "2026-04-28T12:00:04.000Z",
+      body: {
+        eventId: "event_002",
+        decision: "manual_action_required",
+        note: "Reviewed in test.",
+        resolvedByUserId: "user_supervisor_demo",
+        resolvedByDeviceId: "device_web_supervisor"
+      }
+    });
+
+    const body = JSON.parse(response.body) as {
+      ok: boolean;
+      data: {
+        resolution: {
+          eventId: string;
+          decision: string;
+          note: string;
+          resolvedByUserId: string;
+          resolvedByDeviceId: string;
+          resolvedAt: string;
+        };
+        resolutions: readonly {
+          eventId: string;
+        }[];
+      };
+    };
+
+    expect(response.statusCode).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.data.resolution.eventId).toBe("event_002");
+    expect(body.data.resolution.decision).toBe("manual_action_required");
+    expect(body.data.resolution.note).toBe("Reviewed in test.");
+    expect(body.data.resolution.resolvedByUserId).toBe("user_supervisor_demo");
+    expect(body.data.resolution.resolvedByDeviceId).toBe("device_web_supervisor");
+    expect(body.data.resolution.resolvedAt).toBe("2026-04-28T12:00:04.000Z");
+    expect(body.data.resolutions).toHaveLength(1);
+    expect(getConflictResolutions()).toHaveLength(1);
+  });
+
+  it("does not duplicate supervisor conflict resolution for same event", () => {
+    createConflict();
+
+    const firstResponse = routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/conflicts/resolve",
+      requestId: "request_resolve_1",
+      now: "2026-04-28T12:00:04.000Z",
+      body: {
+        eventId: "event_002",
+        decision: "manual_action_required"
+      }
+    });
+
+    const secondResponse = routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/conflicts/resolve",
+      requestId: "request_resolve_2",
+      now: "2026-04-28T12:00:05.000Z",
+      body: {
+        eventId: "event_002",
+        decision: "accepted_after_review"
+      }
+    });
+
+    const firstBody = JSON.parse(firstResponse.body) as {
+      data: {
+        resolution: {
+          resolutionId: string;
+        };
+      };
+    };
+
+    const secondBody = JSON.parse(secondResponse.body) as {
+      data: {
+        resolution: {
+          resolutionId: string;
+        };
+        resolutions: readonly unknown[];
+      };
+    };
+
+    expect(secondResponse.statusCode).toBe(200);
+    expect(secondBody.data.resolution.resolutionId).toBe(firstBody.data.resolution.resolutionId);
+    expect(secondBody.data.resolutions).toHaveLength(1);
+    expect(getConflictResolutions()).toHaveLength(1);
+  });
+
+  it("rejects conflict resolution without event id", () => {
+    const response = routeEdgeRequest({
+      method: "POST",
+      pathname: "/sync/conflicts/resolve",
+      requestId: "request_resolve_invalid",
+      now: "2026-04-28T12:00:04.000Z",
+      body: {
+        decision: "manual_action_required"
+      }
+    });
+
+    const body = JSON.parse(response.body) as {
+      ok: boolean;
+      error: {
+        code: string;
+      };
+    };
+
+    expect(response.statusCode).toBe(400);
+    expect(body.ok).toBe(false);
+    expect(body.error.code).toBe("bad_request");
   });
 
   it("exports sync store", () => {
