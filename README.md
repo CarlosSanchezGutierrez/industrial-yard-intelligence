@@ -170,3 +170,14 @@ pnpm architecture:close
 Document:
 
 `docs/ARCHITECTURE_V1_CLOSURE.md`
+## Phase 2 demo polish
+
+Phase 2 starts with cockpit demo polish.
+
+Document:
+
+`docs/PHASE_2_DEMO_POLISH.md`
+
+First UI component:
+
+`apps/web/src/components/DemoCommandCenter.tsx`
