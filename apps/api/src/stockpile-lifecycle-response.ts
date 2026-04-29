@@ -7,22 +7,23 @@ import {
     stockpileLifecycleStatuses,
 } from "@iyi/domain";
 
-export function createStockpileLifecyclePayload(): CloudApiStockpileLifecyclePayloadContract {
-    const statuses = stockpileLifecycleStatuses.map(
-        (status) => status as CloudApiStockpileLifecycleStatusContract,
-    );
+function toContractStatus(status: string): CloudApiStockpileLifecycleStatusContract {
+    return status as CloudApiStockpileLifecycleStatusContract;
+}
 
-    const allowedTransitionsByStatus = Object.fromEntries(
-        stockpileLifecycleStatuses.map((status) => [
-            status,
-            getAllowedStockpileStatusTransitions(status).map(
-                (targetStatus) => targetStatus as CloudApiStockpileLifecycleStatusContract,
-            ),
-        ]),
-    ) as Record<
+export function createStockpileLifecyclePayload(): CloudApiStockpileLifecyclePayloadContract {
+    const statuses = stockpileLifecycleStatuses.map(toContractStatus);
+
+    const allowedTransitionsByStatus: Record<
         CloudApiStockpileLifecycleStatusContract,
         readonly CloudApiStockpileLifecycleStatusContract[]
-    >;
+    > = {
+        draft: getAllowedStockpileStatusTransitions("draft").map(toContractStatus),
+        operational: getAllowedStockpileStatusTransitions("operational").map(toContractStatus),
+        pending_review: getAllowedStockpileStatusTransitions("pending_review").map(toContractStatus),
+        validated: getAllowedStockpileStatusTransitions("validated").map(toContractStatus),
+        archived: getAllowedStockpileStatusTransitions("archived").map(toContractStatus),
+    };
 
     const transitions = statuses.flatMap((from) =>
         allowedTransitionsByStatus[from]
