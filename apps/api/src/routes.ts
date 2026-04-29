@@ -1,147 +1,320 @@
+import {
+  cloudApiRouteDefinitions,
+  type CloudApiAdminDbResetPayloadContract,
+  type CloudApiAdminDbSnapshotPayloadContract,
+  type CloudApiCreateStockpilePayloadContract,
+  type CloudApiDbSchemaPayloadContract,
+  type CloudApiDbTablesPayloadContract,
+  type CloudApiHealthPayloadContract,
+  type CloudApiManifestPayloadContract,
+  type CloudApiSeedPayloadContract,
+  type CloudApiStockpilesPayloadContract,
+  type CloudApiSystemOverviewPayloadContract,
+  type CloudApiTenantsPayloadContract,
+  type CloudApiUpdateStockpileStatusPayloadContract
+} from "@iyi/api-contracts";
+import {
+  dbSchemaVersion,
+  getCoreSchemaSql,
+  getRequiredCoreTableNames,
+  type DbTenantRecord,
+  type DbUnitOfWork
+} from "@iyi/db";
+import { cooperSmokeSeed } from "@iyi/seed-data";
 import { createStockpileLifecyclePayload } from "./stockpile-lifecycle-response.js";
-import * as coreRoutes from "./routes-core.js";
+import {
+  createApiUnitOfWork,
+  getApiDbFilePath,
+  getApiJsonDbSnapshot,
+  resetApiJsonDb
+} from "./repository-seed.js";
+import {
+  createStockpileCommand,
+  toStockpileSummary,
+  updateStockpileStatusCommand
+} from "./stockpile-service.js";
 
-export * from "./routes-core.js";
+export interface ApiRouteRequest {
+  readonly method: string;
+  readonly pathname: string;
+  readonly requestId: string;
+  readonly now: string;
+  readonly query?: Readonly<Record<string, string>>;
+  readonly body?: unknown;
+}
 
-type ApiRequestHandler = (request: Request) => Response | Promise<Response>;
-type UnknownFunction = (...args: unknown[]) => unknown;
+export interface ApiRouteResponse {
+  readonly statusCode: number;
+  readonly headers: Readonly<Record<string, string>>;
+  readonly body: string;
+}
 
-const exportedCoreRoutes = coreRoutes as Record<string, unknown>;
+export interface ApiSuccessResponse<TData> {
+  readonly ok: true;
+  readonly data: TData;
+  readonly requestId: string;
+  readonly timestamp: string;
+}
 
-const jsonHeaders = {
-    "access-control-allow-headers": "content-type,authorization,x-request-id",
-    "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+export interface ApiFailureResponse {
+  readonly ok: false;
+  readonly error: {
+    readonly code: string;
+    readonly message: string;
+  };
+  readonly requestId: string;
+  readonly timestamp: string;
+}
+
+function createSuccess<TData>(
+  data: TData,
+  requestId: string,
+  timestamp: string
+): ApiSuccessResponse<TData> {
+  return {
+    ok: true,
+    data,
+    requestId,
+    timestamp
+  };
+}
+
+function createFailure(
+  code: string,
+  message: string,
+  requestId: string,
+  timestamp: string
+): ApiFailureResponse {
+  return {
+    ok: false,
+    error: {
+      code,
+      message
+    },
+    requestId,
+    timestamp
+  };
+}
+
+function createCorsHeaders(): Readonly<Record<string, string>> {
+  return {
     "access-control-allow-origin": "*",
-    "content-type": "application/json; charset=utf-8",
-} as const;
+    "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+    "access-control-allow-headers": "content-type,authorization,x-request-id",
+    "access-control-max-age": "86400"
+  };
+}
 
-function jsonResponse(data: unknown, init: ResponseInit = {}): Response {
-    const headers = new Headers(init.headers);
+function jsonResponse(statusCode: number, payload: unknown): ApiRouteResponse {
+  return {
+    statusCode,
+    headers: {
+      ...createCorsHeaders(),
+      "content-type": "application/json; charset=utf-8"
+    },
+    body: `${JSON.stringify(payload, null, 2)}\n`
+  };
+}
 
-    for (const [key, value] of Object.entries(jsonHeaders)) {
-        headers.set(key, value);
+function emptyResponse(statusCode: number): ApiRouteResponse {
+  return {
+    statusCode,
+    headers: createCorsHeaders(),
+    body: ""
+  };
+}
+
+function toTenantSummary(record: DbTenantRecord): CloudApiTenantsPayloadContract["tenants"][number] {
+  return {
+    id: record.id,
+    name: record.name,
+    status: record.status,
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt
+  };
+}
+
+async function createSystemOverviewPayload(
+  unitOfWork: DbUnitOfWork
+): Promise<CloudApiSystemOverviewPayloadContract> {
+  return {
+    tenantCount: await unitOfWork.repositories.tenants.count(),
+    terminalCount: await unitOfWork.repositories.terminals.count(),
+    userCount: await unitOfWork.repositories.users.count(),
+    deviceCount: await unitOfWork.repositories.devices.count(),
+    stockpileCount: await unitOfWork.repositories.stockpiles.count(),
+    syncEventCount: await unitOfWork.repositories.syncEvents.count(),
+    auditEntryCount: await unitOfWork.repositories.auditEntries.count(),
+    evidenceItemCount: await unitOfWork.repositories.evidenceItems.count()
+  };
+}
+
+function getStockpileStatusPathId(pathname: string): string | null {
+  const match = /^\/stockpiles\/([^/]+)\/status$/.exec(pathname);
+
+  if (match === null) {
+    return null;
+  }
+
+  return decodeURIComponent(match[1] ?? "");
+}
+
+export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRouteResponse> {
+    if (request.method === "GET" && request.pathname === "/stockpiles/lifecycle") {
+        return jsonResponse(200, createSuccess(createStockpileLifecyclePayload()));
     }
 
-    return new Response(JSON.stringify(data, null, 2), {
-        ...init,
-        headers,
-    });
-}
+  if (request.method === "OPTIONS") {
+    return emptyResponse(204);
+  }
 
-function notFoundResponse(): Response {
-    return jsonResponse(
-        {
-            ok: false,
-            error: {
-                code: "not_found",
-                message: "Route not found.",
-            },
-        },
-        {
-            status: 404,
-        },
-    );
-}
+  const unitOfWork = createApiUnitOfWork(request.now);
 
-function getExportedFunction(name: string): UnknownFunction | undefined {
-    const value = exportedCoreRoutes[name];
-
-    if (typeof value === "function") {
-        return value as UnknownFunction;
-    }
-
-    return undefined;
-}
-
-function findNamedFunction(names: readonly string[]): UnknownFunction | undefined {
-    for (const name of names) {
-        const value = getExportedFunction(name);
-
-        if (value) {
-            return value;
-        }
-    }
-
-    return undefined;
-}
-
-function findDiscoveredFunction(pattern: RegExp): UnknownFunction | undefined {
-    for (const [name, value] of Object.entries(exportedCoreRoutes)) {
-        if (!pattern.test(name)) {
-            continue;
-        }
-
-        if (typeof value === "function") {
-            return value as UnknownFunction;
-        }
-    }
-
-    return undefined;
-}
-
-function findCoreFactory(): UnknownFunction | undefined {
-    return (
-        findNamedFunction([
-            "createApiRequestHandler",
-            "createCloudApiRequestHandler",
-            "createRequestHandler",
-            "createHttpRequestHandler",
-            "createServerRequestHandler",
-            "createRouteHandler",
-            "createRoutes",
-            "createRouter",
-        ]) ?? findDiscoveredFunction(/^create.*(RequestHandler|Handler|Routes|Router)$/u)
-    );
-}
-
-function findDirectHandler(): UnknownFunction | undefined {
-    return (
-        findNamedFunction([
-            "handleApiRequest",
-            "handleRequest",
-            "handleHttpRequest",
-            "routeRequest",
-            "dispatchRequest",
-            "requestHandler",
-            "default",
-        ]) ?? findDiscoveredFunction(/(handle|handler|request|route|dispatch)/iu)
-    );
-}
-
-function isLifecycleRequest(request: Request): boolean {
-    const url = new URL(request.url);
-
-    return request.method === "GET" && url.pathname === "/stockpiles/lifecycle";
-}
-
-function lifecycleResponse(): Response {
-    return jsonResponse({
-        ok: true,
-        data: createStockpileLifecyclePayload(),
-    });
-}
-
-export function createApiRequestHandler(...args: unknown[]): ApiRequestHandler {
-    const coreFactory = findCoreFactory();
-    const maybeCoreHandler = coreFactory ? coreFactory(...args) : undefined;
-    const coreHandler = typeof maybeCoreHandler === "function" ? (maybeCoreHandler as ApiRequestHandler) : undefined;
-    const directHandler = findDirectHandler();
-
-    return async (request: Request): Promise<Response> => {
-        if (isLifecycleRequest(request)) {
-            return lifecycleResponse();
-        }
-
-        if (coreHandler) {
-            return coreHandler(request);
-        }
-
-        if (directHandler) {
-            const directResult = directHandler(request, ...args);
-
-            return Promise.resolve(directResult as Response);
-        }
-
-        return notFoundResponse();
+  if (request.method === "GET" && request.pathname === "/") {
+    const payload: CloudApiManifestPayloadContract = {
+      service: "@iyi/api",
+      name: "Industrial Yard Intelligence API",
+      runtime: "cloud-api-skeleton",
+      routes: cloudApiRouteDefinitions
     };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/health") {
+    const payload: CloudApiHealthPayloadContract = {
+      status: "ok",
+      service: "@iyi/api",
+      dbSchemaVersion,
+      repositoryMode: "json_file"
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/db/schema") {
+    const payload: CloudApiDbSchemaPayloadContract = {
+      migrationId: dbSchemaVersion,
+      sql: getCoreSchemaSql()
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/db/tables") {
+    const payload: CloudApiDbTablesPayloadContract = {
+      migrationId: dbSchemaVersion,
+      tables: getRequiredCoreTableNames()
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/seed/cooper-smoke") {
+    const payload: CloudApiSeedPayloadContract = {
+      seed: cooperSmokeSeed
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/tenants") {
+    const tenants = await unitOfWork.repositories.tenants.list();
+
+    const payload: CloudApiTenantsPayloadContract = {
+      tenants: tenants.map(toTenantSummary)
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/stockpiles") {
+    const tenantId = request.query?.["tenantId"];
+    const stockpiles = await unitOfWork.repositories.stockpiles.list(
+      tenantId !== undefined ? { tenantId } : undefined
+    );
+
+    const payload: CloudApiStockpilesPayloadContract = {
+      stockpiles: stockpiles.map(toStockpileSummary)
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "POST" && request.pathname === "/stockpiles") {
+    const result = await createStockpileCommand(request.body, request.now);
+
+    if (!result.ok) {
+      return jsonResponse(
+        result.code === "conflict" ? 409 : 400,
+        createFailure(result.code, result.message, request.requestId, request.now)
+      );
+    }
+
+    const payload: CloudApiCreateStockpilePayloadContract = {
+      stockpile: result.stockpile
+    };
+
+    return jsonResponse(201, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "PATCH") {
+    const stockpileId = getStockpileStatusPathId(request.pathname);
+
+    if (stockpileId !== null) {
+      const result = await updateStockpileStatusCommand(stockpileId, request.body, request.now);
+
+      if (!result.ok) {
+        const statusCode = result.code === "not_found" ? 404 : result.code === "conflict" ? 409 : 400;
+
+        return jsonResponse(
+          statusCode,
+          createFailure(result.code, result.message, request.requestId, request.now)
+        );
+      }
+
+      const payload: CloudApiUpdateStockpileStatusPayloadContract = {
+        stockpile: result.stockpile
+      };
+
+      return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+    }
+  }
+
+  if (request.method === "GET" && request.pathname === "/system/overview") {
+    const payload = await createSystemOverviewPayload(unitOfWork);
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/admin/db/snapshot") {
+    const payload: CloudApiAdminDbSnapshotPayloadContract = {
+      storeFile: getApiDbFilePath(),
+      snapshot: getApiJsonDbSnapshot(request.now)
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "POST" && request.pathname === "/admin/db/reset") {
+    const store = resetApiJsonDb(request.now);
+
+    const payload: CloudApiAdminDbResetPayloadContract = {
+      reset: true,
+      storeFile: getApiDbFilePath(),
+      overview: await createSystemOverviewPayload(store)
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  return jsonResponse(
+    404,
+    createFailure(
+      "not_found",
+      `Route ${request.pathname} was not found.`,
+      request.requestId,
+      request.now
+    )
+  );
 }
