@@ -7,9 +7,9 @@ async function get(pathname: string, query?: Readonly<Record<string, string>>) {
   return routeApiRequest({
     method: "GET",
     pathname,
-    query,
     requestId: `request_${pathname.replace(/[^a-z0-9]/gi, "_")}`,
-    now
+    now,
+    ...(query !== undefined ? { query } : {})
   });
 }
 
