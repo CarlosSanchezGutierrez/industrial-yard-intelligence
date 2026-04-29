@@ -378,3 +378,21 @@ Files:
 - `apps/web/src/components/RealGpsWorkspace.tsx`
 - `apps/web/src/styles/namiki-polish-p0-6-gps.css`
 - `docs/NAMIKI_UX_POLISH_P0_6.md`
+## P0.7 premium GPS address and perimeter applied
+
+Action taken:
+
+- Upgraded `RealGpsWorkspace`.
+- Added reverse geocoding.
+- Added city/state/country/neighborhood/street display.
+- Added field reference for between streets/access/visual reference.
+- Added localStorage persistence.
+- Added material/evidence association.
+- Added perimeter vertices and polygon preview.
+- Added GeoJSON preview.
+
+Files:
+
+- `apps/web/src/components/RealGpsWorkspace.tsx`
+- `apps/web/src/styles/namiki-polish-p0-7-gps-premium.css`
+- `docs/NAMIKI_UX_POLISH_P0_7.md`
