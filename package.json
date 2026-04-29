@@ -22,7 +22,13 @@
                     "ci:local:dirty":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ci-local.ps1 -SkipGitStatus",
                     "ci:local:fast":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ci-local.ps1 -SkipInstall -SkipGitStatus",
                     "api:smoke":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/api-smoke.ps1",
-                    "api:smoke:local":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/api-smoke.ps1 -ApiBaseUrl http://localhost:8788"
+                    "api:smoke:local":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/api-smoke.ps1 -ApiBaseUrl http://localhost:8788",
+                    "dev:api":  "pnpm --filter @iyi/api dev",
+                    "dev:edge":  "pnpm --filter @iyi/edge dev",
+                    "dev:web":  "pnpm --filter @iyi/web dev",
+                    "dev:stack:windows":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev-stack-windows.ps1",
+                    "smoke:runtime":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/runtime-smoke.ps1",
+                    "smoke:runtime:local":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/runtime-smoke.ps1 -ApiBaseUrl http://localhost:8788 -EdgeBaseUrl http://localhost:8787"
                 },
     "keywords":  [
                      "industrial",

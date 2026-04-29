@@ -78,3 +78,19 @@ Final technology choices must be justified before implementation.
 Early product architecture phase.
 
 Current Cooper/T. Smith data is treated as seed/simulated configuration unless explicitly confirmed.
+
+## Local stack
+
+Start the full local stack on Windows:
+
+pnpm dev:stack:windows
+
+Then run runtime smoke checks:
+
+pnpm smoke:runtime
+
+Main services:
+
+- API: http://localhost:8788
+- Edge: http://localhost:8787
+- Web: Vite dev server
