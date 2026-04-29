@@ -156,6 +156,20 @@ export function readCloudApiRuntimeAuditEntries(): readonly CloudApiAuditMutatio
     return auditEntries.filter(isAuditMutationEntry);
 }
 
+export function readCloudApiRuntimeAuditEntriesByStockpileId(
+    stockpileId: string,
+): readonly CloudApiAuditMutationEntryContract[] {
+    return readCloudApiRuntimeAuditEntries().filter((entry) => {
+        const mutation = entry.mutation;
+
+        if ("stockpileId" in mutation) {
+            return mutation.stockpileId === stockpileId;
+        }
+
+        return false;
+    });
+}
+
 export function readCloudApiRuntimeAuditEntryCount(): number {
     return readCloudApiRuntimeAuditEntries().length;
 }

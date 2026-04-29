@@ -338,4 +338,121 @@ describe("wrapCloudApiRouteRequestWithAudit", () => {
             },
         });
     });
-});
+
+    it("returns audit mutation history for a specific stockpile", async () => {
+        createTempApiDataDir({
+            audit_entries: [
+                {
+                    id: "audit_001",
+                    context: {
+                        requestId: "request-create-001",
+                        occurredAt: "2026-01-01T00:00:00.000Z",
+                        source: "cloud_api",
+                        actor: {
+                            type: "service",
+                            id: "cloud_api",
+                        },
+                    },
+                    mutation: {
+                        type: "stockpile.created",
+                        stockpileId: "stockpile_001",
+                        stockpileName: "Coke pile A",
+                        status: "draft",
+                    },
+                },
+                {
+                    id: "audit_002",
+                    context: {
+                        requestId: "request-create-002",
+                        occurredAt: "2026-01-01T00:01:00.000Z",
+                        source: "cloud_api",
+                        actor: {
+                            type: "service",
+                            id: "cloud_api",
+                        },
+                    },
+                    mutation: {
+                        type: "stockpile.created",
+                        stockpileId: "stockpile_002",
+                        stockpileName: "Coal pile B",
+                        status: "draft",
+                    },
+                },
+                {
+                    id: "audit_003",
+                    context: {
+                        requestId: "request-status-001",
+                        occurredAt: "2026-01-01T00:05:00.000Z",
+                        source: "cloud_api",
+                        actor: {
+                            type: "service",
+                            id: "cloud_api",
+                        },
+                    },
+                    mutation: {
+                        type: "stockpile.status_updated",
+                        stockpileId: "stockpile_001",
+                        previousStatus: "draft",
+                        nextStatus: "operational",
+                    },
+                },
+            ],
+            stockpiles: [],
+        });
+
+        const route = wrapCloudApiRouteRequestWithAudit(async () => ({
+            statusCode: 404,
+            body: {
+                ok: false,
+            },
+        }));
+
+        const response = await route({
+            method: "GET",
+            pathname: "/audit/stockpiles/stockpile_001",
+            requestId: "request-stockpile-history-001",
+            now: new Date("2026-01-01T00:00:00.000Z"),
+        });
+
+        expect(getData(response)).toEqual({
+            stockpileId: "stockpile_001",
+            entries: [
+                {
+                    id: "audit_001",
+                    context: {
+                        requestId: "request-create-001",
+                        occurredAt: "2026-01-01T00:00:00.000Z",
+                        source: "cloud_api",
+                        actor: {
+                            type: "service",
+                            id: "cloud_api",
+                        },
+                    },
+                    mutation: {
+                        type: "stockpile.created",
+                        stockpileId: "stockpile_001",
+                        stockpileName: "Coke pile A",
+                        status: "draft",
+                    },
+                },
+                {
+                    id: "audit_003",
+                    context: {
+                        requestId: "request-status-001",
+                        occurredAt: "2026-01-01T00:05:00.000Z",
+                        source: "cloud_api",
+                        actor: {
+                            type: "service",
+                            id: "cloud_api",
+                        },
+                    },
+                    mutation: {
+                        type: "stockpile.status_updated",
+                        stockpileId: "stockpile_001",
+                        previousStatus: "draft",
+                        nextStatus: "operational",
+                    },
+                },
+            ],
+        });
+    });});

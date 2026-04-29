@@ -149,6 +149,11 @@ export interface CloudApiAdminDbResetPayloadContract {
 export const cloudApiRouteDefinitions = [
     {
         method: "GET",
+        path: "/audit/stockpiles/:id",
+        description: "List Cloud API mutation audit entries for a stockpile.",
+    },
+    {
+        method: "GET",
         path: "/audit/mutations",
         description: "List Cloud API mutation audit entries.",
     },

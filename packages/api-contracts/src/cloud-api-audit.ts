@@ -61,3 +61,7 @@ export interface CloudApiAuditMutationSummaryPayloadContract {
     readonly mutationCountsByType: Partial<Record<CloudApiAuditMutationTypeContract, number>>;
     readonly latestEntry?: CloudApiAuditMutationEntryContract;
 }
+export interface CloudApiAuditStockpileHistoryPayloadContract {
+    readonly stockpileId: string;
+    readonly entries: readonly CloudApiAuditMutationEntryContract[];
+}

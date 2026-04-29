@@ -50,3 +50,10 @@ Returns:
 - audit entry count
 - mutation counts by type
 - latest audit entry
+## Stockpile history endpoint
+
+GET /audit/stockpiles/:id
+
+Returns audit mutation entries associated with one stockpile.
+
+This endpoint supports entity-level traceability for supervisors and future evidence review screens.

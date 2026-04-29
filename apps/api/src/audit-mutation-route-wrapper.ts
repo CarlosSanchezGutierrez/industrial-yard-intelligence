@@ -4,6 +4,7 @@ import { createAuditMutationEntry } from "./audit-mutation-service.js";
 import {
     appendCloudApiAuditMutationEntryToRuntimeStore,
     readCloudApiRuntimeAuditEntries,
+    readCloudApiRuntimeAuditEntriesByStockpileId,
     readCloudApiRuntimeAuditSummary,
     readCloudApiRuntimeStockpileStatus,
 } from "./audit-mutation-json-file-store.js";
@@ -268,6 +269,17 @@ function tryHandleAuditQuery(request: UnknownRequestRecord): unknown | null {
 
     if (method === "GET" && pathname === "/audit/summary") {
         return createSuccessRouteResponse(readCloudApiRuntimeAuditSummary());
+    }
+
+    const stockpileHistoryMatch = /^\/audit\/stockpiles\/([^/]+)$/u.exec(pathname);
+
+    if (method === "GET" && stockpileHistoryMatch?.[1]) {
+        const stockpileId = decodeURIComponent(stockpileHistoryMatch[1]);
+
+        return createSuccessRouteResponse({
+            stockpileId,
+            entries: readCloudApiRuntimeAuditEntriesByStockpileId(stockpileId),
+        });
     }
 
     return null;
