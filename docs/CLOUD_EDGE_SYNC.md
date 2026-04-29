@@ -80,3 +80,10 @@ The edge DB projection package adapter is documented in:
 The isolated edge sync export handler is documented in:
 
 `docs/EDGE_CLOUD_SYNC_EXPORT_HANDLER.md`
+## Edge DB projection package export route
+
+The edge runtime exposes:
+
+GET /sync/packages/db-projection
+
+This returns a `db_projection_snapshot` Cloud Edge sync package generated from the current edge DB projection snapshot.

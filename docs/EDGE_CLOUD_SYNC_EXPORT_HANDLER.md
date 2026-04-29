@@ -33,3 +33,12 @@ The package is a `CloudEdgeSyncPackageContract` with:
 ## Next step
 
 Wire this handler into the edge HTTP route layer so the local edge service can expose the package at runtime.
+## Edge router wiring
+
+The edge route layer now wraps the core router with `wrapEdgeCloudSyncExportRoute`.
+
+Runtime route:
+
+GET /sync/packages/db-projection
+
+The wrapper calls the existing edge DB projection snapshot route internally and converts the returned snapshot into a Cloud Edge sync package.

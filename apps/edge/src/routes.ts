@@ -24,6 +24,7 @@ import {
   asUserId
 } from "@iyi/kernel";
 import { reconcileSyncBatch } from "@iyi/sync-core";
+import { wrapEdgeCloudSyncExportRoute } from "./edge-cloud-sync-export-route-wrapper.js";
 import {
   exportAuditStore,
   getAuditEntries,
@@ -1005,7 +1006,7 @@ function handleResetDemoState(request: EdgeRouteRequest): EdgeRouteResponse {
     )
   );
 }
-export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
+function routeEdgeRequestCore(request: EdgeRouteRequest): EdgeRouteResponse {
   if (request.method === "OPTIONS") {
     return jsonResponse(204, {});
   }
@@ -1244,3 +1245,5 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
     )
   );
 }
+
+export const routeEdgeRequest = wrapEdgeCloudSyncExportRoute(routeEdgeRequestCore);
