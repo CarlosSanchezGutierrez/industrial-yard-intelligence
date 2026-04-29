@@ -213,3 +213,136 @@ Assert-Condition -Condition ($dbReset.data.overview.tenantCount -eq 1) -Message 
 Write-Host "OK admin DB reset"
 Write-Host ""
 Write-Host "API SMOKE TEST PASSED"
+
+Write-Host "==> Cloud API stockpile lifecycle"
+
+function Get-IyiApiSmokeBaseUrl {
+    $candidateVariableNames = @(
+        "ApiBaseUrl",
+        "BaseUrl",
+        "IyiApiBaseUrl",
+        "CloudApiBaseUrl"
+    )
+
+    foreach ($candidateVariableName in $candidateVariableNames) {
+        $candidateVariable = Get-Variable -Name $candidateVariableName -Scope Script -ErrorAction SilentlyContinue
+
+        if ($null -ne $candidateVariable -and -not [string]::IsNullOrWhiteSpace([string] $candidateVariable.Value)) {
+            return ([string] $candidateVariable.Value).TrimEnd("/")
+        }
+    }
+
+    $candidateEnvironmentNames = @(
+        "IYI_API_BASE_URL",
+        "VITE_IYI_API_BASE_URL",
+        "API_BASE_URL"
+    )
+
+    foreach ($candidateEnvironmentName in $candidateEnvironmentNames) {
+        $candidateEnvironmentValue = [System.Environment]::GetEnvironmentVariable($candidateEnvironmentName)
+
+        if (-not [string]::IsNullOrWhiteSpace($candidateEnvironmentValue)) {
+            return $candidateEnvironmentValue.TrimEnd("/")
+        }
+    }
+
+    return "http://localhost:8788"
+}
+
+$stockpileLifecycleBaseUrl = Get-IyiApiSmokeBaseUrl
+$stockpileLifecycleUri = "$stockpileLifecycleBaseUrl/stockpiles/lifecycle"
+
+$stockpileLifecycleResponse = Invoke-RestMethod `
+    -Method GET `
+    -Uri $stockpileLifecycleUri `
+    -Headers @{
+        "x-request-id" = "api-smoke-stockpile-lifecycle"
+    }
+
+if ($null -eq $stockpileLifecycleResponse) {
+    throw "Stockpile lifecycle response was empty."
+}
+
+$stockpileLifecyclePayload = $stockpileLifecycleResponse
+
+if ($stockpileLifecycleResponse.PSObject.Properties.Name -contains "data") {
+    $stockpileLifecyclePayload = $stockpileLifecycleResponse.data
+}
+
+if ($null -eq $stockpileLifecyclePayload) {
+    throw "Stockpile lifecycle payload was empty."
+}
+
+if ($null -eq $stockpileLifecyclePayload.statuses) {
+    throw "Stockpile lifecycle payload did not include statuses."
+}
+
+if ($null -eq $stockpileLifecyclePayload.transitions) {
+    throw "Stockpile lifecycle payload did not include transitions."
+}
+
+if ($null -eq $stockpileLifecyclePayload.allowedTransitionsByStatus) {
+    throw "Stockpile lifecycle payload did not include allowedTransitionsByStatus."
+}
+
+$requiredLifecycleStatuses = @(
+    "draft",
+    "operational",
+    "pending_review",
+    "validated",
+    "archived"
+)
+
+$actualLifecycleStatuses = @($stockpileLifecyclePayload.statuses)
+
+foreach ($requiredLifecycleStatus in $requiredLifecycleStatuses) {
+    if ($actualLifecycleStatuses -notcontains $requiredLifecycleStatus) {
+        throw "Stockpile lifecycle payload is missing status: $requiredLifecycleStatus"
+    }
+}
+
+$hasDraftToOperationalTransition = $false
+
+foreach ($transition in @($stockpileLifecyclePayload.transitions)) {
+    if ($transition.from -eq "draft" -and $transition.to -eq "operational") {
+        $hasDraftToOperationalTransition = $true
+        break
+    }
+}
+
+if (-not $hasDraftToOperationalTransition) {
+    throw "Stockpile lifecycle transitions should include draft -> operational."
+}
+
+$hasValidatedToArchivedTransition = $false
+
+foreach ($transition in @($stockpileLifecyclePayload.transitions)) {
+    if ($transition.from -eq "validated" -and $transition.to -eq "archived") {
+        $hasValidatedToArchivedTransition = $true
+        break
+    }
+}
+
+if (-not $hasValidatedToArchivedTransition) {
+    throw "Stockpile lifecycle transitions should include validated -> archived."
+}
+
+if ($null -eq $stockpileLifecyclePayload.allowedTransitionsByStatus.draft) {
+    throw "Stockpile lifecycle payload is missing draft transitions."
+}
+
+$draftTransitions = @($stockpileLifecyclePayload.allowedTransitionsByStatus.draft)
+
+if ($draftTransitions -notcontains "operational") {
+    throw "Stockpile lifecycle draft transitions should include operational."
+}
+
+if ($null -eq $stockpileLifecyclePayload.allowedTransitionsByStatus.archived) {
+    throw "Stockpile lifecycle payload is missing archived transitions."
+}
+
+$archivedTransitions = @($stockpileLifecyclePayload.allowedTransitionsByStatus.archived)
+
+if ($archivedTransitions.Count -ne 0) {
+    throw "Stockpile lifecycle archived status should not allow outgoing transitions."
+}
