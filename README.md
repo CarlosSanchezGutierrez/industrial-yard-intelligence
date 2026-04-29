@@ -216,3 +216,8 @@ The cockpit includes stockpile demo summary cards:
 The cockpit includes a clearer audit timeline panel:
 
 `apps/web/src/components/AuditTimelineStoryPanel.tsx`
+## Phase 2 sync demo story
+
+The cockpit includes a guided Edge-to-Cloud sync demo panel:
+
+`apps/web/src/components/SyncDemoStoryPanel.tsx`

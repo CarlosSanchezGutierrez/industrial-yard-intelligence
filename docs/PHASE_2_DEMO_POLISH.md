@@ -148,3 +148,21 @@ Runtime route used:
 Purpose:
 
 Show traceability as a supervisor-facing timeline instead of raw mutation data.
+## Sync demo story panel
+
+`SyncDemoStoryPanel` adds a guided Edge-to-Cloud sync demo.
+
+Location:
+
+`apps/web/src/components/SyncDemoStoryPanel.tsx`
+
+Runtime routes used:
+
+- `GET /sync/status`
+- `GET /sync/packages/db-projection`
+- `POST /sync/preview`
+- `POST /sync/ingest`
+
+Purpose:
+
+Demonstrate that Edge can export a DB projection package, Cloud API can preview it, and apply mode remains safely blocked.

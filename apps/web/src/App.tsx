@@ -53,6 +53,7 @@ import { DemoDataResetPanel } from "./components/DemoDataResetPanel.js";
 import { IndustrialValueSnapshotPanel } from "./components/IndustrialValueSnapshotPanel.js";
 import { StockpileDemoSummaryPanel } from "./components/StockpileDemoSummaryPanel.js";
 import { AuditTimelineStoryPanel } from "./components/AuditTimelineStoryPanel.js";
+import { SyncDemoStoryPanel } from "./components/SyncDemoStoryPanel.js";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
@@ -448,6 +449,7 @@ function App() {
             <IndustrialValueSnapshotPanel />
             <StockpileDemoSummaryPanel />
             <AuditTimelineStoryPanel />
+            <SyncDemoStoryPanel />
       <nav className="top-nav">
         <div>
           <strong>Industrial Yard Intelligence</strong>
