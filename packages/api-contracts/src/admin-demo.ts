@@ -56,6 +56,11 @@ export interface DemoPackageContentsContract {
   readonly auditStore: boolean;
   readonly evidenceStore: boolean;
 }
+export interface DemoPackageIntegrityContract {
+  readonly algorithm: "sha256";
+  readonly hashValue: string;
+  readonly signedPayloadFields: readonly string[];
+}
 
 export interface DemoPackageContract {
   readonly version: 1;
@@ -64,6 +69,7 @@ export interface DemoPackageContract {
   readonly product: string;
   readonly exportedAt: string;
   readonly contents: DemoPackageContentsContract;
+  readonly integrity: DemoPackageIntegrityContract;
   readonly report: DemoExecutiveReportContract;
   readonly backup: unknown;
 }

@@ -124,6 +124,11 @@ describe("@iyi/api-contracts admin demo", () => {
         auditStore: true,
         evidenceStore: true
       },
+      integrity: {
+        algorithm: "sha256",
+        hashValue: "a".repeat(64),
+        signedPayloadFields: ["version", "packageId", "customer", "product", "exportedAt", "contents", "report", "backup"]
+      },
       report,
       backup: {
         syncStore: {
@@ -134,5 +139,7 @@ describe("@iyi/api-contracts admin demo", () => {
 
     expect(demoPackage.report.status).toBe("needs_attention");
     expect(demoPackage.contents.evidenceStore).toBe(true);
+    expect(demoPackage.integrity.algorithm).toBe("sha256");
+    expect(demoPackage.integrity.hashValue).toHaveLength(64);
   });
 });

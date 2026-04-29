@@ -41,6 +41,11 @@ describe("@iyi/edge demo package", () => {
           packageId: string;
           customer: string;
           product: string;
+          integrity: {
+            algorithm: string;
+            hashValue: string;
+            signedPayloadFields: readonly string[];
+          };
           contents: {
             executiveReport: boolean;
             offlineBackup: boolean;
@@ -80,6 +85,10 @@ describe("@iyi/edge demo package", () => {
     expect(body.data.package.packageId).toContain("demo_package_");
     expect(body.data.package.customer).toBe("Cooper/T. Smith");
     expect(body.data.package.product).toBe("Industrial Yard Intelligence");
+    expect(body.data.package.integrity.algorithm).toBe("sha256");
+    expect(body.data.package.integrity.hashValue).toHaveLength(64);
+    expect(body.data.package.integrity.signedPayloadFields).toContain("report");
+    expect(body.data.package.integrity.signedPayloadFields).toContain("backup");
     expect(body.data.package.contents.executiveReport).toBe(true);
     expect(body.data.package.contents.offlineBackup).toBe(true);
     expect(body.data.package.contents.syncStore).toBe(true);

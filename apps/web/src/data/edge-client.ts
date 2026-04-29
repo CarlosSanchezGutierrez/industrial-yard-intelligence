@@ -906,7 +906,7 @@ export async function exportDemoPackage(): Promise<DemoPackageResult> {
       packageData,
       message:
         packageData !== null
-          ? `Exported demo package ${packageData.packageId}.`
+          ? `Exported demo package ${packageData.packageId} with SHA-256 ${packageData.integrity.hashValue.slice(0, 12)}...`
           : "Edge demo package response did not contain package payload."
     };
   } catch {

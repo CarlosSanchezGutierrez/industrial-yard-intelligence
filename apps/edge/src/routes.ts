@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import {
   createApiError,
   createApiFailure,
@@ -7,6 +8,7 @@ import {
   getDemoReportStatusFromReadiness,
   type DemoExecutiveReportContract,
   type DemoPackageContract,
+  type DemoPackageIntegrityContract,
   type DemoReadinessReportContract,
   type SyncSubmitRequest
 } from "@iyi/api-contracts";
@@ -658,6 +660,53 @@ function createDemoExecutiveReport(now: string): DemoExecutiveReportContract {
       "Prepare pilot deployment checklist for Cooper/T. Smith."
     ],
     readiness
+  };
+}
+function isSerializableRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function stableStringify(value: unknown): string {
+  if (value === null || typeof value === "boolean" || typeof value === "number" || typeof value === "string") {
+    return JSON.stringify(value);
+  }
+
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableStringify(item)).join(",")}]`;
+  }
+
+  if (isSerializableRecord(value)) {
+    const entries = Object.keys(value)
+      .sort()
+      .filter((key) => value[key] !== undefined)
+      .map((key) => `${JSON.stringify(key)}:${stableStringify(value[key])}`);
+
+    return `{${entries.join(",")}}`;
+  }
+
+  return JSON.stringify(null);
+}
+
+function sha256Hex(value: string): string {
+  return createHash("sha256").update(value, "utf8").digest("hex");
+}
+
+function createDemoPackageIntegrity(
+  payload: Omit<DemoPackageContract, "integrity">
+): DemoPackageIntegrityContract {
+  return {
+    algorithm: "sha256",
+    hashValue: sha256Hex(stableStringify(payload)),
+    signedPayloadFields: [
+      "version",
+      "packageId",
+      "customer",
+      "product",
+      "exportedAt",
+      "contents",
+      "report",
+      "backup"
+    ]
   };
 }
 function createDemoPackage(now: string): DemoPackageContract {
