@@ -1,4 +1,9 @@
-import type { SyncSubmitRequest } from "@iyi/api-contracts";
+import type {
+  DemoExecutiveReportContract,
+  DemoPackageContract,
+  DemoReadinessReportContract,
+  SyncSubmitRequest
+} from "@iyi/api-contracts";
 import {
   asAggregateId,
   asDeviceId,
@@ -140,20 +145,7 @@ export interface ResetDemoStateResult {
   readonly message: string;
 }
 
-export interface DemoReadinessCheck {
-  readonly id: string;
-  readonly label: string;
-  readonly ok: boolean;
-  readonly detail: string;
-}
-
-export interface DemoReadinessReport {
-  readonly status: "ready" | "attention" | "empty";
-  readonly generatedAt: string;
-  readonly hasOperationalData: boolean;
-  readonly pendingConflictCount: number;
-  readonly checks: readonly DemoReadinessCheck[];
-}
+export type DemoReadinessReport = DemoReadinessReportContract;
 
 export interface DemoReadinessResult {
   readonly ok: boolean;
@@ -162,30 +154,7 @@ export interface DemoReadinessResult {
   readonly message: string;
 }
 
-export interface EdgeDemoReportMetric {
-  readonly label: string;
-  readonly value: number;
-  readonly detail: string;
-}
-
-export interface EdgeDemoReportProofPoint {
-  readonly label: string;
-  readonly detail: string;
-}
-
-export interface EdgeDemoExecutiveReport {
-  readonly reportId: string;
-  readonly title: string;
-  readonly customer: string;
-  readonly generatedAt: string;
-  readonly status: "ready_for_demo" | "needs_attention" | "empty_demo_state";
-  readonly summary: readonly string[];
-  readonly metrics: readonly EdgeDemoReportMetric[];
-  readonly proofPoints: readonly EdgeDemoReportProofPoint[];
-  readonly demoScript: readonly string[];
-  readonly recommendedNextSteps: readonly string[];
-  readonly readiness: DemoReadinessReport;
-}
+export type EdgeDemoExecutiveReport = DemoExecutiveReportContract;
 
 export interface DemoReportResult {
   readonly ok: boolean;
@@ -194,23 +163,7 @@ export interface DemoReportResult {
   readonly message: string;
 }
 
-export interface EdgeDemoPackage {
-  readonly version: 1;
-  readonly packageId: string;
-  readonly customer: string;
-  readonly product: string;
-  readonly exportedAt: string;
-  readonly contents: {
-    readonly executiveReport: boolean;
-    readonly offlineBackup: boolean;
-    readonly syncStore: boolean;
-    readonly conflictResolutions: boolean;
-    readonly auditStore: boolean;
-    readonly evidenceStore: boolean;
-  };
-  readonly report: EdgeDemoExecutiveReport;
-  readonly backup: EdgeOfflineBackup;
-}
+export type EdgeDemoPackage = DemoPackageContract;
 
 export interface DemoPackageResult {
   readonly ok: boolean;

@@ -4,6 +4,10 @@ import {
   createApiSuccess,
   createHealthCheckResponse,
   createSyncSubmitResponse,
+  getDemoReportStatusFromReadiness,
+  type DemoExecutiveReportContract,
+  type DemoPackageContract,
+  type DemoReadinessReportContract,
   type SyncSubmitRequest
 } from "@iyi/api-contracts";
 import { cooperSmokeSeed } from "@iyi/seed-data";
@@ -506,7 +510,7 @@ function reconcileAndRecordGuidedDemoSync(syncRequest: SyncSubmitRequest, receiv
     firstStatus: result.results[0]?.status ?? "unknown"
   };
 }
-function createDemoReadinessReport(now: string) {
+function createDemoReadinessReport(now: string): DemoReadinessReportContract {
   const syncSummary = getSyncSummary();
   const resolutions = getConflictResolutions();
   const auditSummary = getAuditSummary();
@@ -573,7 +577,7 @@ function createDemoReadinessReport(now: string) {
     checks
   };
 }
-function createDemoExecutiveReport(now: string) {
+function createDemoExecutiveReport(now: string): DemoExecutiveReportContract {
   const readiness = createDemoReadinessReport(now);
   const syncSummary = getSyncSummary();
   const resolutions = getConflictResolutions();
@@ -581,12 +585,7 @@ function createDemoExecutiveReport(now: string) {
   const evidenceSummary = getEvidenceSummary();
 
   const unresolvedConflicts = Math.max(syncSummary.conflicts - resolutions.length, 0);
-  const reportStatus =
-    readiness.status === "ready"
-      ? "ready_for_demo"
-      : readiness.status === "attention"
-        ? "needs_attention"
-        : "empty_demo_state";
+  const reportStatus = getDemoReportStatusFromReadiness(readiness.status);
 
   return {
     reportId: `demo_report_${normalizeDemoSuffix(now)}`,
@@ -661,7 +660,7 @@ function createDemoExecutiveReport(now: string) {
     readiness
   };
 }
-function createDemoPackage(now: string) {
+function createDemoPackage(now: string): DemoPackageContract {
   const report = createDemoExecutiveReport(now);
   const backup = createOfflineBackup(now);
 
