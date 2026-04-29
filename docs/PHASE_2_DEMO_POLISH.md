@@ -190,3 +190,14 @@ Gate document:
 docs/PHASE_2_DEMO_POLISH_GATE.md
 
 This validates that the Phase 2 demo cockpit panels exist, are mounted and represent the expected runtime routes.
+## Phase 2 runtime smoke
+
+After starting the local stack, run:
+
+pnpm phase2:runtime
+
+Document:
+
+docs/PHASE_2_DEMO_RUNTIME_SMOKE.md
+
+This validates the live runtime routes used by the Phase 2 cockpit panels.

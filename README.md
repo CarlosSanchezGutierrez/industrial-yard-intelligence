@@ -235,3 +235,12 @@ pnpm phase2:check
 Document:
 
 docs/PHASE_2_DEMO_POLISH_GATE.md
+## Phase 2 runtime smoke
+
+After starting the local stack:
+
+pnpm phase2:runtime
+
+Document:
+
+docs/PHASE_2_DEMO_RUNTIME_SMOKE.md

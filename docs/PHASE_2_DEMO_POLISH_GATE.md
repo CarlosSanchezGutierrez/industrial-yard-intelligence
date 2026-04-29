@@ -44,3 +44,10 @@ If this gate and pnpm --filter @iyi/web build pass, the Phase 2 cockpit polish b
 This does not replace live runtime validation. For live validation, start the stack and run:
 
 pnpm architecture:runtime
+## Runtime smoke
+
+After static validation and web build pass, start the local stack and run:
+
+pnpm phase2:runtime
+
+This validates the runtime endpoints represented by the cockpit panels.

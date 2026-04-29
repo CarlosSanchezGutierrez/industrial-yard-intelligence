@@ -37,7 +37,8 @@
                     "architecture:runtime":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-runtime-gate.ps1",
                     "architecture:manifest":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-manifest.ps1",
                     "architecture:close":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-close.ps1",
-                    "phase2:check":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/phase-2-demo-polish-check.ps1"
+                    "phase2:check":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/phase-2-demo-polish-check.ps1",
+                    "phase2:runtime":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/phase-2-demo-runtime-smoke.ps1"
                 },
     "keywords":  [
                      "industrial",
