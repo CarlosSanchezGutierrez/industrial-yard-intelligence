@@ -34,3 +34,11 @@ The web cockpit now consumes:
 GET /stockpiles/lifecycle
 
 This lets the cockpit display the canonical status model from the shared domain layer.
+## Audit mutations panel
+
+The cockpit consumes:
+
+GET /audit/summary
+GET /audit/mutations
+
+This gives supervisors visibility into stockpile creation and stockpile status update audit entries.

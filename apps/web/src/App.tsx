@@ -43,6 +43,7 @@ import {
 import "./styles.css";
 
 import { StockpileLifecyclePanel } from "./components/StockpileLifecyclePanel.js";
+import { AuditMutationPanel } from "./components/AuditMutationPanel.js";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
@@ -474,6 +475,7 @@ function App() {
       </section>
 
       <StockpileCreatePanel snapshot={cloudApiSnapshot} onCreated={() => void handleRefreshCloudApi()} />
+      <AuditMutationPanel />
       <StockpileLifecyclePanel />
       <StockpileStatusPanel snapshot={cloudApiSnapshot} onUpdated={() => void handleRefreshCloudApi()} />
       <section className="cloud-api-panel">
