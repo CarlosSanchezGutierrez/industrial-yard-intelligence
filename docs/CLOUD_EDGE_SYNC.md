@@ -63,3 +63,10 @@ This confirms the Cloud API exposes contract-safe Cloud Edge sync stubs before r
 The web cockpit sync panel is documented in:
 
 `docs/WEB_CLOUD_EDGE_SYNC.md`
+## Edge package builder
+
+The edge-side sync package builder is documented in:
+
+`docs/EDGE_CLOUD_EDGE_SYNC_PACKAGE.md`
+
+It prepares `db_projection_snapshot` packages for future edge-to-cloud sync.
