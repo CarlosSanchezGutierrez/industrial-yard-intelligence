@@ -9,15 +9,17 @@ interface SyncStepState {
     readonly detail: string;
 }
 
+interface ExportedSyncPackageManifest {
+    readonly packageId?: string;
+    readonly packageKind?: string;
+    readonly direction?: string;
+    readonly schemaVersion?: string;
+    readonly payloadHash?: string;
+    readonly payloadRecordCount?: number;
+}
+
 interface ExportedSyncPackage {
-    readonly manifest?: {
-        readonly packageId?: string;
-        readonly packageKind?: string;
-        readonly direction?: string;
-        readonly schemaVersion?: string;
-        readonly payloadHash?: string;
-        readonly payloadRecordCount?: number;
-    };
+    readonly manifest?: ExportedSyncPackageManifest;
     readonly payload?: unknown;
 }
 
@@ -73,6 +75,33 @@ function getNumber(value: unknown, fallback: number): number {
     return fallback;
 }
 
+function toManifest(value: unknown): ExportedSyncPackageManifest | undefined {
+    if (!isRecord(value)) {
+        return undefined;
+    }
+
+    return {
+        packageId: getString(value["packageId"], ""),
+        packageKind: getString(value["packageKind"], ""),
+        direction: getString(value["direction"], ""),
+        schemaVersion: getString(value["schemaVersion"], ""),
+        payloadHash: getString(value["payloadHash"], ""),
+        payloadRecordCount: getNumber(value["payloadRecordCount"], 0),
+    };
+}
+
+function createExportedSyncPackage(
+    manifestCandidate: unknown,
+    payload: unknown,
+): ExportedSyncPackage {
+    const manifest = toManifest(manifestCandidate);
+
+    return {
+        ...(manifest !== undefined ? { manifest } : {}),
+        payload,
+    };
+}
+
 function toExportedSyncPackage(value: unknown): ExportedSyncPackage | null {
     const data = unwrapData(value);
 
@@ -83,39 +112,14 @@ function toExportedSyncPackage(value: unknown): ExportedSyncPackage | null {
     const packageCandidate = data["package"];
 
     if (isRecord(packageCandidate)) {
-        const manifestCandidate = packageCandidate["manifest"];
-
-        return {
-            manifest: isRecord(manifestCandidate)
-                ? {
-                      packageId: getString(manifestCandidate["packageId"], ""),
-                      packageKind: getString(manifestCandidate["packageKind"], ""),
-                      direction: getString(manifestCandidate["direction"], ""),
-                      schemaVersion: getString(manifestCandidate["schemaVersion"], ""),
-                      payloadHash: getString(manifestCandidate["payloadHash"], ""),
-                      payloadRecordCount: getNumber(manifestCandidate["payloadRecordCount"], 0),
-                  }
-                : undefined,
-            payload: packageCandidate["payload"],
-        };
+        return createExportedSyncPackage(
+            packageCandidate["manifest"],
+            packageCandidate["payload"],
+        );
     }
 
     if ("manifest" in data || "payload" in data) {
-        const manifestCandidate = data["manifest"];
-
-        return {
-            manifest: isRecord(manifestCandidate)
-                ? {
-                      packageId: getString(manifestCandidate["packageId"], ""),
-                      packageKind: getString(manifestCandidate["packageKind"], ""),
-                      direction: getString(manifestCandidate["direction"], ""),
-                      schemaVersion: getString(manifestCandidate["schemaVersion"], ""),
-                      payloadHash: getString(manifestCandidate["payloadHash"], ""),
-                      payloadRecordCount: getNumber(manifestCandidate["payloadRecordCount"], 0),
-                  }
-                : undefined,
-            payload: data["payload"],
-        };
+        return createExportedSyncPackage(data["manifest"], data["payload"]);
     }
 
     return null;
