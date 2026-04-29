@@ -258,3 +258,12 @@ docs/PHASE_2_DEMO_POLISH_STATUS.md
 The cockpit includes quick section navigation:
 
 `apps/web/src/components/CockpitSectionNavigationPanel.tsx`
+## Phase 2 presenter script
+
+Run:
+
+pnpm phase2:presenter
+
+Document:
+
+docs/PHASE_2_DEMO_PRESENTER_SCRIPT.md

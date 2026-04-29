@@ -235,3 +235,16 @@ Anchors added:
 Purpose:
 
 Keep the live demo ordered and make the cockpit easier to present.
+## Phase 2 presenter script
+
+Run:
+
+pnpm phase2:presenter
+
+Presenter document:
+
+docs/PHASE_2_DEMO_PRESENTER_SCRIPT.md
+
+Purpose:
+
+Give the presenter an exact talk track for the cockpit demo.

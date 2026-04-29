@@ -63,3 +63,10 @@ This validates the Phase 2 status document, static gate, runtime smoke document 
 The cockpit includes quick section navigation through:
 
 `apps/web/src/components/CockpitSectionNavigationPanel.tsx`
+## Presenter script
+
+Run:
+
+pnpm phase2:presenter -- -CheckOnly
+
+This validates the live demo presenter script and required cockpit presentation assets.

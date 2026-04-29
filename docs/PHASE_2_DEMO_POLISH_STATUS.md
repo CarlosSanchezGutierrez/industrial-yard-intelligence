@@ -148,3 +148,16 @@ Component:
 Purpose:
 
 Reduce presentation friction by adding anchor navigation across the cockpit.
+## Presenter script
+
+Document:
+
+docs/PHASE_2_DEMO_PRESENTER_SCRIPT.md
+
+Command:
+
+pnpm phase2:presenter
+
+Purpose:
+
+Provide the final talk track for presenting the Phase 2 cockpit.

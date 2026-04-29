@@ -42,3 +42,12 @@ Before runtime validation, run:
 pnpm phase2:status -- -CheckOnly
 
 This confirms the cockpit polish layer is structurally complete before hitting live endpoints.
+## Presenter flow after runtime smoke
+
+After runtime smoke passes, run:
+
+pnpm phase2:presenter
+
+Then follow:
+
+docs/PHASE_2_DEMO_PRESENTER_SCRIPT.md
