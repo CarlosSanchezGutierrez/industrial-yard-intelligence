@@ -58,3 +58,8 @@ POST /sync/preview
 POST /sync/ingest
 
 This confirms the Cloud API exposes contract-safe Cloud Edge sync stubs before real ingestion is enabled.
+## Web cockpit visibility
+
+The web cockpit sync panel is documented in:
+
+`docs/WEB_CLOUD_EDGE_SYNC.md`
