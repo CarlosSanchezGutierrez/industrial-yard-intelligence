@@ -136,7 +136,8 @@ $requiredFiles = @(
     "scripts\architecture-v1-status.ps1",
     "scripts\architecture-v1-gate.ps1",
     "scripts\architecture-v1-runtime-gate.ps1",
-    "scripts\architecture-v1-manifest.ps1",`r`n    "scripts\architecture-v1-close.ps1",
+    "scripts\architecture-v1-manifest.ps1",
+    "scripts\architecture-v1-close.ps1",
     "scripts\demo-operator-v1.ps1",
     "scripts\ci-local.ps1",
     "docs\API_BACKEND.md",
@@ -155,7 +156,8 @@ $requiredFiles = @(
     "docs\ARCHITECTURE_V1_STATUS.md",
     "docs\ARCHITECTURE_V1_FINAL_GATE.md",
     "docs\ARCHITECTURE_V1_RUNTIME_GATE.md",
-    "docs\ARCHITECTURE_V1_MANIFEST.md",`r`n    "docs\ARCHITECTURE_V1_CLOSURE.md",
+    "docs\ARCHITECTURE_V1_MANIFEST.md",
+    "docs\ARCHITECTURE_V1_CLOSURE.md",
     "docs\DEMO_OPERATOR_V1.md",
     "docs\INVESTOR_TECHNICAL_NARRATIVE.md"
 )
@@ -192,11 +194,13 @@ $requiredTextChecks = @(
     @{ Path = "scripts\cloud-edge-sync-smoke.ps1"; Text = "/sync/ingest" },
     @{ Path = "scripts\architecture-v1-runtime-gate.ps1"; Text = "/sync/packages/db-projection" },
     @{ Path = "scripts\architecture-v1-runtime-gate.ps1"; Text = "/sync/status" },
-    @{ Path = "scripts\architecture-v1-manifest.ps1",`r`n    "scripts\architecture-v1-close.ps1"; Text = "V1_DEMO_MANIFEST_READY" },
+    @{ Path = "scripts\architecture-v1-manifest.ps1"; Text = "V1_DEMO_MANIFEST_READY" },
+    @{ Path = "scripts\architecture-v1-close.ps1"; Text = "V1_SKELETON_CLOSED_FOR_DEMO" },
     @{ Path = "docs\ARCHITECTURE_V1_STATUS.md"; Text = "V1_READY_FOR_DEMO" },
     @{ Path = "docs\ARCHITECTURE_V1_FINAL_GATE.md"; Text = "V1_SKELETON_READY_FOR_DEMO" },
     @{ Path = "docs\ARCHITECTURE_V1_RUNTIME_GATE.md"; Text = "V1_RUNTIME_READY_FOR_DEMO" },
-    @{ Path = "docs\ARCHITECTURE_V1_MANIFEST.md",`r`n    "docs\ARCHITECTURE_V1_CLOSURE.md"; Text = "V1_DEMO_MANIFEST_READY" }
+    @{ Path = "docs\ARCHITECTURE_V1_MANIFEST.md"; Text = "V1_DEMO_MANIFEST_READY" },
+    @{ Path = "docs\ARCHITECTURE_V1_CLOSURE.md"; Text = "V1_SKELETON_CLOSED_FOR_DEMO" }
 )
 
 foreach ($check in $requiredTextChecks) {
@@ -228,7 +232,8 @@ if (-not $SkipPackageScripts) {
         "architecture:status",
         "architecture:gate",
         "architecture:runtime",
-        "architecture:manifest",`r`n        "architecture:close",
+        "architecture:manifest",
+        "architecture:close",
         "demo:operator",
         "typecheck",
         "test"
