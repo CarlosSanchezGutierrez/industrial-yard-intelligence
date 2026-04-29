@@ -61,6 +61,8 @@ import "./styles/premium-cockpit.css";
 import { PremiumCockpitCommandDeck } from "./components/PremiumCockpitCommandDeck.js";
 import { PremiumGpsPreviewPanel } from "./components/PremiumGpsPreviewPanel.js";
 import "./styles/premium-experience.css";
+import { PremiumCockpitTabs } from "./components/PremiumCockpitTabs.js";
+import "./styles/premium-tabs.css";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
@@ -449,6 +451,7 @@ function App() {
   return (
     <main className="app-shell" style={applyThemeVariables()}>
             <PremiumCockpitHero />
+            <PremiumCockpitTabs />
             <PremiumCockpitCommandDeck />
             <CockpitSectionNavigationPanel />
             <RuntimeConnectionStatusPanel />

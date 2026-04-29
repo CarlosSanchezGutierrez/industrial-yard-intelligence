@@ -51,3 +51,17 @@ These components stay controlled by their original App-level state flow:
 Reason:
 
 Rendering them as `<Component />` without props breaks TypeScript and web build.
+## Premium tabs
+
+Document:
+
+`docs/PHASE_2_5_PREMIUM_TABS.md`
+
+Added:
+
+- `PremiumCockpitTabs`
+- `premium-tabs.css`
+
+Purpose:
+
+Show one cockpit area at a time instead of rendering a long technical scroll.

@@ -56,7 +56,7 @@ function CommandCard({
 
 export function PremiumCockpitCommandDeck() {
     return (
-        <section id="premium-command-deck" className="iyi-command-deck">
+        <section data-iyi-section="overview" id="premium-command-deck" className="iyi-command-deck">
             <div className="iyi-command-deck-header">
                 <div>
                     <p className="iyi-premium-kicker">Product cockpit</p>

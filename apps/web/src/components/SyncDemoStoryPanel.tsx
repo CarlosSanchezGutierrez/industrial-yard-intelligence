@@ -420,7 +420,7 @@ export function SyncDemoStoryPanel() {
     }
 
     return (
-        <section id="sync-story" className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section data-iyi-section="sync" id="sync-story" className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">

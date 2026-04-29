@@ -297,3 +297,13 @@ Main files:
 - `apps/web/src/components/PremiumCockpitCommandDeck.tsx`
 - `apps/web/src/components/PremiumGpsPreviewPanel.tsx`
 - `apps/web/src/styles/premium-experience.css`
+## Phase 2.5 premium tabs
+
+Document:
+
+`docs/PHASE_2_5_PREMIUM_TABS.md`
+
+Main files:
+
+- `apps/web/src/components/PremiumCockpitTabs.tsx`
+- `apps/web/src/styles/premium-tabs.css`

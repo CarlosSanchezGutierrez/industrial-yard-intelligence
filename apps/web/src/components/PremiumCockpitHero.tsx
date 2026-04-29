@@ -43,7 +43,7 @@ function ExecutiveSignalCard({
 
 export function PremiumCockpitHero() {
     return (
-        <section id="premium-cockpit-hero" className="iyi-premium-hero">
+        <section data-iyi-section="overview" id="premium-cockpit-hero" className="iyi-premium-hero">
             <div className="iyi-premium-hero-grid">
                 <div className="iyi-premium-hero-copy">
                     <div className="iyi-premium-eyebrow">

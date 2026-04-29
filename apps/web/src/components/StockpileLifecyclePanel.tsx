@@ -62,7 +62,7 @@ export function StockpileLifecyclePanel() {
     }, [snapshot]);
 
     return (
-        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section data-iyi-section="operations" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">

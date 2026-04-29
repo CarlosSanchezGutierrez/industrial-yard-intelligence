@@ -87,7 +87,7 @@ export function StockpileCreatePanel({ snapshot, onCreated }: StockpileCreatePan
   }
 
   return (
-    <section className="stockpile-create-panel">
+    <section data-iyi-section="operations" className="stockpile-create-panel">
       <div className="panel-header">
         <div>
           <p className="eyebrow">Cloud API Write</p>

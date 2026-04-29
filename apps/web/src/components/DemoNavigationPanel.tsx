@@ -64,7 +64,7 @@ function DemoSectionCard({
 
 export function DemoNavigationPanel() {
     return (
-        <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+        <section data-iyi-section="overview" className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">

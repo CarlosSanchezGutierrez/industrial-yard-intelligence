@@ -23,7 +23,7 @@ const gpsCapabilities = [
 
 export function PremiumGpsPreviewPanel() {
     return (
-        <section id="premium-gps-preview" className="iyi-gps-preview">
+        <section data-iyi-section="map gps" id="premium-gps-preview" className="iyi-gps-preview">
             <div className="iyi-gps-preview-copy">
                 <p className="iyi-premium-kicker">Next module</p>
                 <h2>GPS, mapa y perimetros: el salto de cockpit a sistema fisico-digital.</h2>
