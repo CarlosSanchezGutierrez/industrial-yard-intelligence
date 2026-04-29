@@ -48,7 +48,7 @@ function Assert-TextContains {
     $text = Read-RepoText -RelativePath $RelativePath
 
     if (-not $text.Contains($Needle)) {
-        throw "Missing expected text in $RelativePath: $Needle"
+        throw "Missing expected text in ${RelativePath}: $Needle"
     }
 
     Write-Host "OK text: $RelativePath contains $Needle"
@@ -166,6 +166,7 @@ if (-not $SkipPackageScripts) {
         "api:smoke",
         "demo:smoke",
         "sync:smoke",
+        "architecture:check",
         "typecheck",
         "test"
     )
