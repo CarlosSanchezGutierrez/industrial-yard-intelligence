@@ -208,7 +208,8 @@ function createManifest(now: string) {
       { method: "GET", path: "/admin/demo-readiness", description: "Show local demo readiness report." },
       { method: "POST", path: "/admin/run-guided-demo", description: "Create a deterministic local demo scenario." },
       { method: "GET", path: "/admin/demo-report", description: "Show executive demo report for Cooper/T. Smith." },
-      { method: "GET", path: "/admin/demo-package", description: "Export executive report plus full offline backup package." }
+      { method: "GET", path: "/admin/demo-package", description: "Export executive report plus full offline backup package." },
+      { method: "GET", path: "/admin/demo-package/verify", description: "Verify current demo package SHA-256 integrity." }
     ]
   };
 }
@@ -736,6 +737,29 @@ function createDemoPackage(now: string): DemoPackageContract {
     integrity: createDemoPackageIntegrity(packagePayload)
   };
 }
+function verifyDemoPackageIntegrity(now: string) {
+  const demoPackage = createDemoPackage(now);
+  const { integrity, ...payload } = demoPackage;
+  const expectedIntegrity = createDemoPackageIntegrity(payload);
+
+  const ok =
+    integrity.algorithm === expectedIntegrity.algorithm &&
+    integrity.hashValue === expectedIntegrity.hashValue &&
+    integrity.signedPayloadFields.join("|") === expectedIntegrity.signedPayloadFields.join("|");
+
+  return {
+    ok,
+    packageId: demoPackage.packageId,
+    checkedAt: now,
+    algorithm: integrity.algorithm,
+    hashValue: integrity.hashValue,
+    expectedHashValue: expectedIntegrity.hashValue,
+    signedPayloadFields: integrity.signedPayloadFields,
+    message: ok
+      ? "Demo package integrity is valid."
+      : "Demo package integrity hash does not match expected payload hash."
+  };
+}
 function handleRunGuidedDemo(request: EdgeRouteRequest): EdgeRouteResponse {
   const resetBeforeRun = getBooleanBodyValue(request.body, "resetBeforeRun", true);
 
@@ -964,6 +988,18 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
       createApiSuccess(
         {
           report: createDemoExecutiveReport(request.now)
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  }
+  if (request.method === "GET" && request.pathname === "/admin/demo-package/verify") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          verification: verifyDemoPackageIntegrity(request.now)
         },
         request.requestId,
         request.now

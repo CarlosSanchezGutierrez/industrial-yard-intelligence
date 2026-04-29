@@ -11,6 +11,7 @@ import {
   loadEdgeSyncSnapshot,
   registerDemoEvidence,
   resetEdgeDemoState,
+  verifyDemoPackageIntegrity,
   resolveSyncConflict,
   runGuidedDemoScenario,
   submitDemoSyncBatch,
@@ -120,6 +121,7 @@ function App() {
   const [demoReport, setDemoReport] = useState<EdgeDemoExecutiveReport | null>(null);
   const [demoReportMessage, setDemoReportMessage] = useState("Sin reporte ejecutivo cargado todavía.");
   const [isExportingDemoPackage, setIsExportingDemoPackage] = useState(false);
+  const [isVerifyingDemoPackage, setIsVerifyingDemoPackage] = useState(false);
   const [evidenceMessage, setEvidenceMessage] = useState("Registra evidencia simulada para generar hash SHA-256.");
   const [isRegisteringEvidence, setIsRegisteringEvidence] = useState(false);
   const [edgeMonitorMessage, setEdgeMonitorMessage] = useState("Esperando conexión al edge.");
@@ -263,6 +265,12 @@ function App() {
     setDemoReportMessage(result.message);
     setIsExportingDemoPackage(false);
   }
+  async function handleVerifyDemoPackage(): Promise<void> {
+    setIsVerifyingDemoPackage(true);
+    const result = await verifyDemoPackageIntegrity();
+    setDemoReportMessage(result.message);
+    setIsVerifyingDemoPackage(false);
+  }
 
   function handleImportClick(): void {
     fileInputRef.current?.click();
@@ -369,6 +377,13 @@ function App() {
           </button>
           <button className="secondary-button" disabled={demoReport === null} onClick={handleExportDemoReport}>
             Exportar reporte JSON
+          </button>
+          <button
+            className="secondary-button"
+            disabled={isVerifyingDemoPackage}
+            onClick={() => void handleVerifyDemoPackage()}
+          >
+            {isVerifyingDemoPackage ? "Verificando..." : "Verificar package SHA-256"}
           </button>
           <button
             className="secondary-button"

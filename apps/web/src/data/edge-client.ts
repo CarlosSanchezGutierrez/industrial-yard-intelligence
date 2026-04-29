@@ -172,6 +172,24 @@ export interface DemoPackageResult {
   readonly message: string;
 }
 
+export interface DemoPackageVerification {
+  readonly ok: boolean;
+  readonly packageId: string;
+  readonly checkedAt: string;
+  readonly algorithm: "sha256";
+  readonly hashValue: string;
+  readonly expectedHashValue: string;
+  readonly signedPayloadFields: readonly string[];
+  readonly message: string;
+}
+
+export interface DemoPackageVerificationResult {
+  readonly ok: boolean;
+  readonly source: "edge" | "unavailable";
+  readonly verification: DemoPackageVerification | null;
+  readonly message: string;
+}
+
 export interface EdgeSyncSnapshot {
   readonly ok: boolean;
   readonly source: "edge" | "unavailable";
@@ -326,6 +344,12 @@ interface DemoPackageResponse {
   readonly ok: boolean;
   readonly data?: {
     readonly package?: EdgeDemoPackage;
+  };
+}
+interface DemoPackageVerifyResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly verification?: DemoPackageVerification;
   };
 }
 
@@ -914,6 +938,47 @@ export async function exportDemoPackage(): Promise<DemoPackageResult> {
       ok: false,
       source: "unavailable",
       packageData: null,
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
+    };
+  }
+}
+export async function verifyDemoPackageIntegrity(): Promise<DemoPackageVerificationResult> {
+  const edgeBaseUrl = getEdgeBaseUrl();
+
+  try {
+    const response = await fetch(`${edgeBaseUrl}/admin/demo-package/verify`, {
+      method: "GET",
+      headers: {
+        accept: "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        source: "edge",
+        verification: null,
+        message: `Edge demo package verification endpoint responded with HTTP ${response.status}.`
+      };
+    }
+
+    const body = (await response.json()) as DemoPackageVerifyResponse;
+    const verification = body.data?.verification ?? null;
+
+    return {
+      ok: body.ok && verification !== null && verification.ok,
+      source: "edge",
+      verification,
+      message:
+        verification !== null
+          ? `${verification.message} SHA-256 ${verification.hashValue.slice(0, 12)}...`
+          : "Edge demo package verification response did not contain verification payload."
+    };
+  } catch {
+    return {
+      ok: false,
+      source: "unavailable",
+      verification: null,
       message: `Local edge server unavailable at ${edgeBaseUrl}.`
     };
   }
