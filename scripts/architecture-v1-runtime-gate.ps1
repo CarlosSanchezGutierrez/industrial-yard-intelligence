@@ -60,7 +60,7 @@ function Assert-HttpOk {
         [string] $Uri
     )
 
-    Write-Host "==> Checking $Name: $Uri"
+    Write-Host "==> Checking ${Name}: $Uri"
 
     try {
         $response = Invoke-RestMethod `
