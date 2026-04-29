@@ -118,3 +118,18 @@ Translate the technical demo into business value:
 - audit becomes visible
 - edge-first architecture supports industrial environments
 - SaaS-ready package boundaries support future scaling
+## Stockpile demo summary panel
+
+`StockpileDemoSummaryPanel` adds clean stockpile cards and lifecycle counters for demo.
+
+Location:
+
+`apps/web/src/components/StockpileDemoSummaryPanel.tsx`
+
+Runtime route used:
+
+`GET /stockpiles`
+
+Purpose:
+
+Show stockpiles as operational yard assets with material, zone, quantity and status labels.

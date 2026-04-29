@@ -206,3 +206,8 @@ The cockpit includes a Cloud API demo reset panel:
 The cockpit includes an executive value panel:
 
 `apps/web/src/components/IndustrialValueSnapshotPanel.tsx`
+## Phase 2 stockpile demo summary
+
+The cockpit includes stockpile demo summary cards:
+
+`apps/web/src/components/StockpileDemoSummaryPanel.tsx`
