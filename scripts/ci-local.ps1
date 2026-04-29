@@ -168,6 +168,13 @@ Invoke-Step "Check no runtime artifacts tracked" {
     Assert-NoRuntimeArtifactsTracked
 }
 
+Invoke-Step "Build db" {
+    pnpm --filter @iyi/db build
+}
+
+Invoke-Step "Test db" {
+    pnpm --filter @iyi/db test
+}
 Invoke-Step "Build api contracts" {
     pnpm --filter @iyi/api-contracts build
 }
