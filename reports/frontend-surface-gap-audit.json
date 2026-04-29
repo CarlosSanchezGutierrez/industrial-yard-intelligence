@@ -1,0 +1,5492 @@
+{
+  "generatedAt": "2026-04-29T22:17:25.172Z",
+  "totals": {
+    "filesScanned": 214,
+    "webFilesScanned": 40,
+    "apiRouteCandidates": 234,
+    "fetchUsages": 40,
+    "components": 23,
+    "visibleComponents": 22,
+    "hiddenComponents": 1,
+    "cssWhiteRisks": 22
+  },
+  "apiRoutes": [
+    {
+      "method": "UNKNOWN",
+      "path": "/admin/db/reset",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 355,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/db/reset",
+      "file": "apps/api/src/routes.ts",
+      "line": 301,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/db/reset",
+      "file": "packages/api-contracts/src/cloud-api.test.ts",
+      "line": 20,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/db/reset",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 242,
+      "terms": []
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/admin/db/snapshot",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 331,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/db/snapshot",
+      "file": "apps/api/src/routes.ts",
+      "line": 292,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/db/snapshot",
+      "file": "packages/api-contracts/src/cloud-api.test.ts",
+      "line": 19,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/db/snapshot",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 237,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package",
+      "file": "apps/edge/src/demo-package-import.test.ts",
+      "line": 31,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package",
+      "file": "apps/edge/src/demo-package-import.test.ts",
+      "line": 127,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package",
+      "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+      "line": 31,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package",
+      "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+      "line": 87,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package",
+      "file": "apps/edge/src/demo-package.test.ts",
+      "line": 31,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package",
+      "file": "apps/edge/src/demo-package.test.ts",
+      "line": 108,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package",
+      "file": "apps/edge/src/demo-package.test.ts",
+      "line": 165,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package",
+      "file": "apps/edge/src/routes.ts",
+      "line": 213,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1170,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/demo-package/import",
+      "file": "apps/edge/src/demo-package-import.test.ts",
+      "line": 51,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/demo-package/import",
+      "file": "apps/edge/src/demo-package-import.test.ts",
+      "line": 147,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/demo-package/import",
+      "file": "apps/edge/src/demo-package-import.test.ts",
+      "line": 189,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package/import",
+      "file": "apps/edge/src/routes.ts",
+      "line": 216,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/demo-package/import",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1143,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/demo-package/verify",
+      "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+      "line": 44,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/demo-package/verify",
+      "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+      "line": 112,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/demo-package/verify",
+      "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+      "line": 144,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package/verify",
+      "file": "apps/edge/src/demo-package-verify.test.ts",
+      "line": 31,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package/verify",
+      "file": "apps/edge/src/demo-package-verify.test.ts",
+      "line": 85,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package/verify",
+      "file": "apps/edge/src/routes.ts",
+      "line": 214,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/demo-package/verify",
+      "file": "apps/edge/src/routes.ts",
+      "line": 215,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/demo-package/verify",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1146,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-package/verify",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1158,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-readiness",
+      "file": "apps/edge/src/demo-readiness.test.ts",
+      "line": 21,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-readiness",
+      "file": "apps/edge/src/demo-readiness.test.ts",
+      "line": 64,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-readiness",
+      "file": "apps/edge/src/demo-readiness.test.ts",
+      "line": 124,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-readiness",
+      "file": "apps/edge/src/routes.ts",
+      "line": 210,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/demo-readiness",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1185,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-report",
+      "file": "apps/edge/src/demo-report.test.ts",
+      "line": 21,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-report",
+      "file": "apps/edge/src/demo-report.test.ts",
+      "line": 63,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-report",
+      "file": "apps/edge/src/demo-report.test.ts",
+      "line": 129,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-report",
+      "file": "apps/edge/src/routes.ts",
+      "line": 212,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/demo-report",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1131,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/reset-demo-state",
+      "file": "apps/edge/src/demo-package-import.test.ts",
+      "line": 44,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/reset-demo-state",
+      "file": "apps/edge/src/demo-reset.test.ts",
+      "line": 50,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/reset-demo-state",
+      "file": "apps/edge/src/demo-reset.test.ts",
+      "line": 103,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/reset-demo-state",
+      "file": "apps/edge/src/routes.ts",
+      "line": 209,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/reset-demo-state",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1182,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/run-guided-demo",
+      "file": "apps/edge/src/db-projection.test.ts",
+      "line": 37,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/run-guided-demo",
+      "file": "apps/edge/src/demo-package-import.test.ts",
+      "line": 21,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/run-guided-demo",
+      "file": "apps/edge/src/demo-package-import.test.ts",
+      "line": 117,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/run-guided-demo",
+      "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+      "line": 21,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/run-guided-demo",
+      "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+      "line": 77,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/run-guided-demo",
+      "file": "apps/edge/src/demo-package-verify.test.ts",
+      "line": 21,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/run-guided-demo",
+      "file": "apps/edge/src/demo-package.test.ts",
+      "line": 21,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/run-guided-demo",
+      "file": "apps/edge/src/demo-report.test.ts",
+      "line": 53,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/run-guided-demo",
+      "file": "apps/edge/src/guided-demo.test.ts",
+      "line": 21,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/run-guided-demo",
+      "file": "apps/edge/src/guided-demo.test.ts",
+      "line": 98,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/admin/run-guided-demo",
+      "file": "apps/edge/src/routes.ts",
+      "line": 211,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/admin/run-guided-demo",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1128,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/audit/entries",
+      "file": "apps/edge/src/routes.ts",
+      "line": 202,
+      "terms": [
+        "audit"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/audit/entries",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1094,
+      "terms": [
+        "audit"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/audit/mutations",
+      "file": "apps/api/src/audit-mutation-route-wrapper.test.ts",
+      "line": 229,
+      "terms": [
+        "audit",
+        "mutation"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/audit/mutations",
+      "file": "apps/api/src/audit-mutation-route-wrapper.ts",
+      "line": 264,
+      "terms": [
+        "audit",
+        "mutation"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/audit/mutations",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 172,
+      "terms": [
+        "audit",
+        "mutation"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/audit/stockpiles/:id",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 167,
+      "terms": [
+        "audit",
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/audit/stockpiles/stockpile_001",
+      "file": "apps/api/src/audit-mutation-route-wrapper.test.ts",
+      "line": 412,
+      "terms": [
+        "audit",
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/audit/summary",
+      "file": "apps/api/src/audit-mutation-route-wrapper.test.ts",
+      "line": 310,
+      "terms": [
+        "audit"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/audit/summary",
+      "file": "apps/api/src/audit-mutation-route-wrapper.ts",
+      "line": 270,
+      "terms": [
+        "audit"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/audit/summary",
+      "file": "apps/edge/src/audit-store.test.ts",
+      "line": 148,
+      "terms": [
+        "audit"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/audit/summary",
+      "file": "apps/edge/src/evidence-store.test.ts",
+      "line": 108,
+      "terms": [
+        "audit"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/audit/summary",
+      "file": "apps/edge/src/routes.ts",
+      "line": 203,
+      "terms": [
+        "audit"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/audit/summary",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1098,
+      "terms": [
+        "audit"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/audit/summary",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 177,
+      "terms": [
+        "audit"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/audit/verify",
+      "file": "apps/edge/src/audit-store.test.ts",
+      "line": 155,
+      "terms": [
+        "audit"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/audit/verify",
+      "file": "apps/edge/src/routes.ts",
+      "line": 204,
+      "terms": [
+        "audit"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/audit/verify",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1102,
+      "terms": [
+        "audit"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/db/schema",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 134,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/schema",
+      "file": "apps/api/src/routes.ts",
+      "line": 197,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/schema",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 192,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/snapshot",
+      "file": "apps/edge/src/db-projection.test.ts",
+      "line": 87,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/snapshot",
+      "file": "apps/edge/src/db-projection.test.ts",
+      "line": 159,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/snapshot",
+      "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.test.ts",
+      "line": 40,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/snapshot",
+      "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.ts",
+      "line": 171,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/snapshot",
+      "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.ts",
+      "line": 172,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/snapshot",
+      "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.ts",
+      "line": 173,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/snapshot",
+      "file": "apps/edge/src/routes.ts",
+      "line": 218,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/snapshot",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1210,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/db/snapshot/save",
+      "file": "apps/edge/src/db-projection.test.ts",
+      "line": 115,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/snapshot/save",
+      "file": "apps/edge/src/db-projection.test.ts",
+      "line": 161,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/db/snapshot/save",
+      "file": "apps/edge/src/routes.ts",
+      "line": 219,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/db/snapshot/save",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1223,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/summary",
+      "file": "apps/edge/src/db-projection.test.ts",
+      "line": 61,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/summary",
+      "file": "apps/edge/src/db-projection.test.ts",
+      "line": 158,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/summary",
+      "file": "apps/edge/src/routes.ts",
+      "line": 217,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/summary",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1197,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/tables",
+      "file": "apps/api/src/routes.ts",
+      "line": 206,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/db/tables",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 197,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/evidence/items",
+      "file": "apps/edge/src/routes.ts",
+      "line": 206,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/evidence/items",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1113,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/evidence/register",
+      "file": "apps/edge/src/demo-readiness.test.ts",
+      "line": 52,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/evidence/register",
+      "file": "apps/edge/src/demo-reset.test.ts",
+      "line": 21,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/evidence/register",
+      "file": "apps/edge/src/evidence-store.test.ts",
+      "line": 13,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/evidence/register",
+      "file": "apps/edge/src/evidence-store.test.ts",
+      "line": 69,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/evidence/register",
+      "file": "apps/edge/src/evidence-store.test.ts",
+      "line": 131,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/evidence/register",
+      "file": "apps/edge/src/evidence-store.test.ts",
+      "line": 154,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/evidence/register",
+      "file": "apps/edge/src/evidence-store.test.ts",
+      "line": 216,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/evidence/register",
+      "file": "apps/edge/src/routes.ts",
+      "line": 205,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/evidence/register",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1109,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/evidence/summary",
+      "file": "apps/edge/src/demo-reset.test.ts",
+      "line": 33,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/evidence/summary",
+      "file": "apps/edge/src/evidence-store.test.ts",
+      "line": 166,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/evidence/summary",
+      "file": "apps/edge/src/routes.ts",
+      "line": 207,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/evidence/summary",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1117,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/evidence/verify",
+      "file": "apps/edge/src/evidence-store.test.ts",
+      "line": 173,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/evidence/verify",
+      "file": "apps/edge/src/routes.ts",
+      "line": 208,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/evidence/verify",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1121,
+      "terms": [
+        "evidence"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "file": "apps/api/src/cloud-edge-sync-route-wrapper.test.ts",
+      "line": 171,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/health",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 85,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/health",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 90,
+      "terms": []
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/health",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 110,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 121,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "file": "apps/api/src/routes.ts",
+      "line": 186,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "file": "apps/edge/src/edge-cloud-sync-export-handler.test.ts",
+      "line": 117,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.test.ts",
+      "line": 137,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "file": "apps/edge/src/routes.ts",
+      "line": 193,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1018,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "file": "packages/api-contracts/src/cloud-api.test.ts",
+      "line": 13,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "file": "packages/api-contracts/src/cloud-api.test.ts",
+      "line": 24,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 187,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/seed/cooper-smoke",
+      "file": "apps/api/src/routes.ts",
+      "line": 215,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/seed/cooper-smoke",
+      "file": "apps/edge/src/routes.ts",
+      "line": 194,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/seed/cooper-smoke",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1034,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/seed/cooper-smoke",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 202,
+      "terms": []
+    },
+    {
+      "method": "POST",
+      "path": "/stockpiles",
+      "file": "apps/api/src/audit-mutation-route-wrapper.test.ts",
+      "line": 80,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/stockpiles",
+      "file": "apps/api/src/audit-mutation-route-wrapper.test.ts",
+      "line": 182,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/stockpiles",
+      "file": "apps/api/src/audit-mutation-route-wrapper.ts",
+      "line": 249,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/stockpiles",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 86,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/stockpiles",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 169,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/stockpiles",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 191,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/stockpiles",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 220,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/stockpiles",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 238,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/stockpiles",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 257,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/stockpiles",
+      "file": "apps/api/src/routes.ts",
+      "line": 233,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/stockpiles",
+      "file": "apps/api/src/routes.ts",
+      "line": 246,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/stockpiles",
+      "file": "packages/api-contracts/src/cloud-api.test.ts",
+      "line": 15,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/stockpiles",
+      "file": "packages/api-contracts/src/cloud-api.test.ts",
+      "line": 16,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/stockpiles",
+      "file": "packages/api-contracts/src/cloud-api.test.ts",
+      "line": 26,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/stockpiles",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 217,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/stockpiles",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 222,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/stockpiles/:id/status",
+      "file": "packages/api-contracts/src/cloud-api.test.ts",
+      "line": 17,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/stockpiles/:id/status",
+      "file": "packages/api-contracts/src/cloud-api.test.ts",
+      "line": 27,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/stockpiles/:id/status",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 227,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/stockpiles/lifecycle",
+      "file": "apps/api/src/routes-lifecycle.test.ts",
+      "line": 41,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/stockpiles/lifecycle",
+      "file": "apps/api/src/routes.ts",
+      "line": 165,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/stockpiles/lifecycle",
+      "file": "packages/api-contracts/src/cloud-api-lifecycle.test.ts",
+      "line": 11,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/stockpiles/lifecycle",
+      "file": "packages/api-contracts/src/cloud-api-lifecycle.test.ts",
+      "line": 17,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/stockpiles/lifecycle",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 212,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/stockpiles/missing_stockpile/status",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 295,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/stockpiles/stockpile_001/status",
+      "file": "apps/api/src/audit-mutation-route-wrapper.test.ts",
+      "line": 135,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/stockpiles/stockpile_status_route/status",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 268,
+      "terms": [
+        "kpi",
+        "stockpile",
+        "stockpiles"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/batches",
+      "file": "apps/edge/src/audit-store.test.ts",
+      "line": 71,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/batches",
+      "file": "apps/edge/src/audit-store.test.ts",
+      "line": 79,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/batches",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 80,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/batches",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 92,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/batches",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 143,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/batches",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 188,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/batches",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 214,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/batches",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 240,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/batches",
+      "file": "apps/edge/src/routes.ts",
+      "line": 195,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/batches",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1038,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/conflicts/resolutions",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 137,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/conflicts/resolutions",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 268,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/conflicts/resolutions",
+      "file": "apps/edge/src/routes.ts",
+      "line": 200,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/conflicts/resolutions",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1083,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/conflicts/resolve",
+      "file": "apps/edge/src/audit-store.test.ts",
+      "line": 98,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/conflicts/resolve",
+      "file": "apps/edge/src/audit-store.test.ts",
+      "line": 138,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/conflicts/resolve",
+      "file": "apps/edge/src/audit-store.test.ts",
+      "line": 196,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/conflicts/resolve",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 136,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/conflicts/resolve",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 290,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/conflicts/resolve",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 335,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/conflicts/resolve",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 419,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/conflicts/resolve",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 430,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/conflicts/resolve",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 465,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/conflicts/resolve",
+      "file": "apps/edge/src/routes.ts",
+      "line": 201,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/conflicts/resolve",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1090,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/events",
+      "file": "apps/edge/src/routes.ts",
+      "line": 196,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/events",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1042,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/export",
+      "file": "apps/edge/src/audit-store.test.ts",
+      "line": 206,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/export",
+      "file": "apps/edge/src/evidence-store.test.ts",
+      "line": 228,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/export",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 134,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/export",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 167,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/export",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 347,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/export",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 490,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/export",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 524,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/export",
+      "file": "apps/edge/src/routes.ts",
+      "line": 198,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/export",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1060,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/import",
+      "file": "apps/edge/src/evidence-store.test.ts",
+      "line": 252,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/import",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 135,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/import",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 381,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/import",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 539,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/import",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 575,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/import",
+      "file": "apps/edge/src/routes.ts",
+      "line": 199,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/import",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1079,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/ingest",
+      "file": "apps/api/src/cloud-edge-sync-route-wrapper.test.ts",
+      "line": 135,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/ingest",
+      "file": "apps/api/src/cloud-edge-sync-route-wrapper.ts",
+      "line": 273,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/ingest",
+      "file": "apps/api/src/cloud-edge-sync-routes.test.ts",
+      "line": 118,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/ingest",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 162,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/packages/db-projection",
+      "file": "apps/edge/src/edge-cloud-sync-export-handler.test.ts",
+      "line": 98,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/sync/packages/db-projection",
+      "file": "apps/edge/src/edge-cloud-sync-export-handler.test.ts",
+      "line": 131,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/packages/db-projection",
+      "file": "apps/edge/src/edge-cloud-sync-export-handler.ts",
+      "line": 104,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/packages/db-projection",
+      "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.test.ts",
+      "line": 89,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/packages/db-projection",
+      "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.test.ts",
+      "line": 159,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/packages/db-projection",
+      "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.ts",
+      "line": 221,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/preview",
+      "file": "apps/api/src/cloud-edge-sync-route-wrapper.test.ts",
+      "line": 104,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/preview",
+      "file": "apps/api/src/cloud-edge-sync-route-wrapper.ts",
+      "line": 269,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/sync/preview",
+      "file": "apps/api/src/cloud-edge-sync-routes.test.ts",
+      "line": 92,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/preview",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 157,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/status",
+      "file": "apps/api/src/cloud-edge-sync-route-wrapper.test.ts",
+      "line": 77,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/status",
+      "file": "apps/api/src/cloud-edge-sync-route-wrapper.ts",
+      "line": 265,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/status",
+      "file": "apps/api/src/cloud-edge-sync-routes.test.ts",
+      "line": 70,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/status",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 152,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/summary",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 604,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/summary",
+      "file": "apps/edge/src/routes.ts",
+      "line": 197,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/sync/summary",
+      "file": "apps/edge/src/routes.ts",
+      "line": 1056,
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/system/overview",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 311,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/system/overview",
+      "file": "apps/api/src/routes.ts",
+      "line": 286,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/system/overview",
+      "file": "packages/api-contracts/src/cloud-api.test.ts",
+      "line": 18,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/system/overview",
+      "file": "packages/api-contracts/src/cloud-api.test.ts",
+      "line": 25,
+      "terms": []
+    },
+    {
+      "method": "PATCH",
+      "path": "/system/overview",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 232,
+      "terms": []
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/tenants",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 151,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/tenants",
+      "file": "apps/api/src/routes.ts",
+      "line": 223,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/tenants",
+      "file": "packages/api-contracts/src/cloud-api.test.ts",
+      "line": 14,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/tenants",
+      "file": "packages/api-contracts/src/cloud-api.ts",
+      "line": 207,
+      "terms": []
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/unknown",
+      "file": "apps/api/src/routes.test.ts",
+      "line": 378,
+      "terms": []
+    },
+    {
+      "method": "GET",
+      "path": "/unknown",
+      "file": "apps/edge/src/index.test.ts",
+      "line": 630,
+      "terms": []
+    },
+    {
+      "method": "UNKNOWN",
+      "path": "/unknown",
+      "file": "packages/api-contracts/src/cloud-api.test.ts",
+      "line": 28,
+      "terms": []
+    }
+  ],
+  "routeGroups": {
+    "otros": [
+      {
+        "method": "UNKNOWN",
+        "path": "/admin/db/reset",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 355,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/db/reset",
+        "file": "apps/api/src/routes.ts",
+        "line": 301,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/db/reset",
+        "file": "packages/api-contracts/src/cloud-api.test.ts",
+        "line": 20,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/db/reset",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 242,
+        "terms": []
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/admin/db/snapshot",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 331,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/db/snapshot",
+        "file": "apps/api/src/routes.ts",
+        "line": 292,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/db/snapshot",
+        "file": "packages/api-contracts/src/cloud-api.test.ts",
+        "line": 19,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/db/snapshot",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 237,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-readiness",
+        "file": "apps/edge/src/demo-readiness.test.ts",
+        "line": 21,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-readiness",
+        "file": "apps/edge/src/demo-readiness.test.ts",
+        "line": 64,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-readiness",
+        "file": "apps/edge/src/demo-readiness.test.ts",
+        "line": 124,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-readiness",
+        "file": "apps/edge/src/routes.ts",
+        "line": 210,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/demo-readiness",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1185,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-report",
+        "file": "apps/edge/src/demo-report.test.ts",
+        "line": 21,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-report",
+        "file": "apps/edge/src/demo-report.test.ts",
+        "line": 63,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-report",
+        "file": "apps/edge/src/demo-report.test.ts",
+        "line": 129,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-report",
+        "file": "apps/edge/src/routes.ts",
+        "line": 212,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-report",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1131,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/reset-demo-state",
+        "file": "apps/edge/src/demo-package-import.test.ts",
+        "line": 44,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/reset-demo-state",
+        "file": "apps/edge/src/demo-reset.test.ts",
+        "line": 50,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/reset-demo-state",
+        "file": "apps/edge/src/demo-reset.test.ts",
+        "line": 103,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/reset-demo-state",
+        "file": "apps/edge/src/routes.ts",
+        "line": 209,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/reset-demo-state",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1182,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/run-guided-demo",
+        "file": "apps/edge/src/db-projection.test.ts",
+        "line": 37,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/run-guided-demo",
+        "file": "apps/edge/src/demo-package-import.test.ts",
+        "line": 21,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/run-guided-demo",
+        "file": "apps/edge/src/demo-package-import.test.ts",
+        "line": 117,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/run-guided-demo",
+        "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+        "line": 21,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/run-guided-demo",
+        "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+        "line": 77,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/run-guided-demo",
+        "file": "apps/edge/src/demo-package-verify.test.ts",
+        "line": 21,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/run-guided-demo",
+        "file": "apps/edge/src/demo-package.test.ts",
+        "line": 21,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/run-guided-demo",
+        "file": "apps/edge/src/demo-report.test.ts",
+        "line": 53,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/run-guided-demo",
+        "file": "apps/edge/src/guided-demo.test.ts",
+        "line": 21,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/run-guided-demo",
+        "file": "apps/edge/src/guided-demo.test.ts",
+        "line": 98,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/run-guided-demo",
+        "file": "apps/edge/src/routes.ts",
+        "line": 211,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/run-guided-demo",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1128,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/schema",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 134,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/schema",
+        "file": "apps/api/src/routes.ts",
+        "line": 197,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/schema",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 192,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/snapshot",
+        "file": "apps/edge/src/db-projection.test.ts",
+        "line": 87,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/snapshot",
+        "file": "apps/edge/src/db-projection.test.ts",
+        "line": 159,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/snapshot",
+        "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.test.ts",
+        "line": 40,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/snapshot",
+        "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.ts",
+        "line": 171,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/snapshot",
+        "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.ts",
+        "line": 172,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/snapshot",
+        "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.ts",
+        "line": 173,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/snapshot",
+        "file": "apps/edge/src/routes.ts",
+        "line": 218,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/snapshot",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1210,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/db/snapshot/save",
+        "file": "apps/edge/src/db-projection.test.ts",
+        "line": 115,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/snapshot/save",
+        "file": "apps/edge/src/db-projection.test.ts",
+        "line": 161,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/db/snapshot/save",
+        "file": "apps/edge/src/routes.ts",
+        "line": 219,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/db/snapshot/save",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1223,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/summary",
+        "file": "apps/edge/src/db-projection.test.ts",
+        "line": 61,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/summary",
+        "file": "apps/edge/src/db-projection.test.ts",
+        "line": 158,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/summary",
+        "file": "apps/edge/src/routes.ts",
+        "line": 217,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/summary",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1197,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/tables",
+        "file": "apps/api/src/routes.ts",
+        "line": 206,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/db/tables",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 197,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/evidence/items",
+        "file": "apps/edge/src/routes.ts",
+        "line": 206,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/evidence/items",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1113,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/evidence/register",
+        "file": "apps/edge/src/demo-readiness.test.ts",
+        "line": 52,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/evidence/register",
+        "file": "apps/edge/src/demo-reset.test.ts",
+        "line": 21,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/evidence/register",
+        "file": "apps/edge/src/evidence-store.test.ts",
+        "line": 13,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/evidence/register",
+        "file": "apps/edge/src/evidence-store.test.ts",
+        "line": 69,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/evidence/register",
+        "file": "apps/edge/src/evidence-store.test.ts",
+        "line": 131,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/evidence/register",
+        "file": "apps/edge/src/evidence-store.test.ts",
+        "line": 154,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/evidence/register",
+        "file": "apps/edge/src/evidence-store.test.ts",
+        "line": 216,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/evidence/register",
+        "file": "apps/edge/src/routes.ts",
+        "line": 205,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/evidence/register",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1109,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/evidence/summary",
+        "file": "apps/edge/src/demo-reset.test.ts",
+        "line": 33,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/evidence/summary",
+        "file": "apps/edge/src/evidence-store.test.ts",
+        "line": 166,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/evidence/summary",
+        "file": "apps/edge/src/routes.ts",
+        "line": 207,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/evidence/summary",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1117,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/evidence/verify",
+        "file": "apps/edge/src/evidence-store.test.ts",
+        "line": 173,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/evidence/verify",
+        "file": "apps/edge/src/routes.ts",
+        "line": 208,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/evidence/verify",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1121,
+        "terms": [
+          "evidence"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/seed/cooper-smoke",
+        "file": "apps/api/src/routes.ts",
+        "line": 215,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/seed/cooper-smoke",
+        "file": "apps/edge/src/routes.ts",
+        "line": 194,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/seed/cooper-smoke",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1034,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/seed/cooper-smoke",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 202,
+        "terms": []
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/system/overview",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 311,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/system/overview",
+        "file": "apps/api/src/routes.ts",
+        "line": 286,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/system/overview",
+        "file": "packages/api-contracts/src/cloud-api.test.ts",
+        "line": 18,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/system/overview",
+        "file": "packages/api-contracts/src/cloud-api.test.ts",
+        "line": 25,
+        "terms": []
+      },
+      {
+        "method": "PATCH",
+        "path": "/system/overview",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 232,
+        "terms": []
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/tenants",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 151,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/tenants",
+        "file": "apps/api/src/routes.ts",
+        "line": 223,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/tenants",
+        "file": "packages/api-contracts/src/cloud-api.test.ts",
+        "line": 14,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/tenants",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 207,
+        "terms": []
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/unknown",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 378,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/unknown",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 630,
+        "terms": []
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/unknown",
+        "file": "packages/api-contracts/src/cloud-api.test.ts",
+        "line": 28,
+        "terms": []
+      }
+    ],
+    "envios/sincronizacion": [
+      {
+        "method": "GET",
+        "path": "/admin/demo-package",
+        "file": "apps/edge/src/demo-package-import.test.ts",
+        "line": 31,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-package",
+        "file": "apps/edge/src/demo-package-import.test.ts",
+        "line": 127,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-package",
+        "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+        "line": 31,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-package",
+        "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+        "line": 87,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-package",
+        "file": "apps/edge/src/demo-package.test.ts",
+        "line": 31,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-package",
+        "file": "apps/edge/src/demo-package.test.ts",
+        "line": 108,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-package",
+        "file": "apps/edge/src/demo-package.test.ts",
+        "line": 165,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-package",
+        "file": "apps/edge/src/routes.ts",
+        "line": 213,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-package",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1170,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/demo-package/import",
+        "file": "apps/edge/src/demo-package-import.test.ts",
+        "line": 51,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/demo-package/import",
+        "file": "apps/edge/src/demo-package-import.test.ts",
+        "line": 147,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/demo-package/import",
+        "file": "apps/edge/src/demo-package-import.test.ts",
+        "line": 189,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-package/import",
+        "file": "apps/edge/src/routes.ts",
+        "line": 216,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/demo-package/import",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1143,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/demo-package/verify",
+        "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+        "line": 44,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/demo-package/verify",
+        "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+        "line": 112,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/demo-package/verify",
+        "file": "apps/edge/src/demo-package-upload-verify.test.ts",
+        "line": 144,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-package/verify",
+        "file": "apps/edge/src/demo-package-verify.test.ts",
+        "line": 31,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-package/verify",
+        "file": "apps/edge/src/demo-package-verify.test.ts",
+        "line": 85,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-package/verify",
+        "file": "apps/edge/src/routes.ts",
+        "line": 214,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/demo-package/verify",
+        "file": "apps/edge/src/routes.ts",
+        "line": 215,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/admin/demo-package/verify",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1146,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/admin/demo-package/verify",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1158,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/sync/batches",
+        "file": "apps/edge/src/audit-store.test.ts",
+        "line": 71,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/batches",
+        "file": "apps/edge/src/audit-store.test.ts",
+        "line": 79,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/batches",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 80,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/batches",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 92,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/batches",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 143,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/batches",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 188,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/batches",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 214,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/batches",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 240,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/batches",
+        "file": "apps/edge/src/routes.ts",
+        "line": 195,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/batches",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1038,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/conflicts/resolutions",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 137,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/conflicts/resolutions",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 268,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/conflicts/resolutions",
+        "file": "apps/edge/src/routes.ts",
+        "line": 200,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/conflicts/resolutions",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1083,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/conflicts/resolve",
+        "file": "apps/edge/src/audit-store.test.ts",
+        "line": 98,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/conflicts/resolve",
+        "file": "apps/edge/src/audit-store.test.ts",
+        "line": 138,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/conflicts/resolve",
+        "file": "apps/edge/src/audit-store.test.ts",
+        "line": 196,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/conflicts/resolve",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 136,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/conflicts/resolve",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 290,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/conflicts/resolve",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 335,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/conflicts/resolve",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 419,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/conflicts/resolve",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 430,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/conflicts/resolve",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 465,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/conflicts/resolve",
+        "file": "apps/edge/src/routes.ts",
+        "line": 201,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/conflicts/resolve",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1090,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/events",
+        "file": "apps/edge/src/routes.ts",
+        "line": 196,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/events",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1042,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/export",
+        "file": "apps/edge/src/audit-store.test.ts",
+        "line": 206,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/export",
+        "file": "apps/edge/src/evidence-store.test.ts",
+        "line": 228,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/export",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 134,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/export",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 167,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/export",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 347,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/export",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 490,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/export",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 524,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/export",
+        "file": "apps/edge/src/routes.ts",
+        "line": 198,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/export",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1060,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/import",
+        "file": "apps/edge/src/evidence-store.test.ts",
+        "line": 252,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/import",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 135,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/import",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 381,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/import",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 539,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/import",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 575,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/import",
+        "file": "apps/edge/src/routes.ts",
+        "line": 199,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/import",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1079,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/ingest",
+        "file": "apps/api/src/cloud-edge-sync-route-wrapper.test.ts",
+        "line": 135,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/ingest",
+        "file": "apps/api/src/cloud-edge-sync-route-wrapper.ts",
+        "line": 273,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/ingest",
+        "file": "apps/api/src/cloud-edge-sync-routes.test.ts",
+        "line": 118,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/ingest",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 162,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/packages/db-projection",
+        "file": "apps/edge/src/edge-cloud-sync-export-handler.test.ts",
+        "line": 98,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/sync/packages/db-projection",
+        "file": "apps/edge/src/edge-cloud-sync-export-handler.test.ts",
+        "line": 131,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/packages/db-projection",
+        "file": "apps/edge/src/edge-cloud-sync-export-handler.ts",
+        "line": 104,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/packages/db-projection",
+        "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.test.ts",
+        "line": 89,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/packages/db-projection",
+        "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.test.ts",
+        "line": 159,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/packages/db-projection",
+        "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.ts",
+        "line": 221,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/preview",
+        "file": "apps/api/src/cloud-edge-sync-route-wrapper.test.ts",
+        "line": 104,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/preview",
+        "file": "apps/api/src/cloud-edge-sync-route-wrapper.ts",
+        "line": 269,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/sync/preview",
+        "file": "apps/api/src/cloud-edge-sync-routes.test.ts",
+        "line": 92,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/preview",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 157,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/status",
+        "file": "apps/api/src/cloud-edge-sync-route-wrapper.test.ts",
+        "line": 77,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/status",
+        "file": "apps/api/src/cloud-edge-sync-route-wrapper.ts",
+        "line": 265,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/status",
+        "file": "apps/api/src/cloud-edge-sync-routes.test.ts",
+        "line": 70,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/status",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 152,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/summary",
+        "file": "apps/edge/src/index.test.ts",
+        "line": 604,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/summary",
+        "file": "apps/edge/src/routes.ts",
+        "line": 197,
+        "terms": [
+          "sync"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/sync/summary",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1056,
+        "terms": [
+          "sync"
+        ]
+      }
+    ],
+    "historial/auditoria": [
+      {
+        "method": "GET",
+        "path": "/audit/entries",
+        "file": "apps/edge/src/routes.ts",
+        "line": 202,
+        "terms": [
+          "audit"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/audit/entries",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1094,
+        "terms": [
+          "audit"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/audit/mutations",
+        "file": "apps/api/src/audit-mutation-route-wrapper.test.ts",
+        "line": 229,
+        "terms": [
+          "audit",
+          "mutation"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/audit/mutations",
+        "file": "apps/api/src/audit-mutation-route-wrapper.ts",
+        "line": 264,
+        "terms": [
+          "audit",
+          "mutation"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/audit/mutations",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 172,
+        "terms": [
+          "audit",
+          "mutation"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/audit/summary",
+        "file": "apps/api/src/audit-mutation-route-wrapper.test.ts",
+        "line": 310,
+        "terms": [
+          "audit"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/audit/summary",
+        "file": "apps/api/src/audit-mutation-route-wrapper.ts",
+        "line": 270,
+        "terms": [
+          "audit"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/audit/summary",
+        "file": "apps/edge/src/audit-store.test.ts",
+        "line": 148,
+        "terms": [
+          "audit"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/audit/summary",
+        "file": "apps/edge/src/evidence-store.test.ts",
+        "line": 108,
+        "terms": [
+          "audit"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/audit/summary",
+        "file": "apps/edge/src/routes.ts",
+        "line": 203,
+        "terms": [
+          "audit"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/audit/summary",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1098,
+        "terms": [
+          "audit"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/audit/summary",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 177,
+        "terms": [
+          "audit"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/audit/verify",
+        "file": "apps/edge/src/audit-store.test.ts",
+        "line": 155,
+        "terms": [
+          "audit"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/audit/verify",
+        "file": "apps/edge/src/routes.ts",
+        "line": 204,
+        "terms": [
+          "audit"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/audit/verify",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1102,
+        "terms": [
+          "audit"
+        ]
+      }
+    ],
+    "materiales/stockpiles": [
+      {
+        "method": "POST",
+        "path": "/audit/stockpiles/:id",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 167,
+        "terms": [
+          "audit",
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/audit/stockpiles/stockpile_001",
+        "file": "apps/api/src/audit-mutation-route-wrapper.test.ts",
+        "line": 412,
+        "terms": [
+          "audit",
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/stockpiles",
+        "file": "apps/api/src/audit-mutation-route-wrapper.test.ts",
+        "line": 80,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/stockpiles",
+        "file": "apps/api/src/audit-mutation-route-wrapper.test.ts",
+        "line": 182,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/stockpiles",
+        "file": "apps/api/src/audit-mutation-route-wrapper.ts",
+        "line": 249,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/stockpiles",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 86,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/stockpiles",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 169,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/stockpiles",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 191,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/stockpiles",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 220,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/stockpiles",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 238,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/stockpiles",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 257,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/stockpiles",
+        "file": "apps/api/src/routes.ts",
+        "line": 233,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/stockpiles",
+        "file": "apps/api/src/routes.ts",
+        "line": 246,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/stockpiles",
+        "file": "packages/api-contracts/src/cloud-api.test.ts",
+        "line": 15,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/stockpiles",
+        "file": "packages/api-contracts/src/cloud-api.test.ts",
+        "line": 16,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/stockpiles",
+        "file": "packages/api-contracts/src/cloud-api.test.ts",
+        "line": 26,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/stockpiles",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 217,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/stockpiles",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 222,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/stockpiles/:id/status",
+        "file": "packages/api-contracts/src/cloud-api.test.ts",
+        "line": 17,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "PATCH",
+        "path": "/stockpiles/:id/status",
+        "file": "packages/api-contracts/src/cloud-api.test.ts",
+        "line": 27,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/stockpiles/:id/status",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 227,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/stockpiles/lifecycle",
+        "file": "apps/api/src/routes-lifecycle.test.ts",
+        "line": 41,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/stockpiles/lifecycle",
+        "file": "apps/api/src/routes.ts",
+        "line": 165,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/stockpiles/lifecycle",
+        "file": "packages/api-contracts/src/cloud-api-lifecycle.test.ts",
+        "line": 11,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/stockpiles/lifecycle",
+        "file": "packages/api-contracts/src/cloud-api-lifecycle.test.ts",
+        "line": 17,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/stockpiles/lifecycle",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 212,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/stockpiles/missing_stockpile/status",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 295,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "PATCH",
+        "path": "/stockpiles/stockpile_001/status",
+        "file": "apps/api/src/audit-mutation-route-wrapper.test.ts",
+        "line": 135,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/stockpiles/stockpile_status_route/status",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 268,
+        "terms": [
+          "kpi",
+          "stockpile",
+          "stockpiles"
+        ]
+      }
+    ],
+    "estado/sistema": [
+      {
+        "method": "GET",
+        "path": "/health",
+        "file": "apps/api/src/cloud-edge-sync-route-wrapper.test.ts",
+        "line": 171,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/health",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 85,
+        "terms": []
+      },
+      {
+        "method": "POST",
+        "path": "/health",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 90,
+        "terms": []
+      },
+      {
+        "method": "UNKNOWN",
+        "path": "/health",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 110,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/health",
+        "file": "apps/api/src/routes.test.ts",
+        "line": 121,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/health",
+        "file": "apps/api/src/routes.ts",
+        "line": 186,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/health",
+        "file": "apps/edge/src/edge-cloud-sync-export-handler.test.ts",
+        "line": 117,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/health",
+        "file": "apps/edge/src/edge-cloud-sync-export-route-wrapper.test.ts",
+        "line": 137,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/health",
+        "file": "apps/edge/src/routes.ts",
+        "line": 193,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/health",
+        "file": "apps/edge/src/routes.ts",
+        "line": 1018,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/health",
+        "file": "packages/api-contracts/src/cloud-api.test.ts",
+        "line": 13,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/health",
+        "file": "packages/api-contracts/src/cloud-api.test.ts",
+        "line": 24,
+        "terms": []
+      },
+      {
+        "method": "GET",
+        "path": "/health",
+        "file": "packages/api-contracts/src/cloud-api.ts",
+        "line": 187,
+        "terms": []
+      }
+    ]
+  },
+  "fetchUsages": [
+    {
+      "file": "apps/web/src/App.tsx",
+      "line": 6,
+      "expression": "client.",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/App.tsx",
+      "line": 42,
+      "expression": "client.",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/components/AuditMutationPanel.tsx",
+      "line": 12,
+      "expression": "client.",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/components/AuditTimelineStoryPanel.tsx",
+      "line": 67,
+      "expression": "fetch(url, { headers: { accept: \"application/json\", \"x-request-id\": \"web-audit-timeline-story\", }, signal: controller.signal, })",
+      "terms": [
+        "audit",
+        "timeline"
+      ]
+    },
+    {
+      "file": "apps/web/src/components/CloudEdgeSyncPanel.tsx",
+      "line": 14,
+      "expression": "client.",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/components/DemoDataResetPanel.tsx",
+      "line": 63,
+      "expression": "fetch(`${getApiBaseUrl()",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/components/RuntimeConnectionStatusPanel.tsx",
+      "line": 56,
+      "expression": "fetch(url, { headers: { accept: \"application/json\", \"x-request-id\": \"web-runtime-connection-status\", }, })",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/components/StockpileCreatePanel.tsx",
+      "line": 2,
+      "expression": "client.",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/components/StockpileDemoSummaryPanel.tsx",
+      "line": 257,
+      "expression": "fetch(`${getApiBaseUrl()",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/components/StockpileLifecyclePanel.tsx",
+      "line": 6,
+      "expression": "client.",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/components/StockpileStatusPanel.tsx",
+      "line": 6,
+      "expression": "client.",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/components/StockpileStatusPanel.tsx",
+      "line": 10,
+      "expression": "client.",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/components/SyncDemoStoryPanel.tsx",
+      "line": 207,
+      "expression": "fetch(url, { ...init, headers: { accept: \"application/json\", \"content-type\": \"application/json\", \"x-request-id\": \"web-sync-demo-story\", ...(init?.headers ?? {})",
+      "terms": [
+        "sync"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/api-client.ts",
+      "line": 63,
+      "expression": "fetch(`${apiBaseUrl}${path}`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/data/api-client.ts",
+      "line": 89,
+      "expression": "fetch(`${apiBaseUrl}${path}`, { method, headers: { accept: \"application/json\", \"content-type\": \"application/json\" }, body: JSON.stringify(payload)",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/data/audit-client.ts",
+      "line": 109,
+      "expression": "fetch(`${baseUrl.replace(/\\/+$/u, \"\")",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/data/cloud-edge-sync-client.ts",
+      "line": 86,
+      "expression": "fetch(`${baseUrl.replace(/\\/+$/u, \"\")",
+      "terms": []
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 435,
+      "expression": "fetch(`${edgeBaseUrl}/seed/cooper-smoke`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 535,
+      "expression": "fetch(`${edgeBaseUrl}/sync/batches`, { method: \"POST\", headers: { accept: \"application/json\", \"content-type\": \"application/json\" }, body: JSON.stringify(request)",
+      "terms": [
+        "edge",
+        "sync"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 636,
+      "expression": "fetch(`${edgeBaseUrl}/admin/run-guided-demo`, { method: \"POST\", headers: { accept: \"application/json\", \"content-type\": \"application/json\" }, body: JSON.stringify({ resetBeforeRun: true })",
+      "terms": [
+        "edge"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 697,
+      "expression": "fetch(`${edgeBaseUrl}/sync/summary`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge",
+        "sync"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 703,
+      "expression": "fetch(`${edgeBaseUrl}/sync/events`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge",
+        "sync"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 709,
+      "expression": "fetch(`${edgeBaseUrl}/sync/conflicts/resolutions`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge",
+        "sync"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 715,
+      "expression": "fetch(`${edgeBaseUrl}/audit/summary`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "audit",
+        "edge"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 721,
+      "expression": "fetch(`${edgeBaseUrl}/audit/entries`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "audit",
+        "edge"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 727,
+      "expression": "fetch(`${edgeBaseUrl}/evidence/summary`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge",
+        "evidence"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 733,
+      "expression": "fetch(`${edgeBaseUrl}/evidence/items`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge",
+        "evidence"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 739,
+      "expression": "fetch(`${edgeBaseUrl}/evidence/verify`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge",
+        "evidence"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 745,
+      "expression": "fetch(`${edgeBaseUrl}/admin/demo-readiness`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 876,
+      "expression": "fetch(`${edgeBaseUrl}/admin/demo-report`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 917,
+      "expression": "fetch(`${edgeBaseUrl}/admin/demo-package`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 958,
+      "expression": "fetch(`${edgeBaseUrl}/admin/demo-package/verify`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 1001,
+      "expression": "fetch(`${edgeBaseUrl}/admin/demo-package/verify`, { method: \"POST\", headers: { accept: \"application/json\", \"content-type\": \"application/json\" }, body: JSON.stringify({ package: packageData })",
+      "terms": [
+        "edge"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 1113,
+      "expression": "fetch(`${edgeBaseUrl}/admin/reset-demo-state`, { method: \"POST\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 1142,
+      "expression": "fetch(`${edgeBaseUrl}/sync/export`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge",
+        "sync"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 1214,
+      "expression": "fetch(`${edgeBaseUrl}/sync/import`, { method: \"POST\", headers: { accept: \"application/json\", \"content-type\": \"application/json\" }, body: JSON.stringify({ replaceExistingStore, store })",
+      "terms": [
+        "edge",
+        "sync"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 1299,
+      "expression": "fetch(`${edgeBaseUrl}/db/summary`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 1347,
+      "expression": "fetch(`${edgeBaseUrl}/db/snapshot`, { method: \"GET\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/edge-client.ts",
+      "line": 1396,
+      "expression": "fetch(`${edgeBaseUrl}/db/snapshot/save`, { method: \"POST\", headers: { accept: \"application/json\" } })",
+      "terms": [
+        "edge"
+      ]
+    },
+    {
+      "file": "apps/web/src/data/stockpile-lifecycle-client.ts",
+      "line": 46,
+      "expression": "fetch(`${baseUrl.replace(/\\/+$/u, \"\")",
+      "terms": []
+    }
+  ],
+  "visibleComponents": [
+    {
+      "file": "apps/web/src/components/NamikiProductShell.tsx",
+      "names": [
+        "AnalisisPage",
+        "CapturaPage",
+        "EnviosPage",
+        "EquipoPage",
+        "HistorialPage",
+        "InicioPage",
+        "InternoPage",
+        "MaterialBoard",
+        "MaterialesPage",
+        "NamikiProductShell",
+        "OperationalYardMap",
+        "PageHeader",
+        "PatioPage",
+        "ProductCard",
+        "ProductDrawer",
+        "StatCard",
+        "TimelineBoard"
+      ],
+      "terms": [
+        "audit",
+        "bascula",
+        "báscula",
+        "comparison",
+        "demand",
+        "demanda",
+        "drone",
+        "drones",
+        "equipment",
+        "evidencia",
+        "filter",
+        "filters",
+        "gps",
+        "historial",
+        "history",
+        "kpi",
+        "location",
+        "map",
+        "maquinaria",
+        "material",
+        "medicion",
+        "medición",
+        "operator",
+        "perímetro",
+        "rtk",
+        "stockpile",
+        "stockpiles",
+        "sync",
+        "timeline",
+        "trípode",
+        "volume",
+        "volumen",
+        "workflow",
+        "yard",
+        "zone"
+      ],
+      "imports": [
+        "import type { ReactNode } from \"react\"",
+        "import { useMemo, useState } from \"react\"",
+        "import { AuditTimelineStoryPanel } from \"./AuditTimelineStoryPanel.js\"",
+        "import { DemoDataResetPanel } from \"./DemoDataResetPanel.js\"",
+        "import { OperatorWorkflowProgressPanel } from \"./OperatorWorkflowProgressPanel.js\"",
+        "import { PremiumGpsPreviewPanel } from \"./PremiumGpsPreviewPanel.js\"",
+        "import { RuntimeConnectionStatusPanel } from \"./RuntimeConnectionStatusPanel.js\"",
+        "import { StockpileDemoSummaryPanel } from \"./StockpileDemoSummaryPanel.js\"",
+        "import { SyncDemoStoryPanel } from \"./SyncDemoStoryPanel.js\"",
+        "import { YardOperationsMapPanel } from \"./YardOperationsMapPanel.js\""
+      ],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 7,
+      "buttonCount": 7,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 54,
+      "lineCount": 843,
+      "visibleNames": [
+        "AnalisisPage",
+        "CapturaPage",
+        "EnviosPage",
+        "EquipoPage",
+        "HistorialPage",
+        "InicioPage",
+        "InternoPage",
+        "MaterialBoard",
+        "MaterialesPage",
+        "NamikiProductShell",
+        "OperationalYardMap",
+        "PageHeader",
+        "PatioPage",
+        "ProductCard",
+        "ProductDrawer",
+        "StatCard",
+        "TimelineBoard"
+      ],
+      "importedByShell": false,
+      "renderedByShell": true,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/YardOperationsMapPanel.tsx",
+      "names": [
+        "FlowStep",
+        "MapSignalCard",
+        "YardOperationsMapPanel",
+        "YardZoneBlock"
+      ],
+      "terms": [
+        "audit",
+        "cloud",
+        "edge",
+        "evidencia",
+        "gps",
+        "historial",
+        "kpi",
+        "map",
+        "material",
+        "operator",
+        "stockpile",
+        "stockpiles",
+        "sync",
+        "yard",
+        "zone",
+        "zones"
+      ],
+      "imports": [],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 0,
+      "buttonCount": 0,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 31,
+      "lineCount": 241,
+      "visibleNames": [
+        "YardOperationsMapPanel"
+      ],
+      "importedByShell": true,
+      "renderedByShell": true,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/AuditTimelineStoryPanel.tsx",
+      "names": [
+        "AuditEventCard",
+        "AuditTimelineStoryPanel",
+        "MetricCard"
+      ],
+      "terms": [
+        "audit",
+        "cloud",
+        "filter",
+        "kpi",
+        "map",
+        "metric",
+        "metrics",
+        "mutation",
+        "stockpile",
+        "stockpiles",
+        "sync",
+        "timeline"
+      ],
+      "imports": [
+        "import { useEffect, useMemo, useState } from \"react\""
+      ],
+      "fetchCount": 1,
+      "chartCount": 0,
+      "stateCount": 9,
+      "buttonCount": 1,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 26,
+      "lineCount": 327,
+      "visibleNames": [
+        "AuditTimelineStoryPanel"
+      ],
+      "importedByShell": true,
+      "renderedByShell": true,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/StockpileDemoSummaryPanel.tsx",
+      "names": [
+        "MetricCard",
+        "StockpileCard",
+        "StockpileDemoSummaryPanel"
+      ],
+      "terms": [
+        "cloud",
+        "filter",
+        "kpi",
+        "map",
+        "material",
+        "metric",
+        "metrics",
+        "stockpile",
+        "stockpiles",
+        "sync",
+        "volume",
+        "yard",
+        "zone"
+      ],
+      "imports": [
+        "import { useEffect, useMemo, useState } from \"react\""
+      ],
+      "fetchCount": 1,
+      "chartCount": 0,
+      "stateCount": 9,
+      "buttonCount": 1,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 26,
+      "lineCount": 345,
+      "visibleNames": [
+        "StockpileDemoSummaryPanel"
+      ],
+      "importedByShell": true,
+      "renderedByShell": true,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/AuditMutationPanel.tsx",
+      "names": [
+        "AuditEntryRow",
+        "AuditMutationPanel"
+      ],
+      "terms": [
+        "audit",
+        "cloud",
+        "compare",
+        "dashboard",
+        "history",
+        "kpi",
+        "map",
+        "mutation",
+        "stockpile",
+        "stockpiles",
+        "sync"
+      ],
+      "imports": [
+        "import { useEffect, useMemo, useState } from \"react\""
+      ],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 16,
+      "buttonCount": 1,
+      "formCount": 1,
+      "svgCount": 0,
+      "score": 22,
+      "lineCount": 343,
+      "visibleNames": [
+        "AuditMutationPanel"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/IndustrialValueSnapshotPanel.tsx",
+      "names": [
+        "IndustrialValueSnapshotPanel",
+        "ProofPointCard",
+        "ValueMetricCard"
+      ],
+      "terms": [
+        "audit",
+        "cloud",
+        "edge",
+        "evidencia",
+        "gps",
+        "historial",
+        "kpi",
+        "map",
+        "material",
+        "metric",
+        "metrics",
+        "stockpile",
+        "stockpiles",
+        "sync"
+      ],
+      "imports": [],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 0,
+      "buttonCount": 0,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 22,
+      "lineCount": 155,
+      "visibleNames": [
+        "IndustrialValueSnapshotPanel"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/StockpileStatusPanel.tsx",
+      "names": [
+        "StockpileStatusPanel"
+      ],
+      "terms": [
+        "cloud",
+        "dashboard",
+        "filter",
+        "kpi",
+        "map",
+        "material",
+        "stockpile",
+        "stockpiles",
+        "sync",
+        "yard",
+        "zone"
+      ],
+      "imports": [
+        "import { useEffect, useMemo, useState } from \"react\""
+      ],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 16,
+      "buttonCount": 1,
+      "formCount": 3,
+      "svgCount": 0,
+      "score": 22,
+      "lineCount": 408,
+      "visibleNames": [
+        "StockpileStatusPanel"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/DemoCommandCenter.tsx",
+      "names": [
+        "DemoCommandCenter",
+        "DemoStepCard",
+        "StatusPill"
+      ],
+      "terms": [
+        "audit",
+        "cloud",
+        "edge",
+        "evidencia",
+        "kpi",
+        "map",
+        "material",
+        "stockpile",
+        "stockpiles",
+        "sync",
+        "timeline",
+        "yard"
+      ],
+      "imports": [],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 0,
+      "buttonCount": 0,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 21,
+      "lineCount": 143,
+      "visibleNames": [
+        "DemoCommandCenter"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/DemoNavigationPanel.tsx",
+      "names": [
+        "DemoNavigationPanel",
+        "DemoSectionCard"
+      ],
+      "terms": [
+        "audit",
+        "cloud",
+        "edge",
+        "evidencia",
+        "historial",
+        "history",
+        "kpi",
+        "map",
+        "mutation",
+        "operator",
+        "stockpile",
+        "sync",
+        "workflow"
+      ],
+      "imports": [],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 0,
+      "buttonCount": 0,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 21,
+      "lineCount": 133,
+      "visibleNames": [
+        "DemoNavigationPanel"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/OperatorWorkflowProgressPanel.tsx",
+      "names": [
+        "OperatorWorkflowProgressPanel",
+        "SignalCard",
+        "WorkflowStageCard"
+      ],
+      "terms": [
+        "audit",
+        "cloud",
+        "edge",
+        "historial",
+        "kpi",
+        "map",
+        "material",
+        "operator",
+        "stockpile",
+        "stockpiles",
+        "sync",
+        "workflow"
+      ],
+      "imports": [],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 0,
+      "buttonCount": 0,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 21,
+      "lineCount": 172,
+      "visibleNames": [
+        "OperatorWorkflowProgressPanel"
+      ],
+      "importedByShell": true,
+      "renderedByShell": true,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/CockpitSectionNavigationPanel.tsx",
+      "names": [
+        "CockpitSectionNavigationPanel",
+        "SectionLinkCard"
+      ],
+      "terms": [
+        "audit",
+        "cloud",
+        "edge",
+        "kpi",
+        "map",
+        "material",
+        "stockpile",
+        "stockpiles",
+        "sync",
+        "timeline",
+        "yard"
+      ],
+      "imports": [],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 0,
+      "buttonCount": 0,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 20,
+      "lineCount": 113,
+      "visibleNames": [
+        "CockpitSectionNavigationPanel"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/RuntimeConnectionStatusPanel.tsx",
+      "names": [
+        "RuntimeConnectionStatusPanel",
+        "RuntimeProbeCard"
+      ],
+      "terms": [
+        "audit",
+        "cloud",
+        "edge",
+        "filter",
+        "kpi",
+        "map",
+        "offline",
+        "stockpile",
+        "stockpiles",
+        "sync"
+      ],
+      "imports": [
+        "import { useEffect, useMemo, useState } from \"react\""
+      ],
+      "fetchCount": 1,
+      "chartCount": 0,
+      "stateCount": 9,
+      "buttonCount": 1,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 20,
+      "lineCount": 225,
+      "visibleNames": [
+        "RuntimeConnectionStatusPanel"
+      ],
+      "importedByShell": true,
+      "renderedByShell": true,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/PremiumCockpitTabs.tsx",
+      "names": [
+        "PremiumCockpitTabs"
+      ],
+      "terms": [
+        "audit",
+        "gps",
+        "historial",
+        "history",
+        "kpi",
+        "location",
+        "map",
+        "material",
+        "sync"
+      ],
+      "imports": [
+        "import { useEffect, useMemo, useState } from \"react\""
+      ],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 7,
+      "buttonCount": 1,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 17,
+      "lineCount": 147,
+      "visibleNames": [
+        "PremiumCockpitTabs"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/PremiumGpsPreviewPanel.tsx",
+      "names": [
+        "PremiumGpsPreviewPanel"
+      ],
+      "terms": [
+        "gps",
+        "map",
+        "material",
+        "perímetro",
+        "zone"
+      ],
+      "imports": [],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 0,
+      "buttonCount": 0,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 15,
+      "lineCount": 58,
+      "visibleNames": [
+        "PremiumGpsPreviewPanel"
+      ],
+      "importedByShell": true,
+      "renderedByShell": true,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/StockpileCreatePanel.tsx",
+      "names": [
+        "StockpileCreatePanel"
+      ],
+      "terms": [
+        "cloud",
+        "dashboard",
+        "kpi",
+        "material",
+        "operator",
+        "stockpile",
+        "sync"
+      ],
+      "imports": [
+        "import { useMemo, useState, type FormEvent } from \"react\"",
+        "import { createCloudApiStockpile, type CloudApiDashboardSnapshot } from \"../data/api-client.js\""
+      ],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 6,
+      "buttonCount": 1,
+      "formCount": 5,
+      "svgCount": 0,
+      "score": 14,
+      "lineCount": 172,
+      "visibleNames": [
+        "StockpileCreatePanel"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/StockpileLifecyclePanel.tsx",
+      "names": [
+        "StockpileLifecyclePanel"
+      ],
+      "terms": [
+        "cloud",
+        "dashboard",
+        "kpi",
+        "map",
+        "stockpile",
+        "stockpiles",
+        "sync"
+      ],
+      "imports": [
+        "import { useEffect, useMemo, useState } from \"react\""
+      ],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 8,
+      "buttonCount": 0,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 14,
+      "lineCount": 132,
+      "visibleNames": [
+        "StockpileLifecyclePanel"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": true,
+      "renderedByApp": false,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/PremiumCockpitHero.tsx",
+      "names": [
+        "ExecutiveSignalCard",
+        "PremiumCockpitHero"
+      ],
+      "terms": [
+        "audit",
+        "gps",
+        "historial",
+        "kpi",
+        "map",
+        "material",
+        "perímetro"
+      ],
+      "imports": [],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 0,
+      "buttonCount": 3,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 13,
+      "lineCount": 105,
+      "visibleNames": [
+        "PremiumCockpitHero"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/SyncDemoStoryPanel.tsx",
+      "names": [
+        "SyncDemoStoryPanel",
+        "SyncPackageSummary",
+        "SyncStepCard"
+      ],
+      "terms": [
+        "cloud",
+        "edge",
+        "map",
+        "sync"
+      ],
+      "imports": [
+        "import { useMemo, useState } from \"react\""
+      ],
+      "fetchCount": 1,
+      "chartCount": 0,
+      "stateCount": 8,
+      "buttonCount": 1,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 13,
+      "lineCount": 465,
+      "visibleNames": [
+        "SyncDemoStoryPanel"
+      ],
+      "importedByShell": true,
+      "renderedByShell": true,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/CloudEdgeSyncPanel.tsx",
+      "names": [
+        "CloudEdgeSyncPanel",
+        "ResultBox"
+      ],
+      "terms": [
+        "cloud",
+        "edge",
+        "kpi",
+        "sync"
+      ],
+      "imports": [
+        "import { useEffect, useMemo, useState } from \"react\""
+      ],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 13,
+      "buttonCount": 3,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 11,
+      "lineCount": 272,
+      "visibleNames": [
+        "CloudEdgeSyncPanel"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/DemoDataResetPanel.tsx",
+      "names": [
+        "DemoDataResetPanel"
+      ],
+      "terms": [
+        "cloud",
+        "kpi",
+        "stockpile",
+        "stockpiles",
+        "sync"
+      ],
+      "imports": [
+        "import { useState } from \"react\""
+      ],
+      "fetchCount": 1,
+      "chartCount": 0,
+      "stateCount": 4,
+      "buttonCount": 1,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 11,
+      "lineCount": 184,
+      "visibleNames": [
+        "DemoDataResetPanel"
+      ],
+      "importedByShell": true,
+      "renderedByShell": true,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/PremiumCockpitCommandDeck.tsx",
+      "names": [
+        "CommandCard",
+        "PremiumCockpitCommandDeck"
+      ],
+      "terms": [
+        "audit",
+        "historial",
+        "kpi",
+        "map",
+        "material"
+      ],
+      "imports": [],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 0,
+      "buttonCount": 1,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 10,
+      "lineCount": 92,
+      "visibleNames": [
+        "PremiumCockpitCommandDeck"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    },
+    {
+      "file": "apps/web/src/components/PremiumUxFrame.tsx",
+      "names": [
+        "PremiumUxFrame",
+        "UxSignalCard"
+      ],
+      "terms": [
+        "gps",
+        "historial",
+        "map",
+        "material"
+      ],
+      "imports": [],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 0,
+      "buttonCount": 0,
+      "formCount": 0,
+      "svgCount": 0,
+      "score": 9,
+      "lineCount": 62,
+      "visibleNames": [
+        "PremiumUxFrame"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": true,
+      "renderedByApp": true,
+      "surfaced": true
+    }
+  ],
+  "hiddenComponents": [
+    {
+      "file": "apps/web/src/App.tsx",
+      "names": [
+        "App"
+      ],
+      "terms": [
+        "audit",
+        "báscula",
+        "cloud",
+        "dashboard",
+        "edge",
+        "equipment",
+        "evidence",
+        "evidencia",
+        "filter",
+        "gps",
+        "historial",
+        "kpi",
+        "map",
+        "material",
+        "medición",
+        "metric",
+        "metrics",
+        "mutation",
+        "offline",
+        "operator",
+        "scenario",
+        "stockpile",
+        "stockpiles",
+        "sync",
+        "timeline",
+        "workflow",
+        "yard"
+      ],
+      "imports": [
+        "import { StockpileStatusPanel } from \"./components/StockpileStatusPanel.js\"",
+        "import { StockpileCreatePanel } from \"./components/StockpileCreatePanel.js\"",
+        "import { industrialDarkTheme, themeToCssVariables } from \"@iyi/design-tokens\"",
+        "import { cooperSmokeSeed, type SmokeStockpile, type SmokeTenantSeed } from \"@iyi/seed-data\"",
+        "import type { CSSProperties, ChangeEvent } from \"react\"",
+        "import { useEffect, useRef, useState } from \"react\"",
+        "import { StockpileLifecyclePanel } from \"./components/StockpileLifecyclePanel.js\"",
+        "import { AuditMutationPanel } from \"./components/AuditMutationPanel.js\"",
+        "import { CloudEdgeSyncPanel } from \"./components/CloudEdgeSyncPanel.js\"",
+        "import { DemoCommandCenter } from \"./components/DemoCommandCenter.js\"",
+        "import { DemoNavigationPanel } from \"./components/DemoNavigationPanel.js\"",
+        "import { OperatorWorkflowProgressPanel } from \"./components/OperatorWorkflowProgressPanel.js\"",
+        "import { RuntimeConnectionStatusPanel } from \"./components/RuntimeConnectionStatusPanel.js\"",
+        "import { DemoDataResetPanel } from \"./components/DemoDataResetPanel.js\"",
+        "import { IndustrialValueSnapshotPanel } from \"./components/IndustrialValueSnapshotPanel.js\"",
+        "import { StockpileDemoSummaryPanel } from \"./components/StockpileDemoSummaryPanel.js\"",
+        "import { AuditTimelineStoryPanel } from \"./components/AuditTimelineStoryPanel.js\"",
+        "import { SyncDemoStoryPanel } from \"./components/SyncDemoStoryPanel.js\"",
+        "import { YardOperationsMapPanel } from \"./components/YardOperationsMapPanel.js\"",
+        "import { CockpitSectionNavigationPanel } from \"./components/CockpitSectionNavigationPanel.js\"",
+        "import { PremiumCockpitHero } from \"./components/PremiumCockpitHero.js\"",
+        "import { PremiumCockpitCommandDeck } from \"./components/PremiumCockpitCommandDeck.js\"",
+        "import { PremiumGpsPreviewPanel } from \"./components/PremiumGpsPreviewPanel.js\"",
+        "import { PremiumCockpitTabs } from \"./components/PremiumCockpitTabs.js\"",
+        "import { PremiumUxFrame } from \"./components/PremiumUxFrame.js\"",
+        "import { NamikiProductShell } from \"./components/NamikiProductShell.js\""
+      ],
+      "fetchCount": 0,
+      "chartCount": 0,
+      "stateCount": 41,
+      "buttonCount": 19,
+      "formCount": 3,
+      "svgCount": 0,
+      "score": 42,
+      "lineCount": 1207,
+      "visibleNames": [
+        "App"
+      ],
+      "importedByShell": false,
+      "renderedByShell": false,
+      "importedByApp": false,
+      "renderedByApp": false,
+      "surfaced": false,
+      "gapLabels": [
+        "dashboard/graficas",
+        "mapa/GPS/perimetros",
+        "materiales/stockpiles",
+        "historial/auditoria",
+        "envios/sincronizacion",
+        "analisis/demanda",
+        "filtros",
+        "equipo/captura"
+      ],
+      "priority": "alta"
+    }
+  ],
+  "componentGroups": {
+    "dashboard/graficas": [
+      {
+        "file": "apps/web/src/App.tsx",
+        "names": [
+          "App"
+        ],
+        "terms": [
+          "audit",
+          "báscula",
+          "cloud",
+          "dashboard",
+          "edge",
+          "equipment",
+          "evidence",
+          "evidencia",
+          "filter",
+          "gps",
+          "historial",
+          "kpi",
+          "map",
+          "material",
+          "medición",
+          "metric",
+          "metrics",
+          "mutation",
+          "offline",
+          "operator",
+          "scenario",
+          "stockpile",
+          "stockpiles",
+          "sync",
+          "timeline",
+          "workflow",
+          "yard"
+        ],
+        "imports": [
+          "import { StockpileStatusPanel } from \"./components/StockpileStatusPanel.js\"",
+          "import { StockpileCreatePanel } from \"./components/StockpileCreatePanel.js\"",
+          "import { industrialDarkTheme, themeToCssVariables } from \"@iyi/design-tokens\"",
+          "import { cooperSmokeSeed, type SmokeStockpile, type SmokeTenantSeed } from \"@iyi/seed-data\"",
+          "import type { CSSProperties, ChangeEvent } from \"react\"",
+          "import { useEffect, useRef, useState } from \"react\"",
+          "import { StockpileLifecyclePanel } from \"./components/StockpileLifecyclePanel.js\"",
+          "import { AuditMutationPanel } from \"./components/AuditMutationPanel.js\"",
+          "import { CloudEdgeSyncPanel } from \"./components/CloudEdgeSyncPanel.js\"",
+          "import { DemoCommandCenter } from \"./components/DemoCommandCenter.js\"",
+          "import { DemoNavigationPanel } from \"./components/DemoNavigationPanel.js\"",
+          "import { OperatorWorkflowProgressPanel } from \"./components/OperatorWorkflowProgressPanel.js\"",
+          "import { RuntimeConnectionStatusPanel } from \"./components/RuntimeConnectionStatusPanel.js\"",
+          "import { DemoDataResetPanel } from \"./components/DemoDataResetPanel.js\"",
+          "import { IndustrialValueSnapshotPanel } from \"./components/IndustrialValueSnapshotPanel.js\"",
+          "import { StockpileDemoSummaryPanel } from \"./components/StockpileDemoSummaryPanel.js\"",
+          "import { AuditTimelineStoryPanel } from \"./components/AuditTimelineStoryPanel.js\"",
+          "import { SyncDemoStoryPanel } from \"./components/SyncDemoStoryPanel.js\"",
+          "import { YardOperationsMapPanel } from \"./components/YardOperationsMapPanel.js\"",
+          "import { CockpitSectionNavigationPanel } from \"./components/CockpitSectionNavigationPanel.js\"",
+          "import { PremiumCockpitHero } from \"./components/PremiumCockpitHero.js\"",
+          "import { PremiumCockpitCommandDeck } from \"./components/PremiumCockpitCommandDeck.js\"",
+          "import { PremiumGpsPreviewPanel } from \"./components/PremiumGpsPreviewPanel.js\"",
+          "import { PremiumCockpitTabs } from \"./components/PremiumCockpitTabs.js\"",
+          "import { PremiumUxFrame } from \"./components/PremiumUxFrame.js\"",
+          "import { NamikiProductShell } from \"./components/NamikiProductShell.js\""
+        ],
+        "fetchCount": 0,
+        "chartCount": 0,
+        "stateCount": 41,
+        "buttonCount": 19,
+        "formCount": 3,
+        "svgCount": 0,
+        "score": 42,
+        "lineCount": 1207,
+        "visibleNames": [
+          "App"
+        ],
+        "importedByShell": false,
+        "renderedByShell": false,
+        "importedByApp": false,
+        "renderedByApp": false,
+        "surfaced": false,
+        "gapLabels": [
+          "dashboard/graficas",
+          "mapa/GPS/perimetros",
+          "materiales/stockpiles",
+          "historial/auditoria",
+          "envios/sincronizacion",
+          "analisis/demanda",
+          "filtros",
+          "equipo/captura"
+        ],
+        "priority": "alta"
+      }
+    ]
+  },
+  "cssWhiteRisks": [
+    {
+      "file": "apps/web/src/styles.css",
+      "line": 350,
+      "rule": "color: #fff"
+    },
+    {
+      "file": "apps/web/src/styles/premium-cockpit.css",
+      "line": 90,
+      "rule": "color: white"
+    },
+    {
+      "file": "apps/web/src/styles/premium-cockpit.css",
+      "line": 173,
+      "rule": "color: white"
+    },
+    {
+      "file": "apps/web/src/styles/premium-cockpit.css",
+      "line": 174,
+      "rule": "background: rgba(255, 255, 255, 0.1)"
+    },
+    {
+      "file": "apps/web/src/styles/premium-cockpit.css",
+      "line": 183,
+      "rule": "background: rgba(255, 255, 255, 0.18)"
+    },
+    {
+      "file": "apps/web/src/styles/premium-cockpit.css",
+      "line": 191,
+      "rule": "background: rgba(255, 255, 255, 0.08)"
+    },
+    {
+      "file": "apps/web/src/styles/premium-cockpit.css",
+      "line": 205,
+      "rule": "color: white"
+    },
+    {
+      "file": "apps/web/src/styles/premium-cockpit.css",
+      "line": 266,
+      "rule": "color: white"
+    },
+    {
+      "file": "apps/web/src/styles/premium-dark-product.css",
+      "line": 243,
+      "rule": "color: white"
+    },
+    {
+      "file": "apps/web/src/styles/premium-dark-product.css",
+      "line": 362,
+      "rule": "color: white"
+    },
+    {
+      "file": "apps/web/src/styles/premium-experience.css",
+      "line": 228,
+      "rule": "color: white"
+    },
+    {
+      "file": "apps/web/src/styles/premium-experience.css",
+      "line": 262,
+      "rule": "color: white"
+    },
+    {
+      "file": "apps/web/src/styles/premium-experience.css",
+      "line": 280,
+      "rule": "color: white"
+    },
+    {
+      "file": "apps/web/src/styles/premium-experience.css",
+      "line": 353,
+      "rule": "color: white"
+    },
+    {
+      "file": "apps/web/src/styles/premium-experience.css",
+      "line": 354,
+      "rule": "background: rgba(255, 255, 255, 0.1)"
+    },
+    {
+      "file": "apps/web/src/styles/premium-experience.css",
+      "line": 384,
+      "rule": "background: rgba(255, 255, 255, 0.08)"
+    },
+    {
+      "file": "apps/web/src/styles/premium-experience.css",
+      "line": 398,
+      "rule": "color: white"
+    },
+    {
+      "file": "apps/web/src/styles/premium-tabs.css",
+      "line": 102,
+      "rule": "color: white"
+    },
+    {
+      "file": "apps/web/src/styles/premium-ux-depth.css",
+      "line": 111,
+      "rule": "background: rgba(255, 255, 255, 0.72)"
+    },
+    {
+      "file": "apps/web/src/styles/premium-ux-depth.css",
+      "line": 255,
+      "rule": "background: rgba(255, 255, 255, 0.86)"
+    },
+    {
+      "file": "apps/web/src/styles/premium-ux-depth.css",
+      "line": 268,
+      "rule": "background: #fff"
+    },
+    {
+      "file": "apps/web/src/styles/premium-ux-depth.css",
+      "line": 278,
+      "rule": "color: white"
+    }
+  ],
+  "recommendedSurfacePlan": [
+    {
+      "page": "Inicio",
+      "shouldShow": [
+        "resumen ejecutivo de capacidades",
+        "KPIs principales",
+        "alertas operativas",
+        "accesos a módulos"
+      ]
+    },
+    {
+      "page": "Patio",
+      "shouldShow": [
+        "mapa operativo visual",
+        "zonas configurables",
+        "rutas, muelles, básculas, bodegas",
+        "capas de GPS/perímetros"
+      ]
+    },
+    {
+      "page": "Materiales",
+      "shouldShow": [
+        "todos los stockpiles/materiales",
+        "cantidad, zona, estado, prioridad, responsable",
+        "formularios de registro/edición si existen",
+        "historial por material"
+      ]
+    },
+    {
+      "page": "Captura",
+      "shouldShow": [
+        "GPS real",
+        "perímetros/polígonos",
+        "evidencias",
+        "drones RTK",
+        "bastones topográficos con trípode",
+        "mediciones"
+      ]
+    },
+    {
+      "page": "Equipo",
+      "shouldShow": [
+        "maquinaria",
+        "básculas",
+        "cuadrillas",
+        "drones",
+        "sensores futuros",
+        "estado operativo"
+      ]
+    },
+    {
+      "page": "Historial",
+      "shouldShow": [
+        "línea del tiempo",
+        "filtros",
+        "eventos por material/zona/responsable",
+        "auditoría entendible"
+      ]
+    },
+    {
+      "page": "Análisis",
+      "shouldShow": [
+        "gráficas existentes",
+        "dashboards",
+        "comparación por tiempo",
+        "demanda",
+        "escenarios",
+        "recomendaciones"
+      ]
+    },
+    {
+      "page": "Envíos",
+      "shouldShow": [
+        "sync",
+        "export/import",
+        "paquetes",
+        "estado offline/local",
+        "preview antes de aplicar"
+      ]
+    },
+    {
+      "page": "Interno",
+      "shouldShow": [
+        "API",
+        "Edge",
+        "runtime",
+        "reset",
+        "checks técnicos"
+      ]
+    }
+  ]
+}
