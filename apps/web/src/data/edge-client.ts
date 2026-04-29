@@ -88,6 +88,48 @@ export interface EdgeAuditEntry {
   readonly integrityHash: string;
 }
 
+export interface EdgeEvidenceSummary {
+  readonly totalEvidenceItems: number;
+  readonly verifiedItems: number;
+  readonly failedItems: number;
+}
+
+export interface EdgeEvidenceIntegrity {
+  readonly algorithm: "sha256";
+  readonly hashValue: string;
+  readonly byteSize: number;
+}
+
+export interface EdgeEvidenceMetadata {
+  readonly evidenceId: string;
+  readonly evidenceKind: string;
+  readonly storageProvider: string;
+  readonly storageKey: string;
+  readonly fileName?: string;
+  readonly mimeType?: string;
+  readonly integrity: EdgeEvidenceIntegrity;
+  readonly immutable: true;
+  readonly createdAt: string;
+}
+
+export interface EdgeEvidenceItem {
+  readonly metadata: EdgeEvidenceMetadata;
+  readonly contentText: string;
+  readonly registeredAt: string;
+}
+
+export interface EdgeEvidenceVerification {
+  readonly ok: boolean;
+  readonly checkedItems: number;
+  readonly failedEvidenceIds: readonly string[];
+}
+
+export interface RegisterEvidenceResult {
+  readonly ok: boolean;
+  readonly source: "edge" | "unavailable";
+  readonly message: string;
+}
+
 export interface EdgeSyncSnapshot {
   readonly ok: boolean;
   readonly source: "edge" | "unavailable";
@@ -96,6 +138,9 @@ export interface EdgeSyncSnapshot {
   readonly conflictResolutions: readonly EdgeConflictResolution[];
   readonly auditSummary: EdgeAuditSummary | null;
   readonly auditEntries: readonly EdgeAuditEntry[];
+  readonly evidenceSummary: EdgeEvidenceSummary | null;
+  readonly evidenceItems: readonly EdgeEvidenceItem[];
+  readonly evidenceVerification: EdgeEvidenceVerification | null;
   readonly message: string;
 }
 
@@ -119,6 +164,11 @@ export interface EdgeOfflineBackup {
   readonly auditStore?: {
     readonly version: 1;
     readonly entries: readonly EdgeAuditEntry[];
+  };
+  readonly evidenceStore?: {
+    readonly version: 1;
+    readonly exportedAt?: string;
+    readonly items: readonly EdgeEvidenceItem[];
   };
 }
 
@@ -194,6 +244,36 @@ interface EdgeAuditEntriesResponse {
   readonly ok: boolean;
   readonly data?: {
     readonly entries?: readonly EdgeAuditEntry[];
+  };
+}
+
+interface EdgeEvidenceSummaryResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly summary?: EdgeEvidenceSummary;
+  };
+}
+
+interface EdgeEvidenceItemsResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly items?: readonly EdgeEvidenceItem[];
+  };
+}
+
+interface EdgeEvidenceVerifyResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly verification?: EdgeEvidenceVerification;
+  };
+}
+
+interface EdgeEvidenceRegisterResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly evidence?: EdgeEvidenceItem;
+    readonly summary?: EdgeEvidenceSummary;
+    readonly verification?: EdgeEvidenceVerification;
   };
 }
 
@@ -391,6 +471,66 @@ export async function submitDemoSyncBatch(): Promise<SubmitSyncDemoResult> {
   }
 }
 
+export async function registerDemoEvidence(): Promise<RegisterEvidenceResult> {
+  const edgeBaseUrl = getEdgeBaseUrl();
+  const now = Date.now();
+
+  try {
+    const response = await fetch(`${edgeBaseUrl}/evidence/register`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        content: JSON.stringify(
+          {
+            type: "FeatureCollection",
+            name: "web-demo-evidence",
+            generatedAt: new Date(now).toISOString(),
+            features: []
+          },
+          null,
+          2
+        ),
+        evidenceKind: "geojson",
+        storageProvider: "edge_filesystem",
+        storageKey: `evidence/geojson/web-demo-${now}.geojson`,
+        fileName: `web-demo-${now}.geojson`,
+        mimeType: "application/geo+json",
+        relatedEntityId: "stockpile_pet_coke_001",
+        relatedEventId: `event_web_demo_${now}`
+      })
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        source: "edge",
+        message: `Edge evidence endpoint responded with HTTP ${response.status}.`
+      };
+    }
+
+    const body = (await response.json()) as EdgeEvidenceRegisterResponse;
+    const evidence = body.data?.evidence;
+
+    return {
+      ok: body.ok,
+      source: "edge",
+      message:
+        evidence !== undefined
+          ? `Evidence registered with SHA-256 ${evidence.metadata.integrity.hashValue.slice(0, 12)}...`
+          : "Evidence registered on local edge."
+    };
+  } catch {
+    return {
+      ok: false,
+      source: "unavailable",
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
+    };
+  }
+}
+
 export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
   const edgeBaseUrl = getEdgeBaseUrl();
 
@@ -400,7 +540,10 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
       eventsResponse,
       resolutionsResponse,
       auditSummaryResponse,
-      auditEntriesResponse
+      auditEntriesResponse,
+      evidenceSummaryResponse,
+      evidenceItemsResponse,
+      evidenceVerifyResponse
     ] = await Promise.all([
       fetch(`${edgeBaseUrl}/sync/summary`, {
         method: "GET",
@@ -431,6 +574,24 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
         headers: {
           accept: "application/json"
         }
+      }),
+      fetch(`${edgeBaseUrl}/evidence/summary`, {
+        method: "GET",
+        headers: {
+          accept: "application/json"
+        }
+      }),
+      fetch(`${edgeBaseUrl}/evidence/items`, {
+        method: "GET",
+        headers: {
+          accept: "application/json"
+        }
+      }),
+      fetch(`${edgeBaseUrl}/evidence/verify`, {
+        method: "GET",
+        headers: {
+          accept: "application/json"
+        }
       })
     ]);
 
@@ -439,7 +600,10 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
       !eventsResponse.ok ||
       !resolutionsResponse.ok ||
       !auditSummaryResponse.ok ||
-      !auditEntriesResponse.ok
+      !auditEntriesResponse.ok ||
+      !evidenceSummaryResponse.ok ||
+      !evidenceItemsResponse.ok ||
+      !evidenceVerifyResponse.ok
     ) {
       return {
         ok: false,
@@ -449,7 +613,10 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
         conflictResolutions: [],
         auditSummary: null,
         auditEntries: [],
-        message: "Edge sync or audit monitor endpoints are unavailable."
+        evidenceSummary: null,
+        evidenceItems: [],
+        evidenceVerification: null,
+        message: "Edge sync, audit or evidence monitor endpoints are unavailable."
       };
     }
 
@@ -458,6 +625,9 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
     const resolutionsBody = (await resolutionsResponse.json()) as EdgeConflictResolutionsResponse;
     const auditSummaryBody = (await auditSummaryResponse.json()) as EdgeAuditSummaryResponse;
     const auditEntriesBody = (await auditEntriesResponse.json()) as EdgeAuditEntriesResponse;
+    const evidenceSummaryBody = (await evidenceSummaryResponse.json()) as EdgeEvidenceSummaryResponse;
+    const evidenceItemsBody = (await evidenceItemsResponse.json()) as EdgeEvidenceItemsResponse;
+    const evidenceVerifyBody = (await evidenceVerifyResponse.json()) as EdgeEvidenceVerifyResponse;
 
     return {
       ok:
@@ -465,14 +635,20 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
         eventsBody.ok &&
         resolutionsBody.ok &&
         auditSummaryBody.ok &&
-        auditEntriesBody.ok,
+        auditEntriesBody.ok &&
+        evidenceSummaryBody.ok &&
+        evidenceItemsBody.ok &&
+        evidenceVerifyBody.ok,
       source: "edge",
       summary: summaryBody.data?.summary ?? null,
       events: eventsBody.data?.events ?? [],
       conflictResolutions: resolutionsBody.data?.resolutions ?? [],
       auditSummary: auditSummaryBody.data?.summary ?? null,
       auditEntries: auditEntriesBody.data?.entries ?? [],
-      message: "Loaded sync, conflict and audit state from local edge."
+      evidenceSummary: evidenceSummaryBody.data?.summary ?? null,
+      evidenceItems: evidenceItemsBody.data?.items ?? [],
+      evidenceVerification: evidenceVerifyBody.data?.verification ?? null,
+      message: "Loaded sync, conflict, audit and evidence state from local edge."
     };
   } catch {
     return {
@@ -483,6 +659,9 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
       conflictResolutions: [],
       auditSummary: null,
       auditEntries: [],
+      evidenceSummary: null,
+      evidenceItems: [],
+      evidenceVerification: null,
       message: `Local edge server unavailable at ${edgeBaseUrl}.`
     };
   }
@@ -557,7 +736,7 @@ export async function exportEdgeSyncStore(): Promise<EdgeStoreExportResult> {
         ok: true,
         source: "edge",
         store: backup,
-        message: `Exported ${backup.syncStore.batches.length} batches, ${backup.syncStore.events.length} events, ${backup.conflictResolutions.resolutions.length} conflict resolutions and ${backup.auditStore?.entries.length ?? 0} audit entries from local edge.`
+        message: `Exported ${backup.syncStore.batches.length} batches, ${backup.syncStore.events.length} events, ${backup.conflictResolutions.resolutions.length} conflict resolutions, ${backup.auditStore?.entries.length ?? 0} audit entries and ${backup.evidenceStore?.items.length ?? 0} evidence items from local edge.`
       };
     }
 

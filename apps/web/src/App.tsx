@@ -7,11 +7,15 @@ import {
   importEdgeSyncStore,
   loadCooperSmokeSeed,
   loadEdgeSyncSnapshot,
+  registerDemoEvidence,
   resolveSyncConflict,
   submitDemoSyncBatch,
   type EdgeAuditEntry,
   type EdgeAuditSummary,
   type EdgeConflictResolution,
+  type EdgeEvidenceItem,
+  type EdgeEvidenceSummary,
+  type EdgeEvidenceVerification,
   type EdgeSyncEvent,
   type EdgeSyncSummary,
   type SmokeSeedSource,
@@ -98,6 +102,11 @@ function App() {
   const [conflictResolutions, setConflictResolutions] = useState<readonly EdgeConflictResolution[]>([]);
   const [auditSummary, setAuditSummary] = useState<EdgeAuditSummary | null>(null);
   const [auditEntries, setAuditEntries] = useState<readonly EdgeAuditEntry[]>([]);
+  const [evidenceSummary, setEvidenceSummary] = useState<EdgeEvidenceSummary | null>(null);
+  const [evidenceItems, setEvidenceItems] = useState<readonly EdgeEvidenceItem[]>([]);
+  const [evidenceVerification, setEvidenceVerification] = useState<EdgeEvidenceVerification | null>(null);
+  const [evidenceMessage, setEvidenceMessage] = useState("Registra evidencia simulada para generar hash SHA-256.");
+  const [isRegisteringEvidence, setIsRegisteringEvidence] = useState(false);
   const [edgeMonitorMessage, setEdgeMonitorMessage] = useState("Esperando conexión al edge.");
   const [transferMessage, setTransferMessage] = useState("Exporta o restaura el historial local del edge como JSON.");
   const [isTransferring, setIsTransferring] = useState(false);
@@ -110,6 +119,9 @@ function App() {
     setConflictResolutions(snapshot.conflictResolutions);
     setAuditSummary(snapshot.auditSummary);
     setAuditEntries(snapshot.auditEntries);
+    setEvidenceSummary(snapshot.evidenceSummary);
+    setEvidenceItems(snapshot.evidenceItems);
+    setEvidenceVerification(snapshot.evidenceVerification);
     setEdgeMonitorMessage(snapshot.message);
   }
 
@@ -137,6 +149,9 @@ function App() {
       setConflictResolutions(snapshot.conflictResolutions);
       setAuditSummary(snapshot.auditSummary);
       setAuditEntries(snapshot.auditEntries);
+      setEvidenceSummary(snapshot.evidenceSummary);
+      setEvidenceItems(snapshot.evidenceItems);
+      setEvidenceVerification(snapshot.evidenceVerification);
       setEdgeMonitorMessage(snapshot.message);
     });
 
@@ -159,6 +174,14 @@ function App() {
     setEdgeMonitorMessage(result.message);
     await refreshEdgeMonitor();
     setResolvingConflictEventId(null);
+  }
+
+  async function handleRegisterEvidence(): Promise<void> {
+    setIsRegisteringEvidence(true);
+    const result = await registerDemoEvidence();
+    setEvidenceMessage(result.message);
+    await refreshEdgeMonitor();
+    setIsRegisteringEvidence(false);
   }
 
   async function handleExportStore(): Promise<void> {
@@ -515,6 +538,71 @@ function App() {
                 <div className="audit-hashes">
                   <span>prev: {entry.previousHash === null ? "GENESIS" : shortenHash(entry.previousHash)}</span>
                   <strong>hash: {shortenHash(entry.integrityHash)}</strong>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+      </section>
+      <section className="evidence-integrity-panel">
+        <div className="panel-header">
+          <div>
+            <p className="eyebrow">Evidence Integrity Monitor</p>
+            <h2>Evidencia con SHA-256 verificable</h2>
+          </div>
+          <span className={`evidence-status ${evidenceVerification?.ok ? "valid" : "invalid"}`}>
+            {evidenceVerification?.ok ? "VERIFIED" : "NO DATA"}
+          </span>
+        </div>
+
+        <div className="evidence-actions-row">
+          <p>{evidenceMessage}</p>
+          <button
+            className="secondary-button"
+            disabled={isRegisteringEvidence}
+            onClick={() => void handleRegisterEvidence()}
+          >
+            {isRegisteringEvidence ? "Registrando..." : "Registrar evidencia simulada"}
+          </button>
+        </div>
+
+        <div className="evidence-summary-grid">
+          <article>
+            <span>Evidencias</span>
+            <strong>{evidenceSummary?.totalEvidenceItems ?? 0}</strong>
+          </article>
+          <article>
+            <span>Verificadas</span>
+            <strong>{evidenceSummary?.verifiedItems ?? 0}</strong>
+          </article>
+          <article>
+            <span>Fallidas</span>
+            <strong>{evidenceSummary?.failedItems ?? 0}</strong>
+          </article>
+          <article>
+            <span>Check</span>
+            <strong>{evidenceVerification?.ok ? "OK" : "Pending"}</strong>
+          </article>
+        </div>
+
+        <div className="evidence-list">
+          {evidenceItems.length === 0 ? (
+            <div className="empty-state">
+              Sin evidencia registrada. Presiona el botón para simular un GeoJSON con hash de integridad.
+            </div>
+          ) : (
+            evidenceItems.slice(0, 5).map((item) => (
+              <article className="evidence-card" key={item.metadata.integrity.hashValue}>
+                <div>
+                  <span className="evidence-kind">{item.metadata.evidenceKind}</span>
+                  <strong>{item.metadata.fileName ?? item.metadata.storageKey}</strong>
+                  <small>
+                    {item.metadata.storageProvider} · {item.metadata.integrity.byteSize} bytes · immutable
+                  </small>
+                </div>
+                <div className="evidence-hash">
+                  <span>{item.metadata.integrity.algorithm}</span>
+                  <strong>{shortenHash(item.metadata.integrity.hashValue)}</strong>
                 </div>
               </article>
             ))
