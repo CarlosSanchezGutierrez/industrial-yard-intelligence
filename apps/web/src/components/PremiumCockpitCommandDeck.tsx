@@ -1,30 +1,30 @@
 const commandCards = [
     {
         eyebrow: "01",
-        title: "Operacion",
-        value: "Stockpiles y patio",
-        text: "Material, zonas, estados y flujo operador en una vista de producto.",
+        title: "Materiales",
+        value: "Ver pilas",
+        text: "Consulta qué material está en el patio y en qué estado está.",
         href: "#stockpile-summary",
     },
     {
         eyebrow: "02",
         title: "Mapa",
-        value: "Base espacial",
-        text: "La capa visual que prepara GPS, perimetros y objetos dentro del patio.",
+        value: "Ver patio",
+        text: "Ubica zonas, materiales y áreas de trabajo.",
         href: "#yard-map",
     },
     {
         eyebrow: "03",
-        title: "Runtime",
-        value: "Stack local",
-        text: "Cloud API, Edge y Web cockpit listos para demo controlada.",
+        title: "Sistema",
+        value: "Revisar conexión",
+        text: "Valida si el sistema local está respondiendo.",
         href: "#runtime-status",
     },
     {
         eyebrow: "04",
-        title: "Siguiente modulo",
-        value: "GPS real",
-        text: "Ubicacion del dispositivo, mapa, dibujo de poligonos y registro de zonas.",
+        title: "GPS",
+        value: "Preparar captura",
+        text: "Siguiente paso: ubicación real y trazado de perímetros.",
         href: "#premium-gps-preview",
     },
 ] as const;
@@ -59,12 +59,11 @@ export function PremiumCockpitCommandDeck() {
         <section data-iyi-section="overview" id="premium-command-deck" className="iyi-command-deck">
             <div className="iyi-command-deck-header">
                 <div>
-                    <p className="iyi-premium-kicker">Product cockpit</p>
-                    <h2>Demo visual de alto impacto, sin scroll técnico perdido.</h2>
+                    <p className="iyi-premium-kicker">Accesos rápidos</p>
+                    <h2>Lo importante primero.</h2>
                 </div>
                 <p>
-                    Se reorganiza la experiencia para que primero se entienda el producto, luego la operación,
-                    después auditoría/sync y finalmente la evolución GPS.
+                    Cuatro entradas simples para presentar la demo sin perderse entre paneles técnicos.
                 </p>
             </div>
 

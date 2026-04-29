@@ -1,0 +1,441 @@
+:root {
+    color-scheme: dark;
+    --iyi-bg-0: #020617;
+    --iyi-bg-1: #07111f;
+    --iyi-bg-2: #0b1628;
+    --iyi-panel: rgba(15, 23, 42, 0.88);
+    --iyi-panel-2: rgba(30, 41, 59, 0.72);
+    --iyi-panel-3: rgba(2, 6, 23, 0.72);
+    --iyi-line: rgba(148, 163, 184, 0.18);
+    --iyi-line-strong: rgba(125, 211, 252, 0.24);
+    --iyi-text: #f8fafc;
+    --iyi-muted: #94a3b8;
+    --iyi-soft: #cbd5e1;
+    --iyi-blue: #38bdf8;
+    --iyi-green: #34d399;
+    --iyi-yellow: #fbbf24;
+    --iyi-red: #fb7185;
+    --iyi-shadow: 0 30px 100px rgba(0, 0, 0, 0.42);
+    --iyi-shadow-soft: 0 18px 50px rgba(0, 0, 0, 0.28);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--iyi-bg-0);
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--iyi-text) !important;
+    background:
+        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.16), transparent 34rem),
+        radial-gradient(circle at 90% 0%, rgba(52, 211, 153, 0.13), transparent 34rem),
+        linear-gradient(180deg, #020617 0%, #07111f 45%, #020617 100%) !important;
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif !important;
+    text-rendering: optimizeLegibility;
+}
+
+body::before {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    content: "";
+    background-image:
+        linear-gradient(to right, rgba(148, 163, 184, 0.045) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.045) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(to bottom, black, transparent 78%);
+}
+
+#root {
+    min-height: 100vh;
+}
+
+main {
+    width: min(100%, 1500px) !important;
+    margin: 0 auto !important;
+    padding: clamp(0.85rem, 1.8vw, 1.6rem) !important;
+    background: transparent !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+small,
+button,
+a,
+label,
+input,
+select,
+textarea,
+code {
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif !important;
+}
+
+h1,
+h2,
+h3 {
+    color: var(--iyi-text) !important;
+    font-weight: 850 !important;
+    letter-spacing: -0.055em !important;
+}
+
+p,
+span,
+small,
+label {
+    color: var(--iyi-muted) !important;
+}
+
+.iyi-premium-hero {
+    border: 1px solid var(--iyi-line-strong) !important;
+    border-radius: 2rem !important;
+    background:
+        radial-gradient(circle at 5% 0%, rgba(56, 189, 248, 0.18), transparent 28rem),
+        radial-gradient(circle at 92% 6%, rgba(52, 211, 153, 0.14), transparent 28rem),
+        linear-gradient(135deg, rgba(2, 6, 23, 0.98), rgba(15, 23, 42, 0.96) 52%, rgba(8, 47, 73, 0.72)) !important;
+    box-shadow: var(--iyi-shadow) !important;
+}
+
+.iyi-premium-eyebrow,
+.iyi-premium-kicker {
+    color: var(--iyi-blue) !important;
+    font-size: 0.72rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.18em !important;
+    text-transform: uppercase !important;
+}
+
+.iyi-premium-hero h1 {
+    max-width: 58rem !important;
+    font-size: clamp(2.4rem, 5.4vw, 5.6rem) !important;
+    line-height: 0.9 !important;
+}
+
+.iyi-premium-hero-lead {
+    max-width: 46rem !important;
+    color: var(--iyi-soft) !important;
+    font-size: clamp(1rem, 1.5vw, 1.22rem) !important;
+    line-height: 1.65 !important;
+}
+
+.iyi-premium-hero-actions a,
+.iyi-command-card,
+.iyi-premium-stage-card,
+.iyi-premium-signal-card,
+.iyi-ux-frame,
+.iyi-command-deck,
+.iyi-gps-preview,
+.iyi-premium-tabs,
+main > section:not(.iyi-premium-hero) {
+    border: 1px solid var(--iyi-line) !important;
+    background:
+        radial-gradient(circle at 100% 0%, rgba(56, 189, 248, 0.08), transparent 18rem),
+        linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.82)) !important;
+    box-shadow: var(--iyi-shadow-soft) !important;
+    backdrop-filter: blur(18px);
+}
+
+main > section {
+    color: var(--iyi-text) !important;
+}
+
+main > section h2 {
+    font-size: clamp(1.45rem, 2.4vw, 2.8rem) !important;
+    line-height: 0.98 !important;
+}
+
+main > section h3 {
+    font-size: clamp(1rem, 1.3vw, 1.35rem) !important;
+    line-height: 1.1 !important;
+}
+
+main > section p {
+    max-width: 52rem;
+    color: var(--iyi-muted) !important;
+    font-size: 0.93rem !important;
+    line-height: 1.55 !important;
+}
+
+.iyi-premium-tabs {
+    position: sticky !important;
+    top: 0.75rem !important;
+    z-index: 50 !important;
+    border-radius: 1.4rem !important;
+    background:
+        linear-gradient(135deg, rgba(2, 6, 23, 0.94), rgba(15, 23, 42, 0.88)) !important;
+}
+
+.iyi-premium-tabs-header h2 {
+    margin: 0.25rem 0 0 !important;
+    color: var(--iyi-text) !important;
+}
+
+.iyi-premium-tabs-header p:last-child {
+    color: var(--iyi-muted) !important;
+}
+
+.iyi-premium-tabs-status {
+    border: 1px solid rgba(52, 211, 153, 0.28) !important;
+    color: var(--iyi-green) !important;
+    background: rgba(6, 78, 59, 0.32) !important;
+}
+
+.iyi-premium-tabs-status,
+.iyi-premium-tabs-status * {
+    color: var(--iyi-green) !important;
+}
+
+.iyi-premium-tab-list button {
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    color: var(--iyi-soft) !important;
+    background:
+        linear-gradient(135deg, rgba(30, 41, 59, 0.82), rgba(15, 23, 42, 0.78)) !important;
+    opacity: 1 !important;
+}
+
+.iyi-premium-tab-list button span,
+.iyi-premium-tab-list button small {
+    color: inherit !important;
+}
+
+.iyi-premium-tab-list button:not(.is-active) {
+    opacity: 0.9 !important;
+}
+
+.iyi-premium-tab-list button:not(.is-active):hover {
+    border-color: rgba(56, 189, 248, 0.35) !important;
+    background:
+        linear-gradient(135deg, rgba(30, 64, 175, 0.42), rgba(15, 23, 42, 0.82)) !important;
+}
+
+.iyi-premium-tab-list button.is-active {
+    border-color: rgba(56, 189, 248, 0.55) !important;
+    color: white !important;
+    background:
+        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.34), transparent 12rem),
+        linear-gradient(135deg, #075985, #0f172a) !important;
+}
+
+.iyi-ux-frame,
+.iyi-command-deck {
+    padding: clamp(1rem, 2vw, 1.35rem) !important;
+}
+
+.iyi-ux-frame h2,
+.iyi-command-deck h2,
+.iyi-gps-preview h2 {
+    max-width: 44rem !important;
+    font-size: clamp(1.75rem, 3.2vw, 3.4rem) !important;
+}
+
+.iyi-ux-quality-list div,
+.iyi-ux-signal,
+.iyi-command-card,
+.iyi-gps-capability,
+.iyi-premium-milestone {
+    border: 1px solid rgba(148, 163, 184, 0.16) !important;
+    color: var(--iyi-text) !important;
+    background:
+        linear-gradient(135deg, rgba(30, 41, 59, 0.78), rgba(15, 23, 42, 0.72)) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22) !important;
+}
+
+.iyi-ux-quality-list div,
+.iyi-premium-milestone,
+.iyi-command-card h3,
+.iyi-ux-signal h3,
+.iyi-gps-capability h3,
+.iyi-premium-stage-card h2,
+.iyi-premium-signal-card h3 {
+    color: var(--iyi-text) !important;
+}
+
+.iyi-command-card:hover,
+.iyi-ux-signal:hover,
+.iyi-gps-capability:hover {
+    border-color: rgba(56, 189, 248, 0.34) !important;
+    transform: translateY(-2px);
+}
+
+.iyi-command-card-top span {
+    color: #00111f !important;
+    background: var(--iyi-blue) !important;
+}
+
+.iyi-command-card-top p,
+.iyi-command-card > p,
+.iyi-ux-signal span,
+.iyi-gps-capability span,
+.iyi-premium-stage-card p,
+.iyi-premium-signal-card p:last-child {
+    color: var(--iyi-muted) !important;
+}
+
+.iyi-gps-preview {
+    color: var(--iyi-text) !important;
+    background:
+        radial-gradient(circle at 18% 12%, rgba(56, 189, 248, 0.18), transparent 20rem),
+        radial-gradient(circle at 88% 20%, rgba(52, 211, 153, 0.16), transparent 20rem),
+        linear-gradient(135deg, rgba(2, 6, 23, 0.96), rgba(8, 47, 73, 0.64)) !important;
+}
+
+.iyi-gps-preview-map {
+    border: 1px solid rgba(125, 211, 252, 0.24) !important;
+    background:
+        linear-gradient(to right, rgba(125, 211, 252, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(125, 211, 252, 0.08) 1px, transparent 1px),
+        radial-gradient(circle at center, rgba(14, 165, 233, 0.22), rgba(2, 6, 23, 0.88)) !important;
+    background-size: 34px 34px, 34px 34px, auto !important;
+}
+
+main > section [class*="bg-white"],
+main > section [class*="bg-slate-50"],
+main > section [class*="bg-slate-100"],
+main > section [class*="bg-blue-100"],
+main > section [class*="bg-emerald-100"],
+main > section [class*="bg-amber-100"],
+main > section [class*="bg-violet-100"] {
+    color: var(--iyi-text) !important;
+    background:
+        linear-gradient(135deg, rgba(30, 41, 59, 0.78), rgba(15, 23, 42, 0.72)) !important;
+}
+
+main > section [class*="text-slate-950"],
+main > section [class*="text-slate-900"],
+main > section [class*="text-blue-950"],
+main > section [class*="text-emerald-950"],
+main > section [class*="text-amber-950"],
+main > section [class*="text-violet-950"] {
+    color: var(--iyi-text) !important;
+}
+
+main > section [class*="text-slate-600"],
+main > section [class*="text-slate-500"],
+main > section [class*="opacity-80"] {
+    color: var(--iyi-muted) !important;
+}
+
+main > section [class*="border-slate-200"],
+main > section [class*="border-slate-300"],
+main > section [class*="border-blue-300"],
+main > section [class*="border-emerald-300"],
+main > section [class*="border-amber-300"],
+main > section [class*="border-violet-300"] {
+    border-color: var(--iyi-line) !important;
+}
+
+button,
+.iyi-premium-hero-actions a {
+    min-height: 2.75rem !important;
+    border: 1px solid rgba(125, 211, 252, 0.22) !important;
+    border-radius: 999px !important;
+    color: white !important;
+    background:
+        linear-gradient(135deg, #0369a1, #0f172a) !important;
+    box-shadow: 0 12px 32px rgba(2, 132, 199, 0.18) !important;
+    font-weight: 850 !important;
+}
+
+button:hover,
+.iyi-premium-hero-actions a:hover {
+    border-color: rgba(125, 211, 252, 0.45) !important;
+    transform: translateY(-1px);
+}
+
+input,
+select,
+textarea {
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    border-radius: 0.95rem !important;
+    color: var(--iyi-text) !important;
+    background: rgba(15, 23, 42, 0.84) !important;
+    outline: none !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: rgba(56, 189, 248, 0.58) !important;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12) !important;
+}
+
+main > section:not(.iyi-premium-hero):not(.iyi-premium-tabs):not(.iyi-command-deck):not(.iyi-ux-frame):not(.iyi-gps-preview) {
+    max-height: none;
+}
+
+body:not([data-iyi-active-section="all"]) main > section:not(.iyi-premium-hero):not(.iyi-premium-tabs):not(.iyi-command-deck):not(.iyi-ux-frame):not(.iyi-gps-preview) p {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+body:not([data-iyi-active-section="all"]) main > section:not(.iyi-premium-hero):not(.iyi-premium-tabs):not(.iyi-command-deck):not(.iyi-ux-frame):not(.iyi-gps-preview) > div:first-child p {
+    -webkit-line-clamp: 2;
+}
+
+body[data-iyi-active-section="overview"] main > section[data-iyi-section]:not([data-iyi-section~="overview"]),
+body[data-iyi-active-section="operations"] main > section[data-iyi-section]:not([data-iyi-section~="operations"]),
+body[data-iyi-active-section="map"] main > section[data-iyi-section]:not([data-iyi-section~="map"]),
+body[data-iyi-active-section="runtime"] main > section[data-iyi-section]:not([data-iyi-section~="runtime"]),
+body[data-iyi-active-section="audit"] main > section[data-iyi-section]:not([data-iyi-section~="audit"]),
+body[data-iyi-active-section="sync"] main > section[data-iyi-section]:not([data-iyi-section~="sync"]) {
+    display: none !important;
+}
+
+body[data-iyi-active-section="all"] main > section[data-iyi-section] {
+    display: block !important;
+}
+
+@media (max-width: 780px) {
+    .iyi-premium-tabs {
+        position: relative !important;
+        top: auto !important;
+    }
+
+    .iyi-premium-tab-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .iyi-premium-hero h1 {
+        font-size: clamp(2.1rem, 12vw, 3.6rem) !important;
+    }
+
+    main {
+        padding: 0.75rem !important;
+    }
+
+    main > section {
+        border-radius: 1.35rem !important;
+    }
+}

@@ -65,6 +65,7 @@ import { PremiumCockpitTabs } from "./components/PremiumCockpitTabs.js";
 import "./styles/premium-tabs.css";
 import { PremiumUxFrame } from "./components/PremiumUxFrame.js";
 import "./styles/premium-ux-depth.css";
+import "./styles/premium-dark-product.css";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }

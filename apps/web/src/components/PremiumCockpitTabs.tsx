@@ -3,45 +3,45 @@ import { useEffect, useState } from "react";
 const tabs = [
     {
         id: "overview",
-        label: "Overview",
-        title: "Producto",
-        description: "Hero, narrativa, valor ejecutivo y estructura general.",
+        label: "Inicio",
+        title: "Resumen",
+        description: "Vista general para explicar qué hace el sistema.",
     },
     {
         id: "operations",
-        label: "Operación",
-        title: "Stockpiles",
-        description: "Inventario, flujo operador y lifecycle del material.",
+        label: "Materiales",
+        title: "Materiales",
+        description: "Pilas, cantidades, estado y flujo operativo.",
     },
     {
         id: "map",
-        label: "Mapa / GPS",
+        label: "Mapa",
         title: "Patio",
-        description: "Vista espacial, zonas, perímetros y siguiente módulo GPS.",
+        description: "Zonas del patio, áreas y futura captura GPS.",
     },
     {
         id: "runtime",
-        label: "Runtime",
-        title: "Stack",
-        description: "Cloud API, Edge, reset y validación local.",
+        label: "Sistema",
+        title: "Sistema",
+        description: "Estado técnico solo para validación interna.",
     },
     {
         id: "audit",
-        label: "Auditoría",
-        title: "Trazabilidad",
-        description: "Eventos, historial y explicación supervisor-facing.",
+        label: "Historial",
+        title: "Historial",
+        description: "Registro de cambios para supervisión.",
     },
     {
         id: "sync",
-        label: "Sync",
-        title: "Edge → Cloud",
-        description: "Export, preview y apply bloqueado.",
+        label: "Sincronización",
+        title: "Sincronización",
+        description: "Envío controlado de datos entre campo y nube.",
     },
     {
         id: "all",
         label: "Todo",
-        title: "Full cockpit",
-        description: "Muestra todas las secciones para revisión técnica.",
+        title: "Vista completa",
+        description: "Modo técnico con todas las secciones visibles.",
     },
 ] as const;
 
@@ -65,21 +65,21 @@ export function PremiumCockpitTabs() {
     const activeTabData = tabs.find((tab) => tab.id === activeTab) ?? tabs[0];
 
     return (
-        <section className="iyi-premium-tabs" aria-label="Premium cockpit navigation">
+        <section data-iyi-section="overview operations map runtime audit sync" className="iyi-premium-tabs" aria-label="Navegación principal">
             <div className="iyi-premium-tabs-header">
                 <div>
-                    <p className="iyi-premium-kicker">Experience mode</p>
+                    <p className="iyi-premium-kicker">Modo de vista</p>
                     <h2>{activeTabData.title}</h2>
                     <p>{activeTabData.description}</p>
                 </div>
 
                 <div className="iyi-premium-tabs-status">
                     <span />
-                    UI premium activa
+                    Vista limpia
                 </div>
             </div>
 
-            <div className="iyi-premium-tab-list" role="tablist" aria-label="Cockpit sections">
+            <div className="iyi-premium-tab-list" role="tablist" aria-label="Secciones del sistema">
                 {tabs.map((tab) => (
                     <button
                         aria-selected={activeTab === tab.id}

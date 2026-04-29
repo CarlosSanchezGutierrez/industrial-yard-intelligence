@@ -79,3 +79,12 @@ Added:
 Purpose:
 
 Apply a deeper premium product feel across buttons, cards, forms, sections and responsive behavior.
+## Dark product UX
+
+Document:
+
+`docs/PHASE_2_5_DARK_PRODUCT_UX.md`
+
+Purpose:
+
+Move the cockpit to a dark industrial product style with simpler operational copy.

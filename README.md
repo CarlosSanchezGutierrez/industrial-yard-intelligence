@@ -317,3 +317,12 @@ Main files:
 
 - `apps/web/src/components/PremiumUxFrame.tsx`
 - `apps/web/src/styles/premium-ux-depth.css`
+## Phase 2.5 dark product UX
+
+Document:
+
+`docs/PHASE_2_5_DARK_PRODUCT_UX.md`
+
+Main file:
+
+`apps/web/src/styles/premium-dark-product.css`

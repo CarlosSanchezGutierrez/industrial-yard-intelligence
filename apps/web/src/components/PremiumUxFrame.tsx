@@ -1,26 +1,26 @@
 const uxSignals = [
     {
-        label: "Focus",
-        value: "Demo ejecutiva",
-        detail: "Menos ruido tecnico, mas narrativa de producto.",
+        label: "Objetivo",
+        value: "Que se entienda rápido",
+        detail: "El operador debe saber qué revisar sin leer párrafos largos.",
     },
     {
-        label: "UX",
-        value: "Secciones claras",
-        detail: "Tabs, jerarquia, cards y densidad controlada.",
+        label: "Vista",
+        value: "Secciones separadas",
+        detail: "Inicio, materiales, mapa, historial y sistema.",
     },
     {
-        label: "Next",
+        label: "Siguiente",
         value: "GPS real",
-        detail: "Mapa, ubicacion, perimetros y zonas guardables.",
+        detail: "Ubicación actual y dibujo de zonas en mapa.",
     },
 ] as const;
 
 const qualityItems = [
-    "Premium shell aplicado",
-    "Paneles agrupados por modo",
-    "Text walls reducidos visualmente",
-    "Botones y formularios normalizados",
+    "Diseño oscuro",
+    "Texto reducido",
+    "Botones claros",
+    "Secciones separadas",
 ] as const;
 
 function UxSignalCard({
@@ -43,14 +43,13 @@ function UxSignalCard({
 
 export function PremiumUxFrame() {
     return (
-        <section data-iyi-section="overview operations map runtime audit sync" id="premium-ux-frame" className="iyi-ux-frame">
+        <section data-iyi-section="overview" id="premium-ux-frame" className="iyi-ux-frame">
             <div className="iyi-ux-frame-header">
                 <div>
-                    <p className="iyi-premium-kicker">UX quality pass</p>
-                    <h2>Producto primero, paneles técnicos después.</h2>
+                    <p className="iyi-premium-kicker">Diseño operativo</p>
+                    <h2>Menos texto. Más control visual.</h2>
                     <p>
-                        Este cockpit ya no debe sentirse como una lista de pruebas. Debe sentirse como una app
-                        industrial vendible: clara, premium, navegable y preparada para GPS.
+                        La pantalla debe servir para campo, supervisión y demo. Lo técnico queda escondido en secciones internas.
                     </p>
                 </div>
 

@@ -1,26 +1,26 @@
 const executiveSignals = [
     {
-        label: "Modelo",
-        value: "Local-first SaaS",
-        detail: "Edge operativo + Cloud API escalable",
-    },
-    {
-        label: "Operacion",
+        label: "Operación",
         value: "Patio visible",
-        detail: "Stockpiles, zonas, lifecycle y auditoria",
+        detail: "Material, zonas y estados en una sola vista.",
     },
     {
-        label: "Demo",
-        value: "Investor-ready",
-        detail: "Narrativa tecnica y ejecutiva integrada",
+        label: "Control",
+        value: "Menos papel",
+        detail: "Registro digital para supervisores y operadores.",
+    },
+    {
+        label: "Siguiente",
+        value: "GPS y perímetros",
+        detail: "Ubicación real, mapa y áreas delimitadas.",
     },
 ] as const;
 
 const premiumMilestones = [
-    "Arquitectura v1 cerrada",
-    "Cockpit demo polish",
-    "Sync edge-to-cloud seguro",
-    "Mapa/GPS como siguiente modulo",
+    "Ver material en patio",
+    "Registrar cambios",
+    "Revisar historial",
+    "Preparar GPS real",
 ] as const;
 
 function ExecutiveSignalCard({
@@ -48,31 +48,29 @@ export function PremiumCockpitHero() {
                 <div className="iyi-premium-hero-copy">
                     <div className="iyi-premium-eyebrow">
                         <span className="iyi-premium-live-dot" />
-                        Industrial Yard Intelligence / Modelo Namiki
+                        Modelo Namiki · Patio industrial
                     </div>
 
                     <h1>
-                        Sistema operativo visual para patios industriales de material a granel.
+                        Control visual del patio y sus materiales.
                     </h1>
 
                     <p className="iyi-premium-hero-lead">
-                        Cockpit local-first para registrar, localizar, validar y auditar stockpiles,
-                        preparado para evolucionar a SaaS industrial multi-terminal.
+                        Una pantalla para ubicar pilas de material, revisar su estado y preparar captura GPS desde celular o laptop.
                     </p>
 
                     <div className="iyi-premium-hero-actions">
-                        <a href="#runtime-status">Ver runtime</a>
-                        <a href="#stockpile-summary">Ver operacion</a>
                         <a href="#yard-map">Ver mapa</a>
+                        <a href="#stockpile-summary">Ver materiales</a>
+                        <a href="#premium-gps-preview">Ver GPS</a>
                     </div>
                 </div>
 
                 <div className="iyi-premium-stage-card">
-                    <p className="iyi-premium-kicker">Fase actual</p>
-                    <h2>Phase 2.5 UI Premium</h2>
+                    <p className="iyi-premium-kicker">Estado actual</p>
+                    <h2>Demo operativa</h2>
                     <p>
-                        Capa visual para transformar el prototipo tecnico en una experiencia de producto
-                        vendible para Cooper/T. Smith, incubadora e inversionistas.
+                        Vista enfocada en explicar el patio, los materiales y el flujo de trabajo sin lenguaje técnico innecesario.
                     </p>
 
                     <div className="iyi-premium-milestones">
