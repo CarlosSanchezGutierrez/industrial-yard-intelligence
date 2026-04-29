@@ -58,3 +58,8 @@ Run:
 pnpm phase2:status -- -CheckOnly
 
 This validates the Phase 2 status document, static gate, runtime smoke document and mounted cockpit panels.
+## Section navigation
+
+The cockpit includes quick section navigation through:
+
+`apps/web/src/components/CockpitSectionNavigationPanel.tsx`

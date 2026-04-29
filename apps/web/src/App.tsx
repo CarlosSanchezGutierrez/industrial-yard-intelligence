@@ -55,6 +55,7 @@ import { StockpileDemoSummaryPanel } from "./components/StockpileDemoSummaryPane
 import { AuditTimelineStoryPanel } from "./components/AuditTimelineStoryPanel.js";
 import { SyncDemoStoryPanel } from "./components/SyncDemoStoryPanel.js";
 import { YardOperationsMapPanel } from "./components/YardOperationsMapPanel.js";
+import { CockpitSectionNavigationPanel } from "./components/CockpitSectionNavigationPanel.js";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
@@ -443,6 +444,7 @@ function App() {
   return (
     <main className="app-shell" style={applyThemeVariables()}>
             <DemoCommandCenter />
+            <CockpitSectionNavigationPanel />
             <DemoNavigationPanel />
             <OperatorWorkflowProgressPanel />
             <RuntimeConnectionStatusPanel />

@@ -83,7 +83,7 @@ Write-Host "==> Phase 2 demo polish check"
 
 $requiredFiles = @(
     "apps\web\src\App.tsx",
-    "apps\web\src\components\DemoCommandCenter.tsx",
+    "apps\web\src\components\DemoCommandCenter.tsx",`r`n    "apps\web\src\components\CockpitSectionNavigationPanel.tsx",
     "apps\web\src\components\DemoNavigationPanel.tsx",
     "apps\web\src\components\OperatorWorkflowProgressPanel.tsx",
     "apps\web\src\components\RuntimeConnectionStatusPanel.tsx",
@@ -103,7 +103,7 @@ foreach ($requiredFile in $requiredFiles) {
 }
 
 $requiredAppMarkers = @(
-    "DemoCommandCenter",
+    "DemoCommandCenter",`r`n    "CockpitSectionNavigationPanel",
     "DemoNavigationPanel",
     "OperatorWorkflowProgressPanel",
     "RuntimeConnectionStatusPanel",
@@ -120,7 +120,7 @@ foreach ($marker in $requiredAppMarkers) {
 }
 
 $requiredDocMarkers = @(
-    "DemoCommandCenter",
+    "DemoCommandCenter",`r`n    "CockpitSectionNavigationPanel",
     "DemoNavigationPanel",
     "OperatorWorkflowProgressPanel",
     "RuntimeConnectionStatusPanel",
@@ -143,7 +143,7 @@ Assert-TextContains -RelativePath "apps\web\src\components\AuditTimelineStoryPan
 Assert-TextContains -RelativePath "apps\web\src\components\SyncDemoStoryPanel.tsx" -Needle "/sync/packages/db-projection"
 Assert-TextContains -RelativePath "apps\web\src\components\SyncDemoStoryPanel.tsx" -Needle "/sync/preview"
 Assert-TextContains -RelativePath "apps\web\src\components\SyncDemoStoryPanel.tsx" -Needle "/sync/ingest"
-Assert-TextContains -RelativePath "apps\web\src\components\YardOperationsMapPanel.tsx" -Needle "Yard hub"
+Assert-TextContains -RelativePath "apps\web\src\components\YardOperationsMapPanel.tsx" -Needle "Yard hub"`r`nAssert-TextContains -RelativePath "apps\web\src\components\CockpitSectionNavigationPanel.tsx" -Needle "#sync-story"`r`nAssert-TextContains -RelativePath "apps\web\src\components\SyncDemoStoryPanel.tsx" -Needle "id=`"sync-story`""
 
 if (-not $SkipPackageScripts) {
     Assert-JsonScript -ScriptName "phase2:check"

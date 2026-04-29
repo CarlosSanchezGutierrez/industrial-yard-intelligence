@@ -214,3 +214,24 @@ docs/PHASE_2_DEMO_POLISH_STATUS.md
 Current status:
 
 PHASE_2_DEMO_POLISH_STATIC_READY
+## Cockpit section navigation panel
+
+`CockpitSectionNavigationPanel` adds quick section navigation to reduce demo scrolling.
+
+Location:
+
+`apps/web/src/components/CockpitSectionNavigationPanel.tsx`
+
+Anchors added:
+
+- `#demo-command-center`
+- `#runtime-status`
+- `#industrial-value`
+- `#stockpile-summary`
+- `#audit-story`
+- `#sync-story`
+- `#yard-map`
+
+Purpose:
+
+Keep the live demo ordered and make the cockpit easier to present.

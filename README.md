@@ -253,3 +253,8 @@ pnpm phase2:status
 Document:
 
 docs/PHASE_2_DEMO_POLISH_STATUS.md
+## Phase 2 cockpit section navigation
+
+The cockpit includes quick section navigation:
+
+`apps/web/src/components/CockpitSectionNavigationPanel.tsx`

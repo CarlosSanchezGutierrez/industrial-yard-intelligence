@@ -139,3 +139,12 @@ Recommended next work:
 3. Add presenter script for the final live walkthrough.
 4. Run live runtime validation.
 5. Tag Phase 2 demo polish baseline.
+## Section navigation
+
+Component:
+
+`apps/web/src/components/CockpitSectionNavigationPanel.tsx`
+
+Purpose:
+
+Reduce presentation friction by adding anchor navigation across the cockpit.
