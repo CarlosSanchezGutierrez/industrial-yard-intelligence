@@ -28,7 +28,8 @@
                     "dev:web":  "pnpm --filter @iyi/web dev",
                     "dev:stack:windows":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev-stack-windows.ps1",
                     "smoke:runtime":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/runtime-smoke.ps1",
-                    "smoke:runtime:local":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/runtime-smoke.ps1 -ApiBaseUrl http://localhost:8788 -EdgeBaseUrl http://localhost:8787"
+                    "smoke:runtime:local":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/runtime-smoke.ps1 -ApiBaseUrl http://localhost:8788 -EdgeBaseUrl http://localhost:8787",
+                    "sync:smoke":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cloud-edge-sync-smoke.ps1"
                 },
     "keywords":  [
                      "industrial",

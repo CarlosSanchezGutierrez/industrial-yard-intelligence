@@ -92,3 +92,16 @@ This returns a `db_projection_snapshot` Cloud Edge sync package generated from t
 `scripts/demo-smoke.ps1` validates that the edge runtime can expose a `db_projection_snapshot` sync package from:
 
 GET /sync/packages/db-projection
+## Integrated sync smoke
+
+The first integrated Edge-to-Cloud sync smoke is documented in:
+
+`docs/CLOUD_EDGE_SYNC_SMOKE.md`
+
+Command:
+
+`pnpm sync:smoke`
+
+Validated flow:
+
+Edge `GET /sync/packages/db-projection` -> Cloud API `POST /sync/preview` -> Cloud API `POST /sync/ingest`

@@ -58,3 +58,10 @@ Default values:
 
 API: http://localhost:8788
 Edge: http://localhost:8787
+## Cloud Edge integrated sync smoke
+
+After starting the local stack, validate the Edge-to-Cloud sync skeleton with:
+
+pnpm sync:smoke
+
+This calls the edge export route and validates the exported package against the Cloud API sync preview and disabled apply-mode ingest endpoints.
