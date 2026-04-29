@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   exportDemoPackage,
   exportEdgeSyncStore,
+  importDemoPackage,
   importEdgeSyncStore,
   loadCooperSmokeSeed,
   loadDemoExecutiveReport,
@@ -100,6 +101,7 @@ function downloadJsonFile(fileName: string, value: unknown): void {
 function App() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const packageInputRef = useRef<HTMLInputElement | null>(null);
+  const packageImportInputRef = useRef<HTMLInputElement | null>(null);
   const [seed, setSeed] = useState<SmokeTenantSeed>(cooperSmokeSeed);
   const [seedSource, setSeedSource] = useState<SmokeSeedSource>("local_fallback");
   const [seedMessage, setSeedMessage] = useState("Usando seed local inicial.");
@@ -125,6 +127,7 @@ function App() {
   const [isExportingDemoPackage, setIsExportingDemoPackage] = useState(false);
   const [isVerifyingDemoPackage, setIsVerifyingDemoPackage] = useState(false);
   const [isVerifyingUploadedPackage, setIsVerifyingUploadedPackage] = useState(false);
+  const [isImportingDemoPackage, setIsImportingDemoPackage] = useState(false);
   const [evidenceMessage, setEvidenceMessage] = useState("Registra evidencia simulada para generar hash SHA-256.");
   const [isRegisteringEvidence, setIsRegisteringEvidence] = useState(false);
   const [edgeMonitorMessage, setEdgeMonitorMessage] = useState("Esperando conexión al edge.");
@@ -283,6 +286,33 @@ function App() {
       event.target.value = "";
       setIsVerifyingUploadedPackage(false);
     }
+  }
+  function handleImportDemoPackageClick(): void {
+    packageImportInputRef.current?.click();
+  }
+
+  async function handleImportDemoPackageFile(event: ChangeEvent<HTMLInputElement>): Promise<void> {
+    const file = event.target.files?.[0];
+
+    if (file === undefined) {
+      return;
+    }
+
+    setIsImportingDemoPackage(true);
+
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text) as unknown;
+      const result = await importDemoPackage(parsed, true);
+
+      setDemoReportMessage(result.message);
+      await refreshEdgeMonitor();
+    } catch {
+      setDemoReportMessage("No se pudo leer o importar el demo package JSON seleccionado.");
+    } finally {
+      event.target.value = "";
+      setIsImportingDemoPackage(false);
+    }
   }  async function handleExportDemoPackage(): Promise<void> {
     setIsExportingDemoPackage(true);
     const result = await exportDemoPackage();
@@ -427,6 +457,20 @@ function App() {
             className="hidden-file-input"
             type="file"
             onChange={(event) => void handleVerifyUploadedPackageFile(event)}
+          />
+          <button
+            className="secondary-button"
+            disabled={isImportingDemoPackage}
+            onClick={handleImportDemoPackageClick}
+          >
+            {isImportingDemoPackage ? "Importando package..." : "Importar demo package"}
+          </button>
+          <input
+            ref={packageImportInputRef}
+            accept="application/json,.json"
+            className="hidden-file-input"
+            type="file"
+            onChange={(event) => void handleImportDemoPackageFile(event)}
           />
           <button
             className="secondary-button"

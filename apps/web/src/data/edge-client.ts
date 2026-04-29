@@ -190,6 +190,13 @@ export interface DemoPackageVerificationResult {
   readonly message: string;
 }
 
+export interface DemoPackageImportResult {
+  readonly ok: boolean;
+  readonly source: "edge" | "unavailable";
+  readonly imported: boolean;
+  readonly message: string;
+}
+
 export interface EdgeSyncSnapshot {
   readonly ok: boolean;
   readonly source: "edge" | "unavailable";
@@ -1026,6 +1033,73 @@ export async function verifyUploadedDemoPackage(
       ok: false,
       source: "unavailable",
       verification: null,
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
+    };
+  }
+}
+export async function importDemoPackage(
+  packageData: unknown,
+  replaceExistingStore = true
+): Promise<DemoPackageImportResult> {
+  const edgeBaseUrl = getEdgeBaseUrl();
+
+  try {
+    const response = await fetch(`${edgeBaseUrl}/admin/demo-package/import`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        replaceExistingStore,
+        package: packageData
+      })
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        source: "edge",
+        imported: false,
+        message: `Edge demo package import endpoint responded with HTTP ${response.status}.`
+      };
+    }
+
+    const body = (await response.json()) as {
+      readonly ok: boolean;
+      readonly data?: {
+        readonly imported?: boolean;
+        readonly verification?: DemoPackageVerification;
+        readonly summary?: {
+          readonly totalEvents?: number;
+        };
+        readonly evidenceSummary?: {
+          readonly totalEvidenceItems?: number;
+        };
+        readonly auditSummary?: {
+          readonly totalEntries?: number;
+        };
+      };
+    };
+
+    const imported = body.data?.imported === true;
+    const totalEvents = body.data?.summary?.totalEvents ?? 0;
+    const totalEvidenceItems = body.data?.evidenceSummary?.totalEvidenceItems ?? 0;
+    const totalAuditEntries = body.data?.auditSummary?.totalEntries ?? 0;
+
+    return {
+      ok: body.ok && imported,
+      source: "edge",
+      imported,
+      message: imported
+        ? `Imported verified demo package: ${totalEvents} events, ${totalAuditEntries} audit entries, ${totalEvidenceItems} evidence items.`
+        : "Edge demo package import response did not confirm import."
+    };
+  } catch {
+    return {
+      ok: false,
+      source: "unavailable",
+      imported: false,
       message: `Local edge server unavailable at ${edgeBaseUrl}.`
     };
   }

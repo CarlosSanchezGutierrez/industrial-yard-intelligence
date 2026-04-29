@@ -210,7 +210,8 @@ function createManifest(now: string) {
       { method: "GET", path: "/admin/demo-report", description: "Show executive demo report for Cooper/T. Smith." },
       { method: "GET", path: "/admin/demo-package", description: "Export executive report plus full offline backup package." },
       { method: "GET", path: "/admin/demo-package/verify", description: "Verify current demo package SHA-256 integrity." },
-      { method: "POST", path: "/admin/demo-package/verify", description: "Verify uploaded demo package SHA-256 integrity." }
+      { method: "POST", path: "/admin/demo-package/verify", description: "Verify uploaded demo package SHA-256 integrity." },
+      { method: "POST", path: "/admin/demo-package/import", description: "Import uploaded verified demo package into local edge state." }
     ]
   };
 }
@@ -904,6 +905,80 @@ function handleRunGuidedDemo(request: EdgeRouteRequest): EdgeRouteResponse {
     )
   );
 }
+function handleImportDemoPackage(request: EdgeRouteRequest): EdgeRouteResponse {
+  const packagePayload = getDemoPackageFromBody(request.body);
+  const verification = verifyProvidedDemoPackageIntegrity(packagePayload, request.now);
+  const replaceExistingStore = getBooleanBodyValue(request.body, "replaceExistingStore", true);
+
+  if (!verification.ok || !isDemoPackageLike(packagePayload) || !isEdgeOfflineBackup(packagePayload.backup)) {
+    return jsonResponse(
+      400,
+      createApiFailure(
+        createApiError(
+          "bad_request",
+          verification.message ?? "Invalid or unverifiable demo package import payload."
+        ),
+        request.requestId,
+        request.now
+      )
+    );
+  }
+
+  try {
+    const importResult = importEdgeStore(packagePayload.backup.syncStore, replaceExistingStore);
+
+    const conflictImportResult = importConflictResolutionStore(
+      packagePayload.backup.conflictResolutions,
+      replaceExistingStore
+    );
+
+    const auditImportResult =
+      packagePayload.backup.auditStore !== undefined
+        ? importAuditStore(packagePayload.backup.auditStore, replaceExistingStore)
+        : {
+            importedAuditEntries: 0,
+            replacedExistingStore: replaceExistingStore
+          };
+
+    const evidenceImportResult =
+      packagePayload.backup.evidenceStore !== undefined
+        ? importEvidenceStore(packagePayload.backup.evidenceStore, replaceExistingStore)
+        : {
+            importedEvidenceItems: 0,
+            replacedExistingStore: replaceExistingStore
+          };
+
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          imported: true,
+          verification,
+          importResult,
+          conflictImportResult,
+          auditImportResult,
+          evidenceImportResult,
+          summary: getSyncSummary(),
+          resolutions: getConflictResolutions(),
+          auditSummary: getAuditSummary(),
+          evidenceSummary: getEvidenceSummary(),
+          readiness: createDemoReadinessReport(request.now)
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  } catch {
+    return jsonResponse(
+      400,
+      createApiFailure(
+        createApiError("bad_request", "Failed to import verified demo package backup."),
+        request.requestId,
+        request.now
+      )
+    );
+  }
+}
 function handleResetDemoState(request: EdgeRouteRequest): EdgeRouteResponse {
   resetEdgeMemoryStore();
   resetConflictResolutionStore();
@@ -1059,6 +1134,9 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
         request.now
       )
     );
+  }
+  if (request.method === "POST" && request.pathname === "/admin/demo-package/import") {
+    return handleImportDemoPackage(request);
   }
   if (request.method === "POST" && request.pathname === "/admin/demo-package/verify") {
     return jsonResponse(
