@@ -48,6 +48,7 @@ import { CloudEdgeSyncPanel } from "./components/CloudEdgeSyncPanel.js";
 import { DemoCommandCenter } from "./components/DemoCommandCenter.js";
 import { DemoNavigationPanel } from "./components/DemoNavigationPanel.js";
 import { OperatorWorkflowProgressPanel } from "./components/OperatorWorkflowProgressPanel.js";
+import { RuntimeConnectionStatusPanel } from "./components/RuntimeConnectionStatusPanel.js";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
@@ -438,6 +439,7 @@ function App() {
             <DemoCommandCenter />
             <DemoNavigationPanel />
             <OperatorWorkflowProgressPanel />
+            <RuntimeConnectionStatusPanel />
       <nav className="top-nav">
         <div>
           <strong>Industrial Yard Intelligence</strong>

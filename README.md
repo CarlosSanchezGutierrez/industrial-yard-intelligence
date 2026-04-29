@@ -191,3 +191,8 @@ The web cockpit includes a guided demo navigation panel:
 The cockpit includes an operator workflow progress panel:
 
 `apps/web/src/components/OperatorWorkflowProgressPanel.tsx`
+## Phase 2 runtime status
+
+The cockpit includes live local stack status cards:
+
+`apps/web/src/components/RuntimeConnectionStatusPanel.tsx`

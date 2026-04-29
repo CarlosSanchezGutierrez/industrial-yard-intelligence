@@ -72,3 +72,18 @@ It presents the sequence:
 Purpose:
 
 Make the cockpit read as an operational product demo instead of disconnected technical panels.
+## Runtime connection status panel
+
+`RuntimeConnectionStatusPanel` adds live demo status cards for:
+
+- Cloud API `/health`
+- Edge `/health`
+- Cloud API `/sync/status`
+
+Location:
+
+`apps/web/src/components/RuntimeConnectionStatusPanel.tsx`
+
+Purpose:
+
+Make the cockpit immediately show whether the local demo stack is healthy before presenting stockpiles, audit and sync.
