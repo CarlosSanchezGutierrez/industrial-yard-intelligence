@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.js";
 
+import { NamikiAccessGate } from "./components/NamikiAccessGate.js";
 const root = document.getElementById("root");
 
 if (!root) {
@@ -10,6 +11,8 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <App />
+    <NamikiAccessGate>
+            <App />
+        </NamikiAccessGate>
   </React.StrictMode>
 );
