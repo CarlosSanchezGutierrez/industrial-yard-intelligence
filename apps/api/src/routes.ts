@@ -23,6 +23,7 @@ import {
 import { cooperSmokeSeed } from "@iyi/seed-data";
 import { createStockpileLifecyclePayload } from "./stockpile-lifecycle-response.js";
 import { wrapCloudApiRouteRequestWithAudit } from "./audit-mutation-route-wrapper.js";
+import { wrapCloudApiSyncRoutes } from "./cloud-edge-sync-route-wrapper.js";
 import {
   createApiUnitOfWork,
   getApiDbFilePath,
@@ -319,4 +320,4 @@ async function routeApiRequestCore(request: ApiRouteRequest): Promise<ApiRouteRe
     )
   );
 }
-export const routeApiRequest = wrapCloudApiRouteRequestWithAudit(routeApiRequestCore);
+export const routeApiRequest = wrapCloudApiSyncRoutes(wrapCloudApiRouteRequestWithAudit(routeApiRequestCore));

@@ -46,3 +46,6 @@ Next steps:
 2. Add smoke coverage for sync status.
 3. Add preview-only validation.
 4. Later connect real ingestion into DB repositories.
+## Route wiring
+
+`apps/api/src/routes.ts` wraps `routeApiRequest` with `wrapCloudApiSyncRoutes`, so these paths are handled before falling through to the existing core API route logic.
