@@ -9,6 +9,7 @@
     "dev": "pnpm build && node dist/server.js"
   },
   "dependencies": {
+    "@iyi/api-contracts": "workspace:^",
     "@iyi/db": "workspace:*",
     "@iyi/seed-data": "workspace:*"
   },

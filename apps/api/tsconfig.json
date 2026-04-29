@@ -1,18 +1,25 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
-    "composite": true,
-    "types": ["node"]
-  },
-  "include": ["src/**/*.ts"],
-  "references": [
-    {
-      "path": "../../packages/db"
-    },
-    {
-      "path": "../../packages/seed-data"
-    }
-  ]
+    "extends":  "../../tsconfig.base.json",
+    "compilerOptions":  {
+                            "rootDir":  "src",
+                            "outDir":  "dist",
+                            "composite":  true,
+                            "types":  [
+                                          "node"
+                                      ]
+                        },
+    "include":  [
+                    "src/**/*.ts"
+                ],
+    "references":  [
+                       {
+                           "path":  "../../packages/db"
+                       },
+                       {
+                           "path":  "../../packages/seed-data"
+                       },
+                       {
+                           "path":  "../../packages/api-contracts"
+                       }
+                   ]
 }

@@ -33,7 +33,12 @@ async function readJsonBody(request: IncomingMessage): Promise<unknown> {
   return JSON.parse(raw) as unknown;
 }
 
-function writeResponse(response: ServerResponse, statusCode: number, headers: Readonly<Record<string, string>>, body: string): void {
+function writeResponse(
+  response: ServerResponse,
+  statusCode: number,
+  headers: Readonly<Record<string, string>>,
+  body: string
+): void {
   response.writeHead(statusCode, headers);
   response.end(body);
 }
@@ -43,9 +48,10 @@ const server = createServer((request, response) => {
     const requestUrl = new URL(request.url ?? "/", "http://localhost");
     const body = await readJsonBody(request);
 
-    const apiResponse = routeApiRequest({
+    const apiResponse = await routeApiRequest({
       method: request.method ?? "GET",
       pathname: requestUrl.pathname,
+      query: Object.fromEntries(requestUrl.searchParams.entries()),
       requestId: randomUUID(),
       now: new Date().toISOString(),
       body

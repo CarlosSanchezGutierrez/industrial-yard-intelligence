@@ -6,3 +6,4 @@ export * from "./health.js";
 export * from "./sync.js";
 export * from "./admin-demo.js";
 export * from "./db-projection.js";
+export * from "./cloud-api.js";

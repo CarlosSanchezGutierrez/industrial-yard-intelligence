@@ -1,15 +1,30 @@
 import {
+  cloudApiRouteDefinitions,
+  type CloudApiDbSchemaPayloadContract,
+  type CloudApiDbTablesPayloadContract,
+  type CloudApiHealthPayloadContract,
+  type CloudApiManifestPayloadContract,
+  type CloudApiSeedPayloadContract,
+  type CloudApiStockpilesPayloadContract,
+  type CloudApiSystemOverviewPayloadContract,
+  type CloudApiTenantsPayloadContract
+} from "@iyi/api-contracts";
+import {
   dbSchemaVersion,
   getCoreSchemaSql,
-  getRequiredCoreTableNames
+  getRequiredCoreTableNames,
+  type DbStockpileRecord,
+  type DbTenantRecord
 } from "@iyi/db";
 import { cooperSmokeSeed } from "@iyi/seed-data";
+import { createApiUnitOfWork } from "./repository-seed.js";
 
 export interface ApiRouteRequest {
   readonly method: string;
   readonly pathname: string;
   readonly requestId: string;
   readonly now: string;
+  readonly query?: Readonly<Record<string, string>>;
   readonly body?: unknown;
 }
 
@@ -35,34 +50,6 @@ export interface ApiFailureResponse {
   readonly requestId: string;
   readonly timestamp: string;
 }
-
-const apiRoutes = [
-  {
-    method: "GET",
-    path: "/",
-    description: "API manifest."
-  },
-  {
-    method: "GET",
-    path: "/health",
-    description: "API health check."
-  },
-  {
-    method: "GET",
-    path: "/db/schema",
-    description: "Return DB schema SQL contract."
-  },
-  {
-    method: "GET",
-    path: "/db/tables",
-    description: "Return required DB table names."
-  },
-  {
-    method: "GET",
-    path: "/seed/cooper-smoke",
-    description: "Return Cooper/T. Smith smoke seed data."
-  }
-] as const;
 
 function createSuccess<TData>(
   data: TData,
@@ -104,77 +91,120 @@ function jsonResponse(statusCode: number, payload: unknown): ApiRouteResponse {
   };
 }
 
-export function routeApiRequest(request: ApiRouteRequest): ApiRouteResponse {
+function toTenantSummary(record: DbTenantRecord): CloudApiTenantsPayloadContract["tenants"][number] {
+  return {
+    id: record.id,
+    name: record.name,
+    status: record.status,
+    createdAt: record.createdAt,
+    updatedAt: record.updatedAt
+  };
+}
+
+function toStockpileSummary(
+  record: DbStockpileRecord
+): CloudApiStockpilesPayloadContract["stockpiles"][number] {
+  return {
+    id: record.id,
+    tenantId: record.tenantId,
+    terminalId: record.terminalId,
+    name: record.name,
+    material: record.material,
+    category: record.category,
+    estimatedTons: record.estimatedTons,
+    validationState: record.validationState,
+    confidenceLevel: record.confidenceLevel,
+    status: record.status
+  };
+}
+
+export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRouteResponse> {
+  const unitOfWork = createApiUnitOfWork(request.now);
+
   if (request.method === "GET" && request.pathname === "/") {
-    return jsonResponse(
-      200,
-      createSuccess(
-        {
-          service: "@iyi/api",
-          name: "Industrial Yard Intelligence API",
-          runtime: "cloud-api-skeleton",
-          routes: apiRoutes
-        },
-        request.requestId,
-        request.now
-      )
-    );
+    const payload: CloudApiManifestPayloadContract = {
+      service: "@iyi/api",
+      name: "Industrial Yard Intelligence API",
+      runtime: "cloud-api-skeleton",
+      routes: cloudApiRouteDefinitions
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
   }
 
   if (request.method === "GET" && request.pathname === "/health") {
-    return jsonResponse(
-      200,
-      createSuccess(
-        {
-          status: "ok",
-          service: "@iyi/api",
-          dbSchemaVersion
-        },
-        request.requestId,
-        request.now
-      )
-    );
+    const payload: CloudApiHealthPayloadContract = {
+      status: "ok",
+      service: "@iyi/api",
+      dbSchemaVersion,
+      repositoryMode: "in_memory"
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
   }
 
   if (request.method === "GET" && request.pathname === "/db/schema") {
-    return jsonResponse(
-      200,
-      createSuccess(
-        {
-          migrationId: dbSchemaVersion,
-          sql: getCoreSchemaSql()
-        },
-        request.requestId,
-        request.now
-      )
-    );
+    const payload: CloudApiDbSchemaPayloadContract = {
+      migrationId: dbSchemaVersion,
+      sql: getCoreSchemaSql()
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
   }
 
   if (request.method === "GET" && request.pathname === "/db/tables") {
-    return jsonResponse(
-      200,
-      createSuccess(
-        {
-          migrationId: dbSchemaVersion,
-          tables: getRequiredCoreTableNames()
-        },
-        request.requestId,
-        request.now
-      )
-    );
+    const payload: CloudApiDbTablesPayloadContract = {
+      migrationId: dbSchemaVersion,
+      tables: getRequiredCoreTableNames()
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
   }
 
   if (request.method === "GET" && request.pathname === "/seed/cooper-smoke") {
-    return jsonResponse(
-      200,
-      createSuccess(
-        {
-          seed: cooperSmokeSeed
-        },
-        request.requestId,
-        request.now
-      )
+    const payload: CloudApiSeedPayloadContract = {
+      seed: cooperSmokeSeed
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/tenants") {
+    const tenants = await unitOfWork.repositories.tenants.list();
+
+    const payload: CloudApiTenantsPayloadContract = {
+      tenants: tenants.map(toTenantSummary)
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/stockpiles") {
+    const tenantId = request.query?.["tenantId"];
+    const stockpiles = await unitOfWork.repositories.stockpiles.list(
+      tenantId !== undefined ? { tenantId } : undefined
     );
+
+    const payload: CloudApiStockpilesPayloadContract = {
+      stockpiles: stockpiles.map(toStockpileSummary)
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "GET" && request.pathname === "/system/overview") {
+    const payload: CloudApiSystemOverviewPayloadContract = {
+      tenantCount: await unitOfWork.repositories.tenants.count(),
+      terminalCount: await unitOfWork.repositories.terminals.count(),
+      userCount: await unitOfWork.repositories.users.count(),
+      deviceCount: await unitOfWork.repositories.devices.count(),
+      stockpileCount: await unitOfWork.repositories.stockpiles.count(),
+      syncEventCount: await unitOfWork.repositories.syncEvents.count(),
+      auditEntryCount: await unitOfWork.repositories.auditEntries.count(),
+      evidenceItemCount: await unitOfWork.repositories.evidenceItems.count()
+    };
+
+    return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
   }
 
   return jsonResponse(

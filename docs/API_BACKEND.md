@@ -12,6 +12,10 @@ Local-first operation, offline sync, evidence, audit and demo package workflows.
 apps/api
 Future cloud API, production persistence, auth, tenant management and remote sync.
 
+Current mode:
+
+Repository-backed in-memory API using packages/db repository contracts.
+
 Current endpoints:
 
 GET /
@@ -28,6 +32,15 @@ Returns required core DB table names.
 
 GET /seed/cooper-smoke
 Returns Cooper/T. Smith smoke seed data.
+
+GET /tenants
+Lists tenants from the API repository layer.
+
+GET /stockpiles
+Lists stockpiles from the API repository layer. Supports tenantId query.
+
+GET /system/overview
+Returns repository-backed table counts for API-owned state.
 
 Default local port:
 
