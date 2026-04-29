@@ -140,6 +140,28 @@ export interface ResetDemoStateResult {
   readonly message: string;
 }
 
+export interface DemoReadinessCheck {
+  readonly id: string;
+  readonly label: string;
+  readonly ok: boolean;
+  readonly detail: string;
+}
+
+export interface DemoReadinessReport {
+  readonly status: "ready" | "attention" | "empty";
+  readonly generatedAt: string;
+  readonly hasOperationalData: boolean;
+  readonly pendingConflictCount: number;
+  readonly checks: readonly DemoReadinessCheck[];
+}
+
+export interface DemoReadinessResult {
+  readonly ok: boolean;
+  readonly source: "edge" | "unavailable";
+  readonly readiness: DemoReadinessReport | null;
+  readonly message: string;
+}
+
 export interface EdgeSyncSnapshot {
   readonly ok: boolean;
   readonly source: "edge" | "unavailable";
@@ -151,6 +173,7 @@ export interface EdgeSyncSnapshot {
   readonly evidenceSummary: EdgeEvidenceSummary | null;
   readonly evidenceItems: readonly EdgeEvidenceItem[];
   readonly evidenceVerification: EdgeEvidenceVerification | null;
+  readonly demoReadiness: DemoReadinessReport | null;
   readonly message: string;
 }
 
@@ -275,6 +298,12 @@ interface EdgeEvidenceVerifyResponse {
   readonly ok: boolean;
   readonly data?: {
     readonly verification?: EdgeEvidenceVerification;
+  };
+}
+interface DemoReadinessResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly readiness?: DemoReadinessReport;
   };
 }
 
@@ -581,7 +610,8 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
       auditEntriesResponse,
       evidenceSummaryResponse,
       evidenceItemsResponse,
-      evidenceVerifyResponse
+      evidenceVerifyResponse,
+      readinessResponse
     ] = await Promise.all([
       fetch(`${edgeBaseUrl}/sync/summary`, {
         method: "GET",
@@ -630,6 +660,12 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
         headers: {
           accept: "application/json"
         }
+      }),
+      fetch(`${edgeBaseUrl}/admin/demo-readiness`, {
+        method: "GET",
+        headers: {
+          accept: "application/json"
+        }
       })
     ]);
 
@@ -641,7 +677,8 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
       !auditEntriesResponse.ok ||
       !evidenceSummaryResponse.ok ||
       !evidenceItemsResponse.ok ||
-      !evidenceVerifyResponse.ok
+      !evidenceVerifyResponse.ok ||
+      !readinessResponse.ok
     ) {
       return {
         ok: false,
@@ -654,7 +691,8 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
         evidenceSummary: null,
         evidenceItems: [],
         evidenceVerification: null,
-        message: "Edge sync, audit or evidence monitor endpoints are unavailable."
+        demoReadiness: null,
+        message: "Edge sync, audit, evidence or readiness monitor endpoints are unavailable."
       };
     }
 
@@ -666,6 +704,7 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
     const evidenceSummaryBody = (await evidenceSummaryResponse.json()) as EdgeEvidenceSummaryResponse;
     const evidenceItemsBody = (await evidenceItemsResponse.json()) as EdgeEvidenceItemsResponse;
     const evidenceVerifyBody = (await evidenceVerifyResponse.json()) as EdgeEvidenceVerifyResponse;
+    const readinessBody = (await readinessResponse.json()) as DemoReadinessResponse;
 
     return {
       ok:
@@ -676,7 +715,8 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
         auditEntriesBody.ok &&
         evidenceSummaryBody.ok &&
         evidenceItemsBody.ok &&
-        evidenceVerifyBody.ok,
+        evidenceVerifyBody.ok &&
+        readinessBody.ok,
       source: "edge",
       summary: summaryBody.data?.summary ?? null,
       events: eventsBody.data?.events ?? [],
@@ -686,7 +726,8 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
       evidenceSummary: evidenceSummaryBody.data?.summary ?? null,
       evidenceItems: evidenceItemsBody.data?.items ?? [],
       evidenceVerification: evidenceVerifyBody.data?.verification ?? null,
-      message: "Loaded sync, conflict, audit and evidence state from local edge."
+      demoReadiness: readinessBody.data?.readiness ?? null,
+      message: "Loaded sync, conflict, audit, evidence and readiness state from local edge."
     };
   } catch {
     return {
@@ -700,6 +741,7 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
       evidenceSummary: null,
       evidenceItems: [],
       evidenceVerification: null,
+      demoReadiness: null,
       message: `Local edge server unavailable at ${edgeBaseUrl}.`
     };
   }

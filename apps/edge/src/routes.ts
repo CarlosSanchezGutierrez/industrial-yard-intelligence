@@ -189,7 +189,8 @@ function createManifest(now: string) {
       { method: "GET", path: "/evidence/items", description: "List registered evidence items." },
       { method: "GET", path: "/evidence/summary", description: "Show evidence integrity summary." },
       { method: "GET", path: "/evidence/verify", description: "Verify evidence hashes." },
-      { method: "POST", path: "/admin/reset-demo-state", description: "Reset local demo state on edge." }
+      { method: "POST", path: "/admin/reset-demo-state", description: "Reset local demo state on edge." },
+      { method: "GET", path: "/admin/demo-readiness", description: "Show local demo readiness report." }
     ]
   };
 }
@@ -416,6 +417,73 @@ function handleEvidenceRegister(request: EdgeRouteRequest): EdgeRouteResponse {
   }
 }
 
+function createDemoReadinessReport(now: string) {
+  const syncSummary = getSyncSummary();
+  const resolutions = getConflictResolutions();
+  const auditSummary = getAuditSummary();
+  const auditVerification = verifyEdgeAuditChain();
+  const evidenceSummary = getEvidenceSummary();
+  const evidenceVerification = verifyEvidenceStore();
+
+  const pendingConflictCount = Math.max(syncSummary.conflicts - resolutions.length, 0);
+  const hasOperationalData = syncSummary.totalEvents > 0 || evidenceSummary.totalEvidenceItems > 0;
+  const auditReady = auditSummary.chainValid && auditVerification.ok;
+  const evidenceReady = evidenceVerification.ok;
+  const backupReady = auditReady && evidenceReady;
+
+  const checks = [
+    {
+      id: "edge_online",
+      label: "Edge local online",
+      ok: true,
+      detail: "Edge server responded locally."
+    },
+    {
+      id: "sync_state",
+      label: "Sync state available",
+      ok: syncSummary.totalEvents >= 0,
+      detail: `${syncSummary.totalEvents} sync events stored.`
+    },
+    {
+      id: "pending_conflicts",
+      label: "Pending conflicts visible",
+      ok: pendingConflictCount >= 0,
+      detail: `${pendingConflictCount} unresolved conflicts.`
+    },
+    {
+      id: "audit_chain",
+      label: "Audit hash-chain valid",
+      ok: auditReady,
+      detail: auditSummary.verificationMessage
+    },
+    {
+      id: "evidence_integrity",
+      label: "Evidence hashes verified",
+      ok: evidenceReady,
+      detail: `${evidenceSummary.verifiedItems}/${evidenceSummary.totalEvidenceItems} evidence items verified.`
+    },
+    {
+      id: "offline_backup",
+      label: "Offline backup available",
+      ok: backupReady,
+      detail: "Export includes sync store, conflict resolutions, audit store and evidence store."
+    }
+  ];
+
+  const failedChecks = checks.filter((check) => !check.ok);
+  const status = failedChecks.length === 0 ? "ready" : hasOperationalData ? "attention" : "empty";
+
+  return {
+    status,
+    generatedAt: now,
+    hasOperationalData,
+    pendingConflictCount,
+    syncSummary,
+    auditSummary,
+    evidenceSummary,
+    checks
+  };
+}
 function handleResetDemoState(request: EdgeRouteRequest): EdgeRouteResponse {
   resetEdgeMemoryStore();
   resetConflictResolutionStore();
@@ -559,6 +627,18 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
 
   if (request.method === "POST" && request.pathname === "/admin/reset-demo-state") {
     return handleResetDemoState(request);
+  }
+  if (request.method === "GET" && request.pathname === "/admin/demo-readiness") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          readiness: createDemoReadinessReport(request.now)
+        },
+        request.requestId,
+        request.now
+      )
+    );
   }
   return jsonResponse(
     404,

@@ -18,6 +18,7 @@ import {
   type EdgeEvidenceItem,
   type EdgeEvidenceSummary,
   type EdgeEvidenceVerification,
+  type DemoReadinessReport,
   type EdgeSyncEvent,
   type EdgeSyncSummary,
   type SmokeSeedSource,
@@ -112,6 +113,7 @@ function App() {
   const [evidenceSummary, setEvidenceSummary] = useState<EdgeEvidenceSummary | null>(null);
   const [evidenceItems, setEvidenceItems] = useState<readonly EdgeEvidenceItem[]>([]);
   const [evidenceVerification, setEvidenceVerification] = useState<EdgeEvidenceVerification | null>(null);
+  const [demoReadiness, setDemoReadiness] = useState<DemoReadinessReport | null>(null);
   const [evidenceMessage, setEvidenceMessage] = useState("Registra evidencia simulada para generar hash SHA-256.");
   const [isRegisteringEvidence, setIsRegisteringEvidence] = useState(false);
   const [edgeMonitorMessage, setEdgeMonitorMessage] = useState("Esperando conexión al edge.");
@@ -129,6 +131,7 @@ function App() {
     setEvidenceSummary(snapshot.evidenceSummary);
     setEvidenceItems(snapshot.evidenceItems);
     setEvidenceVerification(snapshot.evidenceVerification);
+    setDemoReadiness(snapshot.demoReadiness);
     setEdgeMonitorMessage(snapshot.message);
   }
 
@@ -159,6 +162,7 @@ function App() {
       setEvidenceSummary(snapshot.evidenceSummary);
       setEvidenceItems(snapshot.evidenceItems);
       setEvidenceVerification(snapshot.evidenceVerification);
+      setDemoReadiness(snapshot.demoReadiness);
       setEdgeMonitorMessage(snapshot.message);
     });
 
@@ -307,6 +311,30 @@ function App() {
         ))}
       </section>
 
+      <section className="demo-readiness-panel">
+        <div className="panel-header">
+          <div>
+            <p className="eyebrow">Demo Readiness Report</p>
+            <h2>Preparación para demo Cooper/T. Smith</h2>
+          </div>
+          <span className={`readiness-status readiness-${demoReadiness?.status ?? "empty"}`}>
+            {demoReadiness?.status ?? "empty"}
+          </span>
+        </div>
+
+        <div className="readiness-check-grid">
+          {(demoReadiness?.checks ?? []).map((check) => (
+            <article className={`readiness-check ${check.ok ? "ok" : "fail"}`} key={check.id}>
+              <strong>{check.label}</strong>
+              <span>{check.detail}</span>
+            </article>
+          ))}
+        </div>
+
+        {demoReadiness === null ? (
+          <div className="empty-state">Sin reporte de preparación. Verifica que el edge esté corriendo.</div>
+        ) : null}
+      </section>
       <section className="workspace-grid">
         <article className="map-panel">
           <div className="panel-header">
