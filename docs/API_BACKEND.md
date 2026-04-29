@@ -131,3 +131,13 @@ Returns stockpile lifecycle metadata generated from `@iyi/domain`:
 - statuses
 - explicit transitions
 - allowed transitions indexed by current status
+## Mutation audit contract
+
+Cloud API mutation audit contracts are documented in:
+
+`docs/API_AUDIT_MUTATIONS.md`
+
+The first mutation types are:
+
+- `stockpile.created`
+- `stockpile.status_updated`
