@@ -209,7 +209,8 @@ function createManifest(now: string) {
       { method: "POST", path: "/admin/run-guided-demo", description: "Create a deterministic local demo scenario." },
       { method: "GET", path: "/admin/demo-report", description: "Show executive demo report for Cooper/T. Smith." },
       { method: "GET", path: "/admin/demo-package", description: "Export executive report plus full offline backup package." },
-      { method: "GET", path: "/admin/demo-package/verify", description: "Verify current demo package SHA-256 integrity." }
+      { method: "GET", path: "/admin/demo-package/verify", description: "Verify current demo package SHA-256 integrity." },
+      { method: "POST", path: "/admin/demo-package/verify", description: "Verify uploaded demo package SHA-256 integrity." }
     ]
   };
 }
@@ -737,6 +738,71 @@ function createDemoPackage(now: string): DemoPackageContract {
     integrity: createDemoPackageIntegrity(packagePayload)
   };
 }
+function getDemoPackageFromBody(body: unknown): unknown {
+  if (!isRecord(body)) {
+    return body;
+  }
+
+  return "package" in body ? body["package"] : body;
+}
+
+function isDemoPackageLike(value: unknown): value is DemoPackageContract {
+  if (!isRecord(value) || !isRecord(value["integrity"])) {
+    return false;
+  }
+
+  const integrity = value["integrity"];
+
+  return (
+    value["version"] === 1 &&
+    typeof value["packageId"] === "string" &&
+    typeof value["customer"] === "string" &&
+    typeof value["product"] === "string" &&
+    typeof value["exportedAt"] === "string" &&
+    isRecord(value["contents"]) &&
+    isRecord(value["report"]) &&
+    isRecord(value["backup"]) &&
+    integrity["algorithm"] === "sha256" &&
+    typeof integrity["hashValue"] === "string" &&
+    Array.isArray(integrity["signedPayloadFields"])
+  );
+}
+
+function verifyProvidedDemoPackageIntegrity(value: unknown, now: string) {
+  if (!isDemoPackageLike(value)) {
+    return {
+      ok: false,
+      packageId: null,
+      checkedAt: now,
+      algorithm: "sha256",
+      hashValue: null,
+      expectedHashValue: null,
+      signedPayloadFields: [],
+      message: "Provided demo package is invalid or missing integrity metadata."
+    };
+  }
+
+  const { integrity, ...payload } = value;
+  const expectedIntegrity = createDemoPackageIntegrity(payload);
+
+  const ok =
+    integrity.algorithm === expectedIntegrity.algorithm &&
+    integrity.hashValue === expectedIntegrity.hashValue &&
+    integrity.signedPayloadFields.join("|") === expectedIntegrity.signedPayloadFields.join("|");
+
+  return {
+    ok,
+    packageId: value.packageId,
+    checkedAt: now,
+    algorithm: integrity.algorithm,
+    hashValue: integrity.hashValue,
+    expectedHashValue: expectedIntegrity.hashValue,
+    signedPayloadFields: integrity.signedPayloadFields,
+    message: ok
+      ? "Provided demo package integrity is valid."
+      : "Provided demo package integrity hash does not match its payload."
+  };
+}
 function verifyDemoPackageIntegrity(now: string) {
   const demoPackage = createDemoPackage(now);
   const { integrity, ...payload } = demoPackage;
@@ -988,6 +1054,18 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
       createApiSuccess(
         {
           report: createDemoExecutiveReport(request.now)
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  }
+  if (request.method === "POST" && request.pathname === "/admin/demo-package/verify") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          verification: verifyProvidedDemoPackageIntegrity(getDemoPackageFromBody(request.body), request.now)
         },
         request.requestId,
         request.now

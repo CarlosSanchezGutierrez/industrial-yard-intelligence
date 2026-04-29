@@ -12,6 +12,7 @@ import {
   registerDemoEvidence,
   resetEdgeDemoState,
   verifyDemoPackageIntegrity,
+  verifyUploadedDemoPackage,
   resolveSyncConflict,
   runGuidedDemoScenario,
   submitDemoSyncBatch,
@@ -98,6 +99,7 @@ function downloadJsonFile(fileName: string, value: unknown): void {
 
 function App() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const packageInputRef = useRef<HTMLInputElement | null>(null);
   const [seed, setSeed] = useState<SmokeTenantSeed>(cooperSmokeSeed);
   const [seedSource, setSeedSource] = useState<SmokeSeedSource>("local_fallback");
   const [seedMessage, setSeedMessage] = useState("Usando seed local inicial.");
@@ -122,6 +124,7 @@ function App() {
   const [demoReportMessage, setDemoReportMessage] = useState("Sin reporte ejecutivo cargado todavía.");
   const [isExportingDemoPackage, setIsExportingDemoPackage] = useState(false);
   const [isVerifyingDemoPackage, setIsVerifyingDemoPackage] = useState(false);
+  const [isVerifyingUploadedPackage, setIsVerifyingUploadedPackage] = useState(false);
   const [evidenceMessage, setEvidenceMessage] = useState("Registra evidencia simulada para generar hash SHA-256.");
   const [isRegisteringEvidence, setIsRegisteringEvidence] = useState(false);
   const [edgeMonitorMessage, setEdgeMonitorMessage] = useState("Esperando conexión al edge.");
@@ -254,7 +257,33 @@ function App() {
     downloadJsonFile(`iyi-demo-report-${Date.now()}.json`, demoReport);
     setDemoReportMessage(`Exported executive report ${demoReport.reportId}.`);
   }
-  async function handleExportDemoPackage(): Promise<void> {
+
+  function handleVerifyUploadedPackageClick(): void {
+    packageInputRef.current?.click();
+  }
+
+  async function handleVerifyUploadedPackageFile(event: ChangeEvent<HTMLInputElement>): Promise<void> {
+    const file = event.target.files?.[0];
+
+    if (file === undefined) {
+      return;
+    }
+
+    setIsVerifyingUploadedPackage(true);
+
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text) as unknown;
+      const result = await verifyUploadedDemoPackage(parsed);
+
+      setDemoReportMessage(result.message);
+    } catch {
+      setDemoReportMessage("No se pudo leer o verificar el demo package JSON seleccionado.");
+    } finally {
+      event.target.value = "";
+      setIsVerifyingUploadedPackage(false);
+    }
+  }  async function handleExportDemoPackage(): Promise<void> {
     setIsExportingDemoPackage(true);
     const result = await exportDemoPackage();
 
@@ -383,8 +412,22 @@ function App() {
             disabled={isVerifyingDemoPackage}
             onClick={() => void handleVerifyDemoPackage()}
           >
-            {isVerifyingDemoPackage ? "Verificando..." : "Verificar package SHA-256"}
+            {isVerifyingDemoPackage ? "Verificando..." : "Verificar package actual"}
           </button>
+          <button
+            className="secondary-button"
+            disabled={isVerifyingUploadedPackage}
+            onClick={handleVerifyUploadedPackageClick}
+          >
+            {isVerifyingUploadedPackage ? "Verificando JSON..." : "Verificar JSON exportado"}
+          </button>
+          <input
+            ref={packageInputRef}
+            accept="application/json,.json"
+            className="hidden-file-input"
+            type="file"
+            onChange={(event) => void handleVerifyUploadedPackageFile(event)}
+          />
           <button
             className="secondary-button"
             disabled={isExportingDemoPackage}

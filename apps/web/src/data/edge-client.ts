@@ -983,6 +983,53 @@ export async function verifyDemoPackageIntegrity(): Promise<DemoPackageVerificat
     };
   }
 }
+export async function verifyUploadedDemoPackage(
+  packageData: unknown
+): Promise<DemoPackageVerificationResult> {
+  const edgeBaseUrl = getEdgeBaseUrl();
+
+  try {
+    const response = await fetch(`${edgeBaseUrl}/admin/demo-package/verify`, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({
+        package: packageData
+      })
+    });
+
+    if (!response.ok) {
+      return {
+        ok: false,
+        source: "edge",
+        verification: null,
+        message: `Edge uploaded package verification endpoint responded with HTTP ${response.status}.`
+      };
+    }
+
+    const body = (await response.json()) as DemoPackageVerifyResponse;
+    const verification = body.data?.verification ?? null;
+
+    return {
+      ok: body.ok && verification !== null && verification.ok,
+      source: "edge",
+      verification,
+      message:
+        verification !== null
+          ? `${verification.message} SHA-256 ${verification.hashValue?.slice(0, 12) ?? "missing"}...`
+          : "Edge uploaded package verification response did not contain verification payload."
+    };
+  } catch {
+    return {
+      ok: false,
+      source: "unavailable",
+      verification: null,
+      message: `Local edge server unavailable at ${edgeBaseUrl}.`
+    };
+  }
+}
 export async function resetEdgeDemoState(): Promise<ResetDemoStateResult> {
   const edgeBaseUrl = getEdgeBaseUrl();
 
