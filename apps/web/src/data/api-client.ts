@@ -2,9 +2,12 @@ import type {
   CloudApiCreateStockpilePayloadContract,
   CloudApiCreateStockpileRequestContract,
   CloudApiHealthPayloadContract,
+  CloudApiStockpileStatusContract,
   CloudApiStockpileSummaryContract,
   CloudApiSystemOverviewPayloadContract,
-  CloudApiTenantSummaryContract
+  CloudApiTenantSummaryContract,
+  CloudApiUpdateStockpileStatusPayloadContract,
+  CloudApiUpdateStockpileStatusRequestContract
 } from "@iyi/api-contracts";
 
 interface ApiEnvelope<TData> {
@@ -34,6 +37,13 @@ export interface CloudApiDashboardResult {
 }
 
 export interface CreateCloudStockpileResult {
+  readonly ok: boolean;
+  readonly source: "api" | "unavailable";
+  readonly stockpile: CloudApiStockpileSummaryContract | null;
+  readonly message: string;
+}
+
+export interface UpdateCloudStockpileStatusResult {
   readonly ok: boolean;
   readonly source: "api" | "unavailable";
   readonly stockpile: CloudApiStockpileSummaryContract | null;
@@ -70,10 +80,14 @@ async function requestApi<TData>(path: string): Promise<TData> {
   return body.data;
 }
 
-async function postApi<TRequest, TData>(path: string, payload: TRequest): Promise<TData> {
+async function sendJsonApi<TRequest, TData>(
+  method: "POST" | "PATCH",
+  path: string,
+  payload: TRequest
+): Promise<TData> {
   const apiBaseUrl = getApiBaseUrl();
   const response = await fetch(`${apiBaseUrl}${path}`, {
-    method: "POST",
+    method,
     headers: {
       accept: "application/json",
       "content-type": "application/json"
@@ -131,16 +145,52 @@ export async function createCloudApiStockpile(
   const apiBaseUrl = getApiBaseUrl();
 
   try {
-    const payload = await postApi<
+    const payload = await sendJsonApi<
       CloudApiCreateStockpileRequestContract,
       CloudApiCreateStockpilePayloadContract
-    >("/stockpiles", request);
+    >("POST", "/stockpiles", request);
 
     return {
       ok: true,
       source: "api",
       stockpile: payload.stockpile,
       message: `Created stockpile ${payload.stockpile.name}.`
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : `Cloud API unavailable at ${apiBaseUrl}.`;
+
+    return {
+      ok: false,
+      source: "unavailable",
+      stockpile: null,
+      message
+    };
+  }
+}
+
+export async function updateCloudApiStockpileStatus(
+  stockpileId: string,
+  status: CloudApiStockpileStatusContract
+): Promise<UpdateCloudStockpileStatusResult> {
+  const apiBaseUrl = getApiBaseUrl();
+
+  const request: CloudApiUpdateStockpileStatusRequestContract = {
+    status,
+    validationState: status === "validated" ? "supervisor_validated" : `status_${status}`,
+    confidenceLevel: status === "validated" ? "reviewed" : "operator_input"
+  };
+
+  try {
+    const payload = await sendJsonApi<
+      CloudApiUpdateStockpileStatusRequestContract,
+      CloudApiUpdateStockpileStatusPayloadContract
+    >("PATCH", `/stockpiles/${encodeURIComponent(stockpileId)}/status`, request);
+
+    return {
+      ok: true,
+      source: "api",
+      stockpile: payload.stockpile,
+      message: `Updated ${payload.stockpile.name} to ${payload.stockpile.status}.`
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : `Cloud API unavailable at ${apiBaseUrl}.`;
