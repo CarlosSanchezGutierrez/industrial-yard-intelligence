@@ -946,6 +946,137 @@ function MaterialesView() {
     );
 }
 
+function EvidenceWorkspace() {
+    const [targetMaterial, setTargetMaterial] = useState(materialRows[0]?.name ?? "Pet coke");
+    const [evidenceType, setEvidenceType] = useState("Foto");
+    const [note, setNote] = useState("");
+    const [queuedItems, setQueuedItems] = useState(evidenceRows);
+
+    function addEvidenceItem() {
+        const trimmedNote = note.trim();
+
+        const nextItem = {
+            id: `EV-${String(queuedItems.length + 1).padStart(3, "0")}`,
+            material: targetMaterial,
+            type: evidenceType,
+            source:
+                evidenceType === "Vuelo RTK"
+                    ? "Drones RTK"
+                    : evidenceType === "Medición"
+                      ? "Bastones topográficos con trípode"
+                      : evidenceType === "GPS"
+                        ? "GPS del dispositivo"
+                        : "Celular",
+            status: "Pendiente",
+            note: trimmedNote.length > 0 ? trimmedNote : "Evidencia capturada en campo pendiente de validación.",
+            time: "Ahora",
+        };
+
+        setQueuedItems((current) => [nextItem, ...current]);
+        setNote("");
+    }
+
+    return (
+        <div className="nmk-evidence-workspace">
+            <section className="nmk-evidence-form">
+                <div className="nmk-panel-head">
+                    <div>
+                        <p>Workspace de evidencia</p>
+                        <h2>Captura operativa</h2>
+                    </div>
+                    <span>Campo · revisión · validación</span>
+                </div>
+
+                <div className="nmk-evidence-fields">
+                    <label className="nmk-field">
+                        <span>Material</span>
+                        <select
+                            onChange={(event) => setTargetMaterial(event.target.value)}
+                            value={targetMaterial}
+                        >
+                            {materialRows.map((material) => (
+                                <option key={material.name} value={material.name}>
+                                    {material.name}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+
+                    <label className="nmk-field">
+                        <span>Tipo de evidencia</span>
+                        <select
+                            onChange={(event) => setEvidenceType(event.target.value)}
+                            value={evidenceType}
+                        >
+                            <option>Foto</option>
+                            <option>GPS</option>
+                            <option>Medición</option>
+                            <option>Vuelo RTK</option>
+                            <option>Nota</option>
+                        </select>
+                    </label>
+
+                    <label className="nmk-field nmk-field-wide">
+                        <span>Nota de campo</span>
+                        <textarea
+                            onChange={(event) => setNote(event.target.value)}
+                            placeholder="Ejemplo: pila con pendiente irregular, requiere validación de volumen..."
+                            value={note}
+                        />
+                    </label>
+                </div>
+
+                <div className="nmk-evidence-preview">
+                    <div>
+                        <p>Fuente sugerida</p>
+                        <strong>
+                            {evidenceType === "Vuelo RTK"
+                                ? "Drones RTK (Real Time Kinematic)"
+                                : evidenceType === "Medición"
+                                  ? "Bastones topográficos con trípode"
+                                  : evidenceType === "GPS"
+                                    ? "GPS del dispositivo"
+                                    : "Celular / supervisor"}
+                        </strong>
+                        <span>La evidencia queda ligada al material seleccionado y preparada para historial.</span>
+                    </div>
+
+                    <button onClick={addEvidenceItem} type="button">
+                        Agregar evidencia demo
+                    </button>
+                </div>
+            </section>
+
+            <section className="nmk-evidence-queue">
+                <div className="nmk-panel-head">
+                    <div>
+                        <p>Cola de evidencia</p>
+                        <h2>Registros recientes</h2>
+                    </div>
+                    <span>{queuedItems.length} items</span>
+                </div>
+
+                <div className="nmk-evidence-list">
+                    {queuedItems.map((item) => (
+                        <article key={`${item.id}-${item.time}-${item.material}`}>
+                            <div>
+                                <strong>{item.material}</strong>
+                                <span>{item.type} · {item.source}</span>
+                            </div>
+                            <p>{item.note}</p>
+                            <footer>
+                                <span>{item.id}</span>
+                                <span>{item.status}</span>
+                                <span>{item.time}</span>
+                            </footer>
+                        </article>
+                    ))}
+                </div>
+            </section>
+        </div>
+    );
+}
+
 function CapturaView() {
     return (
         <div className="nmk-view-grid">
