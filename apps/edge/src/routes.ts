@@ -58,6 +58,7 @@ interface EdgeOfflineBackup {
   readonly exportedAt: string;
   readonly syncStore: EdgeStoreFile;
   readonly conflictResolutions: ReturnType<typeof exportConflictResolutionStore>;
+  readonly auditStore: ReturnType<typeof exportAuditStore>;
 }
 
 function jsonResponse(statusCode: number, body: unknown): EdgeRouteResponse {

@@ -19,7 +19,7 @@ import type { ConflictResolutionRecord } from "./conflict-resolutions.js";
 
 interface AuditStoreFile {
   readonly version: 1;
-  readonly entries: AuditEntry[];
+  entries: AuditEntry[];
 }
 
 export interface EdgeAuditSummary {
@@ -72,7 +72,7 @@ function normalizeAuditEntry(value: unknown): AuditEntry | null {
     value["sourceRuntime"] === "mobile" ||
     value["sourceRuntime"] === "edge" ||
     value["sourceRuntime"] === "cloud" ||
-    value["sourceRuntime"] === "external"
+    value["sourceRuntime"] === "external_ingestion"
       ? value["sourceRuntime"]
       : "edge";
 
