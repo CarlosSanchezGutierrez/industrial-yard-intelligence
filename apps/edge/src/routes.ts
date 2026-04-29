@@ -200,7 +200,8 @@ function createManifest(now: string) {
       { method: "GET", path: "/evidence/verify", description: "Verify evidence hashes." },
       { method: "POST", path: "/admin/reset-demo-state", description: "Reset local demo state on edge." },
       { method: "GET", path: "/admin/demo-readiness", description: "Show local demo readiness report." },
-      { method: "POST", path: "/admin/run-guided-demo", description: "Create a deterministic local demo scenario." }
+      { method: "POST", path: "/admin/run-guided-demo", description: "Create a deterministic local demo scenario." },
+      { method: "GET", path: "/admin/demo-report", description: "Show executive demo report for Cooper/T. Smith." }
     ]
   };
 }
@@ -571,6 +572,94 @@ function createDemoReadinessReport(now: string) {
     checks
   };
 }
+function createDemoExecutiveReport(now: string) {
+  const readiness = createDemoReadinessReport(now);
+  const syncSummary = getSyncSummary();
+  const resolutions = getConflictResolutions();
+  const auditSummary = getAuditSummary();
+  const evidenceSummary = getEvidenceSummary();
+
+  const unresolvedConflicts = Math.max(syncSummary.conflicts - resolutions.length, 0);
+  const reportStatus =
+    readiness.status === "ready"
+      ? "ready_for_demo"
+      : readiness.status === "attention"
+        ? "needs_attention"
+        : "empty_demo_state";
+
+  return {
+    reportId: `demo_report_${normalizeDemoSuffix(now)}`,
+    title: "Industrial Yard Intelligence - Cooper/T. Smith Demo Report",
+    customer: "Cooper/T. Smith",
+    generatedAt: now,
+    status: reportStatus,
+    summary: [
+      "Local-first edge demo for industrial yard visibility.",
+      "Tracks sync events, conflicts, evidence integrity and audit chain state.",
+      "Demonstrates offline backup with sync store, conflict resolutions, audit trail and evidence records."
+    ],
+    metrics: [
+      {
+        label: "Sync events",
+        value: syncSummary.totalEvents,
+        detail: `${syncSummary.accepted} accepted, ${syncSummary.conflicts} conflicts.`
+      },
+      {
+        label: "Pending conflicts",
+        value: unresolvedConflicts,
+        detail: `${resolutions.length} conflicts already reviewed by supervisor.`
+      },
+      {
+        label: "Audit entries",
+        value: auditSummary.totalEntries,
+        detail: auditSummary.chainValid ? "Audit hash-chain is valid." : "Audit hash-chain needs review."
+      },
+      {
+        label: "Evidence items",
+        value: evidenceSummary.totalEvidenceItems,
+        detail: `${evidenceSummary.verifiedItems} verified, ${evidenceSummary.failedItems} failed.`
+      }
+    ],
+    proofPoints: [
+      {
+        label: "Offline operation",
+        detail: "The edge stores demo state in local JSON-backed development stores."
+      },
+      {
+        label: "Conflict visibility",
+        detail: "Stale aggregate versions produce sync conflicts for supervisor review."
+      },
+      {
+        label: "Evidence integrity",
+        detail: "Registered evidence receives SHA-256 integrity metadata."
+      },
+      {
+        label: "Auditability",
+        detail: "Supervisor actions and evidence registration generate append-only audit hash-chain entries."
+      },
+      {
+        label: "Portable backup",
+        detail: "Export includes sync events, conflict resolutions, audit entries and evidence records."
+      }
+    ],
+    demoScript: [
+      "Reset demo state.",
+      "Run guided demo scenario.",
+      "Show accepted sync event and conflict.",
+      "Register or inspect evidence with SHA-256 hash.",
+      "Review audit chain validity.",
+      "Export offline backup JSON."
+    ],
+    recommendedNextSteps: [
+      "Connect real mobile capture flow.",
+      "Replace JSON development stores with production persistence.",
+      "Add user authentication and role-based supervisor review.",
+      "Integrate real GPS/RTK/GeoJSON evidence sources.",
+      "Prepare pilot deployment checklist for Cooper/T. Smith."
+    ],
+    readiness
+  };
+}
 function handleRunGuidedDemo(request: EdgeRouteRequest): EdgeRouteResponse {
   const resetBeforeRun = getBooleanBodyValue(request.body, "resetBeforeRun", true);
 
@@ -792,6 +881,18 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
 
   if (request.method === "POST" && request.pathname === "/admin/run-guided-demo") {
     return handleRunGuidedDemo(request);
+  }
+  if (request.method === "GET" && request.pathname === "/admin/demo-report") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          report: createDemoExecutiveReport(request.now)
+        },
+        request.requestId,
+        request.now
+      )
+    );
   }
   if (request.method === "POST" && request.pathname === "/admin/reset-demo-state") {
     return handleResetDemoState(request);
