@@ -40,7 +40,7 @@ export interface EvidenceIntegrityRecord {
   readonly byteSize: number;
 }
 
-export interface EvidenceMetadataInput {
+export interface EvidenceIntegrityMetadataInput {
   readonly tenantId: TenantId;
   readonly terminalId?: TerminalId;
   readonly evidenceId: EntityId;
@@ -57,7 +57,7 @@ export interface EvidenceMetadataInput {
   readonly createdAt: string;
 }
 
-export interface EvidenceMetadata extends EvidenceMetadataInput {
+export interface EvidenceIntegrityMetadata extends EvidenceIntegrityMetadataInput {
   readonly integrity: EvidenceIntegrityRecord;
   readonly immutable: true;
 }
@@ -83,10 +83,10 @@ export function computeEvidenceIntegrity(
   };
 }
 
-export function createEvidenceMetadata(
-  input: EvidenceMetadataInput,
+export function createEvidenceIntegrityMetadata(
+  input: EvidenceIntegrityMetadataInput,
   integrity: EvidenceIntegrityRecord
-): EvidenceMetadata {
+): EvidenceIntegrityMetadata {
   return {
     ...input,
     integrity,
@@ -107,15 +107,15 @@ export function verifyEvidenceIntegrity(
   );
 }
 
-export function createTextEvidenceMetadata(input: {
+export function createTextEvidenceIntegrityMetadata(input: {
   readonly content: string;
-  readonly metadata: EvidenceMetadataInput;
-}): EvidenceMetadata {
+  readonly metadata: EvidenceIntegrityMetadataInput;
+}): EvidenceIntegrityMetadata {
   const integrity = computeEvidenceIntegrity({
     bytes: input.content
   });
 
-  return createEvidenceMetadata(input.metadata, integrity);
+  return createEvidenceIntegrityMetadata(input.metadata, integrity);
 }
 
 export function assertEvidenceStorageKey(storageKey: string): string {
