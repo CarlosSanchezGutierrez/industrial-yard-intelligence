@@ -348,3 +348,17 @@ Files:
 - `apps/web/src/components/NamikiExperienceShell.tsx`
 - `apps/web/src/styles/namiki-polish-p0-4.css`
 - `docs/NAMIKI_UX_POLISH_P0_4.md`
+## P0.5 material history and evidence workspace applied
+
+Action taken:
+
+- Connected material detail to related history.
+- Connected material detail to evidence records.
+- Added evidence workspace under Captura.
+- Added evidence queue and evidence source suggestions.
+
+Files:
+
+- `apps/web/src/components/NamikiExperienceShell.tsx`
+- `apps/web/src/styles/namiki-polish-p0-5.css`
+- `docs/NAMIKI_UX_POLISH_P0_5.md`

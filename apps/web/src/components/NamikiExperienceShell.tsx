@@ -57,6 +57,45 @@ const captureTools = [
     { title: "Medición de volumen", text: "Base para comparar estimación, evidencia y estado." },
 ] as const;
 
+const evidenceRows = [
+    {
+        id: "EV-001",
+        material: "Pet coke",
+        type: "Foto",
+        source: "Celular",
+        status: "Guardada",
+        note: "Vista lateral de pila en Patio A.",
+        time: "08:32",
+    },
+    {
+        id: "EV-002",
+        material: "Clinker",
+        type: "Medición",
+        source: "Bastones topográficos con trípode",
+        status: "Revisión",
+        note: "Diferencia estimada en geometría de pila.",
+        time: "09:18",
+    },
+    {
+        id: "EV-003",
+        material: "Fluorita MT",
+        type: "Vuelo RTK",
+        source: "Drones RTK",
+        status: "Validada",
+        note: "Captura superior para estimación espacial.",
+        time: "10:14",
+    },
+    {
+        id: "EV-004",
+        material: "Mineral mixto",
+        type: "Nota",
+        source: "Supervisor",
+        status: "Pendiente",
+        note: "Requiere confirmar zona exacta.",
+        time: "10:36",
+    },
+] as const;
+
 const equipmentRows = [
     { title: "Payloader", text: "Movimiento y acomodo de material.", status: "Disponible" },
     { title: "Grúas", text: "Descarga y maniobras pesadas.", status: "Operativo" },
@@ -388,6 +427,29 @@ function MaterialTable() {
         filteredRows[0] ??
         materialRows[0];
 
+    const relatedEvents = useMemo(() => {
+        if (!selectedMaterial) {
+            return [];
+        }
+
+        const materialName = selectedMaterial.name.toLowerCase();
+        const zoneName = selectedMaterial.zone.toLowerCase();
+
+        return eventRows.filter((event) => {
+            const eventText = `${event.title} ${event.text}`.toLowerCase();
+
+            return eventText.includes(materialName) || eventText.includes(zoneName);
+        });
+    }, [selectedMaterial]);
+
+    const relatedEvidence = useMemo(() => {
+        if (!selectedMaterial) {
+            return [];
+        }
+
+        return evidenceRows.filter((evidence) => evidence.material === selectedMaterial.name);
+    }, [selectedMaterial]);
+
     if (!selectedMaterial) {
         return (
             <div className="nmk-empty-state">
@@ -442,7 +504,7 @@ function MaterialTable() {
                         </thead>
                         <tbody>
                             {filteredRows.map((row) => (
-                                <tr key={row.name}>
+                                <tr className={row.name === selectedMaterial.name ? "is-selected" : ""} key={row.name}>
                                     <td>{row.name}</td>
                                     <td>{row.zone}</td>
                                     <td>{row.tons.toLocaleString("es-MX")} t</td>
@@ -489,9 +551,67 @@ function MaterialTable() {
                         <strong>{selectedMaterial.updated}</strong>
                     </div>
 
+                    <div className="nmk-connected-panel">
+                        <div className="nmk-connected-head">
+                            <strong>Historial relacionado</strong>
+                            <span>{relatedEvents.length} eventos</span>
+                        </div>
+
+                        <div className="nmk-mini-list">
+                            {relatedEvents.length > 0 ? (
+                                relatedEvents.map((event) => (
+                                    <article key={`${event.time}-${event.title}`}>
+                                        <time>{event.time}</time>
+                                        <div>
+                                            <strong>{event.title}</strong>
+                                            <span>{event.text}</span>
+                                        </div>
+                                    </article>
+                                ))
+                            ) : (
+                                <article>
+                                    <time>—</time>
+                                    <div>
+                                        <strong>Sin eventos directos</strong>
+                                        <span>Este material aún no tiene eventos filtrados por nombre o zona.</span>
+                                    </div>
+                                </article>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="nmk-connected-panel">
+                        <div className="nmk-connected-head">
+                            <strong>Evidencia ligada</strong>
+                            <span>{relatedEvidence.length} registros</span>
+                        </div>
+
+                        <div className="nmk-mini-list">
+                            {relatedEvidence.length > 0 ? (
+                                relatedEvidence.map((evidence) => (
+                                    <article key={evidence.id}>
+                                        <time>{evidence.time}</time>
+                                        <div>
+                                            <strong>{evidence.type} · {evidence.source}</strong>
+                                            <span>{evidence.note}</span>
+                                        </div>
+                                    </article>
+                                ))
+                            ) : (
+                                <article>
+                                    <time>—</time>
+                                    <div>
+                                        <strong>Sin evidencia directa</strong>
+                                        <span>Registra foto, nota, medición, GPS o captura RTK desde Captura.</span>
+                                    </div>
+                                </article>
+                            )}
+                        </div>
+                    </div>
+
                     <div className="nmk-detail-actions">
                         <button type="button">Registrar evidencia</button>
-                        <button type="button">Ver historial</button>
+                        <button type="button">Ver historial completo</button>
                         <button type="button">Enviar a revisión</button>
                     </div>
                 </aside>
@@ -842,6 +962,10 @@ function CapturaView() {
                         <ProductCard key={tool.title} title={tool.title} text={tool.text} />
                     ))}
                 </div>
+            </section>
+
+            <section className="nmk-panel nmk-span-2">
+                <EvidenceWorkspace />
             </section>
 
             <section className="nmk-panel">
