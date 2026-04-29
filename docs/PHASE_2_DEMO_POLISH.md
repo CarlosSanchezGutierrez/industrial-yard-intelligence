@@ -133,3 +133,18 @@ Runtime route used:
 Purpose:
 
 Show stockpiles as operational yard assets with material, zone, quantity and status labels.
+## Audit timeline story panel
+
+`AuditTimelineStoryPanel` adds a clearer audit narrative to the cockpit.
+
+Location:
+
+`apps/web/src/components/AuditTimelineStoryPanel.tsx`
+
+Runtime route used:
+
+`GET /audit/mutations`
+
+Purpose:
+
+Show traceability as a supervisor-facing timeline instead of raw mutation data.

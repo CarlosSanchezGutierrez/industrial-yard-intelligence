@@ -211,3 +211,8 @@ The cockpit includes an executive value panel:
 The cockpit includes stockpile demo summary cards:
 
 `apps/web/src/components/StockpileDemoSummaryPanel.tsx`
+## Phase 2 audit timeline story
+
+The cockpit includes a clearer audit timeline panel:
+
+`apps/web/src/components/AuditTimelineStoryPanel.tsx`
