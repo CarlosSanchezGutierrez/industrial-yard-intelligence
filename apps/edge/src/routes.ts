@@ -359,16 +359,24 @@ function handleEvidenceRegister(request: EdgeRouteRequest): EdgeRouteResponse {
   }
 
   try {
+    const evidenceKind = getStringBodyValue(request.body, "evidenceKind");
+    const storageProvider = getStringBodyValue(request.body, "storageProvider");
+    const storageKey = getStringBodyValue(request.body, "storageKey");
+    const fileName = getStringBodyValue(request.body, "fileName");
+    const mimeType = getStringBodyValue(request.body, "mimeType");
+    const relatedEntityId = getStringBodyValue(request.body, "relatedEntityId");
+    const relatedEventId = getStringBodyValue(request.body, "relatedEventId");
+
     const evidence = recordTextEvidence({
       content,
-      evidenceKind: getStringBodyValue(request.body, "evidenceKind"),
-      storageProvider: getStringBodyValue(request.body, "storageProvider"),
-      storageKey: getStringBodyValue(request.body, "storageKey"),
-      fileName: getStringBodyValue(request.body, "fileName"),
-      mimeType: getStringBodyValue(request.body, "mimeType"),
-      relatedEntityId: getStringBodyValue(request.body, "relatedEntityId"),
-      relatedEventId: getStringBodyValue(request.body, "relatedEventId"),
-      registeredAt: request.now
+      registeredAt: request.now,
+      ...(evidenceKind !== undefined ? { evidenceKind } : {}),
+      ...(storageProvider !== undefined ? { storageProvider } : {}),
+      ...(storageKey !== undefined ? { storageKey } : {}),
+      ...(fileName !== undefined ? { fileName } : {}),
+      ...(mimeType !== undefined ? { mimeType } : {}),
+      ...(relatedEntityId !== undefined ? { relatedEntityId } : {}),
+      ...(relatedEventId !== undefined ? { relatedEventId } : {})
     });
 
     return jsonResponse(

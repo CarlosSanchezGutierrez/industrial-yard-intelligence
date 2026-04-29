@@ -134,13 +134,16 @@ function normalizeStoredEvidenceItem(value: unknown): StoredEvidenceItem | null 
     return null;
   }
 
-  const sourceRuntime =
-    metadata["sourceRuntime"] === "mobile" ||
-    metadata["sourceRuntime"] === "edge" ||
-    metadata["sourceRuntime"] === "cloud" ||
-    metadata["sourceRuntime"] === "external_ingestion"
-      ? metadata["sourceRuntime"]
-      : "edge";
+  const sourceRuntime: EvidenceIntegrityMetadata["sourceRuntime"] =
+    metadata["sourceRuntime"] === "mobile"
+      ? "mobile"
+      : metadata["sourceRuntime"] === "edge"
+        ? "edge"
+        : metadata["sourceRuntime"] === "cloud"
+          ? "cloud"
+          : metadata["sourceRuntime"] === "external_ingestion"
+            ? "external_ingestion"
+            : "edge";
 
   const normalizedMetadata = {
     tenantId: asTenantId(metadata["tenantId"]),
