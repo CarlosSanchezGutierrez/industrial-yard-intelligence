@@ -241,13 +241,18 @@ function handleConflictResolution(request: EdgeRouteRequest): EdgeRouteResponse 
     );
   }
 
+  const decision = getDecisionBodyValue(request.body);
+  const note = getStringBodyValue(request.body, "note");
+  const resolvedByUserId = getStringBodyValue(request.body, "resolvedByUserId");
+  const resolvedByDeviceId = getStringBodyValue(request.body, "resolvedByDeviceId");
+
   const resolution = recordConflictResolution({
     eventId,
-    decision: getDecisionBodyValue(request.body),
-    note: getStringBodyValue(request.body, "note"),
-    resolvedByUserId: getStringBodyValue(request.body, "resolvedByUserId"),
-    resolvedByDeviceId: getStringBodyValue(request.body, "resolvedByDeviceId"),
-    resolvedAt: request.now
+    resolvedAt: request.now,
+    ...(decision !== undefined ? { decision } : {}),
+    ...(note !== undefined ? { note } : {}),
+    ...(resolvedByUserId !== undefined ? { resolvedByUserId } : {}),
+    ...(resolvedByDeviceId !== undefined ? { resolvedByDeviceId } : {})
   });
 
   return jsonResponse(
