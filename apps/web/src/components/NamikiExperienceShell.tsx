@@ -243,33 +243,115 @@ function StatusPill({ value }: { readonly value: string }) {
 }
 
 function OperationalMap() {
+    const mapLayers = [
+        { id: "zones", label: "Zonas" },
+        { id: "routes", label: "Rutas" },
+        { id: "materials", label: "Materiales" },
+        { id: "equipment", label: "Equipo" },
+    ] as const;
+
+    type MapLayerId = (typeof mapLayers)[number]["id"];
+
+    const [layers, setLayers] = useState<Record<MapLayerId, boolean>>({
+        zones: true,
+        routes: true,
+        materials: true,
+        equipment: true,
+    });
+
+    function toggleLayer(layerId: MapLayerId) {
+        setLayers((current) => ({
+            ...current,
+            [layerId]: !current[layerId],
+        }));
+    }
+
     return (
-        <div className="nmk-map">
-            <div className="nmk-water">Frente de agua / descarga</div>
-            <div className="nmk-rail" />
-            <div className="nmk-belt">Sistema de bandas</div>
+        <div className="nmk-map-shell">
+            <aside className="nmk-layer-panel">
+                <div>
+                    <p>Capas del mapa</p>
+                    <h3>Vista operativa</h3>
+                    <span>Activa o apaga elementos para explicar el patio sin saturar la vista.</span>
+                </div>
 
-            <div className="nmk-tag nmk-tag-arthur">Arthur</div>
-            <div className="nmk-tag nmk-tag-sharon">Sharon</div>
-            <div className="nmk-tag nmk-tag-mr2">MR2</div>
+                <div className="nmk-layer-list">
+                    {mapLayers.map((layer) => (
+                        <button
+                            className={layers[layer.id] ? "is-active" : ""}
+                            key={layer.id}
+                            onClick={() => toggleLayer(layer.id)}
+                            type="button"
+                        >
+                            <span />
+                            {layer.label}
+                        </button>
+                    ))}
+                </div>
 
-            <div className="nmk-dock nmk-dock-1">Muelle 1</div>
-            <div className="nmk-dock nmk-dock-2">Muelle 2</div>
+                <div className="nmk-map-status-grid">
+                    <article>
+                        <strong>5</strong>
+                        <span>Zonas</span>
+                    </article>
+                    <article>
+                        <strong>4</strong>
+                        <span>Pilas</span>
+                    </article>
+                    <article>
+                        <strong>3</strong>
+                        <span>Equipos</span>
+                    </article>
+                    <article>
+                        <strong>2</strong>
+                        <span>Rutas</span>
+                    </article>
+                </div>
+            </aside>
 
-            <div className="nmk-pile nmk-pile-a">Pet coke</div>
-            <div className="nmk-pile nmk-pile-b">Clinker</div>
-            <div className="nmk-pile nmk-pile-c">Chatarra HMS</div>
-            <div className="nmk-pile nmk-pile-d">Fluorita MT</div>
+            <div className="nmk-map">
+                <div className="nmk-water">Frente de agua / descarga</div>
 
-            <div className="nmk-equipment nmk-bodega">Bodega</div>
-            <div className="nmk-equipment nmk-bascula">Básculas</div>
-            <div className="nmk-equipment nmk-telestacker">Telestacker</div>
+                {layers.routes ? (
+                    <>
+                        <div className="nmk-rail" />
+                        <div className="nmk-belt">Sistema de bandas</div>
+                    </>
+                ) : null}
 
-            <div className="nmk-map-legend">
-                <span>Material</span>
-                <span>Equipo</span>
-                <span>Ruta</span>
-                <span>Zona</span>
+                {layers.zones ? (
+                    <>
+                        <div className="nmk-tag nmk-tag-arthur">Arthur</div>
+                        <div className="nmk-tag nmk-tag-sharon">Sharon</div>
+                        <div className="nmk-tag nmk-tag-mr2">MR2</div>
+                        <div className="nmk-dock nmk-dock-1">Muelle 1</div>
+                        <div className="nmk-dock nmk-dock-2">Muelle 2</div>
+                    </>
+                ) : null}
+
+                {layers.materials ? (
+                    <>
+                        <div className="nmk-pile nmk-pile-a">Pet coke</div>
+                        <div className="nmk-pile nmk-pile-b">Clinker</div>
+                        <div className="nmk-pile nmk-pile-c">Chatarra HMS</div>
+                        <div className="nmk-pile nmk-pile-d">Fluorita MT</div>
+                    </>
+                ) : null}
+
+                {layers.equipment ? (
+                    <>
+                        <div className="nmk-equipment nmk-bodega">Bodega</div>
+                        <div className="nmk-equipment nmk-bascula">Básculas</div>
+                        <div className="nmk-equipment nmk-telestacker">Telestacker</div>
+                    </>
+                ) : null}
+
+                <div className="nmk-map-legend">
+                    <span>Material</span>
+                    <span>Equipo</span>
+                    <span>Ruta</span>
+                    <span>Zona</span>
+                </div>
             </div>
         </div>
     );

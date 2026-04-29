@@ -332,3 +332,19 @@ Action taken:
 Purpose:
 
 Make the UI feel like an actual professional operations console, not just a visual dashboard.
+## P0.4 map and timeline controls applied
+
+Action taken:
+
+- Added map layer controls.
+- Added map operational summary cards.
+- Added timeline search.
+- Added priority filter.
+- Added event type filters.
+- Added empty state.
+
+Files:
+
+- `apps/web/src/components/NamikiExperienceShell.tsx`
+- `apps/web/src/styles/namiki-polish-p0-4.css`
+- `docs/NAMIKI_UX_POLISH_P0_4.md`
