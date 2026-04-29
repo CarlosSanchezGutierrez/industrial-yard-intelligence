@@ -1,3 +1,7 @@
+import {
+  loadCloudApiDashboardSnapshot,
+  type CloudApiDashboardSnapshot
+} from "./data/api-client.js";
 import { industrialDarkTheme, themeToCssVariables } from "@iyi/design-tokens";
 import { cooperSmokeSeed, type SmokeStockpile, type SmokeTenantSeed } from "@iyi/seed-data";
 import type { CSSProperties, ChangeEvent } from "react";
@@ -109,7 +113,9 @@ function App() {
   const [seed, setSeed] = useState<SmokeTenantSeed>(cooperSmokeSeed);
   const [seedSource, setSeedSource] = useState<SmokeSeedSource>("local_fallback");
   const [seedMessage, setSeedMessage] = useState("Usando seed local inicial.");
-  const [isLoadingSeed, setIsLoadingSeed] = useState(true);
+  const [cloudApiSnapshot, setCloudApiSnapshot] = useState<CloudApiDashboardSnapshot | null>(null);
+  const [cloudApiMessage, setCloudApiMessage] = useState("Sin API cloud cargada todavía.");
+  const [isLoadingCloudApi, setIsLoadingCloudApi] = useState(false);  const [isLoadingSeed, setIsLoadingSeed] = useState(true);
   const [syncResult, setSyncResult] = useState<SubmitSyncDemoResult | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
   const [guidedDemoMessage, setGuidedDemoMessage] = useState(
@@ -412,6 +418,13 @@ function App() {
     setEdgeDbMessage(result.message);
     setIsSavingEdgeDbSnapshot(false);
   }
+  async function handleRefreshCloudApi(): Promise<void> {
+    setIsLoadingCloudApi(true);
+    const result = await loadCloudApiDashboardSnapshot();
+    setCloudApiSnapshot(result.snapshot);
+    setCloudApiMessage(result.message);
+    setIsLoadingCloudApi(false);
+  }
   return (
     <main className="app-shell" style={applyThemeVariables()}>
       <nav className="top-nav">
@@ -457,6 +470,78 @@ function App() {
         ))}
       </section>
 
+      <section className="cloud-api-panel">
+        <div className="panel-header">
+          <div>
+            <p className="eyebrow">Cloud API</p>
+            <h2>Backend principal</h2>
+          </div>
+          <span className="cloud-api-status">
+            {cloudApiSnapshot === null ? "OFFLINE" : "ONLINE"}
+          </span>
+        </div>
+
+        <p className="cloud-api-message">{cloudApiMessage}</p>
+
+        <div className="cloud-api-actions">
+          <button
+            className="secondary-button"
+            disabled={isLoadingCloudApi}
+            onClick={() => void handleRefreshCloudApi()}
+          >
+            {isLoadingCloudApi ? "Cargando API..." : "Actualizar Cloud API"}
+          </button>
+        </div>
+
+        {cloudApiSnapshot === null ? (
+          <div className="empty-state">
+            Sin datos del backend cloud. Levanta apps/api y presiona “Actualizar Cloud API”.
+          </div>
+        ) : (
+          <>
+            <div className="cloud-api-metric-grid">
+              <article>
+                <span>Tenants</span>
+                <strong>{cloudApiSnapshot.overview.tenantCount}</strong>
+              </article>
+              <article>
+                <span>Terminals</span>
+                <strong>{cloudApiSnapshot.overview.terminalCount}</strong>
+              </article>
+              <article>
+                <span>Stockpiles</span>
+                <strong>{cloudApiSnapshot.overview.stockpileCount}</strong>
+              </article>
+              <article>
+                <span>Repository mode</span>
+                <strong>{cloudApiSnapshot.health.repositoryMode}</strong>
+              </article>
+            </div>
+
+            <div className="cloud-api-grid">
+              <article>
+                <h3>Tenants</h3>
+                {cloudApiSnapshot.tenants.map((tenant) => (
+                  <div className="cloud-api-line-item" key={tenant.id}>
+                    <strong>{tenant.name}</strong>
+                    <span>{tenant.id} · {tenant.status}</span>
+                  </div>
+                ))}
+              </article>
+
+              <article>
+                <h3>Stockpiles</h3>
+                {cloudApiSnapshot.stockpiles.slice(0, 6).map((stockpile) => (
+                  <div className="cloud-api-line-item" key={stockpile.id}>
+                    <strong>{stockpile.name}</strong>
+                    <span>{stockpile.material} · {stockpile.estimatedTons} tons · {stockpile.status}</span>
+                  </div>
+                ))}
+              </article>
+            </div>
+          </>
+        )}
+      </section>
       <section className="db-projection-panel">
         <div className="panel-header">
           <div>
