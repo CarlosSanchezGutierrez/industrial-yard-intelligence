@@ -21,6 +21,7 @@ import {
   type DbUnitOfWork
 } from "@iyi/db";
 import { cooperSmokeSeed } from "@iyi/seed-data";
+import { createStockpileLifecyclePayload } from "./stockpile-lifecycle-response.js";
 import {
   createApiUnitOfWork,
   getApiDbFilePath,

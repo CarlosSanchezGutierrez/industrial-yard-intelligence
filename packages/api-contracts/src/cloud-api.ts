@@ -103,6 +103,27 @@ export interface CloudApiStockpilesPayloadContract {
   readonly stockpiles: readonly CloudApiStockpileSummaryContract[];
 }
 
+
+export type CloudApiStockpileLifecycleStatusContract =
+    | "draft"
+    | "operational"
+    | "pending_review"
+    | "validated"
+    | "archived";
+
+export interface CloudApiStockpileLifecycleTransitionContract {
+    from: CloudApiStockpileLifecycleStatusContract;
+    to: CloudApiStockpileLifecycleStatusContract;
+}
+
+export interface CloudApiStockpileLifecyclePayloadContract {
+    statuses: readonly CloudApiStockpileLifecycleStatusContract[];
+    transitions: readonly CloudApiStockpileLifecycleTransitionContract[];
+    allowedTransitionsByStatus: Record<
+        CloudApiStockpileLifecycleStatusContract,
+        readonly CloudApiStockpileLifecycleStatusContract[]
+    >;
+}
 export interface CloudApiSystemOverviewPayloadContract {
   readonly tenantCount: number;
   readonly terminalCount: number;
@@ -157,6 +178,11 @@ export const cloudApiRouteDefinitions = [
     description: "List tenants from API repository layer."
   },
   {
+    method: "GET",
+    path: "/stockpiles/lifecycle",
+    description: "Expose stockpile lifecycle statuses and allowed transitions."
+  },
+{
     method: "GET",
     path: "/stockpiles",
     description: "List stockpiles from API repository layer."
