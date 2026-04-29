@@ -10,7 +10,8 @@ import {
   type CloudApiSeedPayloadContract,
   type CloudApiStockpilesPayloadContract,
   type CloudApiSystemOverviewPayloadContract,
-  type CloudApiTenantsPayloadContract
+  type CloudApiTenantsPayloadContract,
+  type CloudApiUpdateStockpileStatusPayloadContract
 } from "@iyi/api-contracts";
 import {
   dbSchemaVersion,
@@ -28,7 +29,8 @@ import {
 } from "./repository-seed.js";
 import {
   createStockpileCommand,
-  toStockpileSummary
+  toStockpileSummary,
+  updateStockpileStatusCommand
 } from "./stockpile-service.js";
 
 export interface ApiRouteRequest {
@@ -146,6 +148,16 @@ async function createSystemOverviewPayload(
   };
 }
 
+function getStockpileStatusPathId(pathname: string): string | null {
+  const match = /^\/stockpiles\/([^/]+)\/status$/.exec(pathname);
+
+  if (match === null) {
+    return null;
+  }
+
+  return decodeURIComponent(match[1] ?? "");
+}
+
 export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRouteResponse> {
   if (request.method === "OPTIONS") {
     return emptyResponse(204);
@@ -239,6 +251,29 @@ export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRout
     };
 
     return jsonResponse(201, createSuccess(payload, request.requestId, request.now));
+  }
+
+  if (request.method === "PATCH") {
+    const stockpileId = getStockpileStatusPathId(request.pathname);
+
+    if (stockpileId !== null) {
+      const result = await updateStockpileStatusCommand(stockpileId, request.body, request.now);
+
+      if (!result.ok) {
+        const statusCode = result.code === "not_found" ? 404 : 400;
+
+        return jsonResponse(
+          statusCode,
+          createFailure(result.code, result.message, request.requestId, request.now)
+        );
+      }
+
+      const payload: CloudApiUpdateStockpileStatusPayloadContract = {
+        stockpile: result.stockpile
+      };
+
+      return jsonResponse(200, createSuccess(payload, request.requestId, request.now));
+    }
   }
 
   if (request.method === "GET" && request.pathname === "/system/overview") {

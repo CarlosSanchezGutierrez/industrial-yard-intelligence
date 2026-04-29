@@ -1,7 +1,9 @@
 import { randomUUID } from "node:crypto";
 import type {
   CloudApiCreateStockpileRequestContract,
-  CloudApiStockpileSummaryContract
+  CloudApiStockpileStatusContract,
+  CloudApiStockpileSummaryContract,
+  CloudApiUpdateStockpileStatusRequestContract
 } from "@iyi/api-contracts";
 import type {
   DbStockpileRecord,
@@ -18,15 +20,24 @@ export interface CreateStockpileCommandResult {
   readonly stockpile: CloudApiStockpileSummaryContract;
 }
 
-export interface CreateStockpileCommandFailure {
+export interface UpdateStockpileStatusCommandResult {
+  readonly ok: true;
+  readonly stockpile: CloudApiStockpileSummaryContract;
+}
+
+export interface StockpileCommandFailure {
   readonly ok: false;
-  readonly code: "bad_request" | "conflict";
+  readonly code: "bad_request" | "conflict" | "not_found";
   readonly message: string;
 }
 
 export type CreateStockpileCommandResponse =
   | CreateStockpileCommandResult
-  | CreateStockpileCommandFailure;
+  | StockpileCommandFailure;
+
+export type UpdateStockpileStatusCommandResponse =
+  | UpdateStockpileStatusCommandResult
+  | StockpileCommandFailure;
 
 function isRecord(value: unknown): value is RecordLike {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -76,6 +87,16 @@ function normalizeStockpileStatus(value: unknown): DbStockpileRecord["status"] {
   return "draft";
 }
 
+function isStockpileStatus(value: unknown): value is CloudApiStockpileStatusContract {
+  return (
+    value === "draft" ||
+    value === "operational" ||
+    value === "pending_review" ||
+    value === "validated" ||
+    value === "archived"
+  );
+}
+
 export function toStockpileSummary(record: DbStockpileRecord): CloudApiStockpileSummaryContract {
   return {
     id: record.id,
@@ -94,7 +115,7 @@ export function toStockpileSummary(record: DbStockpileRecord): CloudApiStockpile
 export function parseCreateStockpileCommand(
   body: unknown,
   now: string
-): { readonly ok: true; readonly record: DbStockpileRecord } | CreateStockpileCommandFailure {
+): { readonly ok: true; readonly record: DbStockpileRecord } | StockpileCommandFailure {
   if (!isRecord(body)) {
     return {
       ok: false,
@@ -167,6 +188,38 @@ export function parseCreateStockpileCommand(
   };
 }
 
+export function parseUpdateStockpileStatusCommand(
+  body: unknown
+): { readonly ok: true; readonly status: DbStockpileRecord["status"]; readonly validationState?: string; readonly confidenceLevel?: string } | StockpileCommandFailure {
+  if (!isRecord(body)) {
+    return {
+      ok: false,
+      code: "bad_request",
+      message: "Request body must be a JSON object."
+    };
+  }
+
+  const request = body as unknown as Partial<CloudApiUpdateStockpileStatusRequestContract>;
+
+  if (!isStockpileStatus(request.status)) {
+    return {
+      ok: false,
+      code: "bad_request",
+      message: "status must be one of draft, operational, pending_review, validated or archived."
+    };
+  }
+
+  const validationState = optionalStringBodyValue(body, "validationState");
+  const confidenceLevel = optionalStringBodyValue(body, "confidenceLevel");
+
+  return {
+    ok: true,
+    status: request.status,
+    ...(validationState !== undefined ? { validationState } : {}),
+    ...(confidenceLevel !== undefined ? { confidenceLevel } : {})
+  };
+}
+
 export async function createStockpileCommand(
   body: unknown,
   now: string,
@@ -189,6 +242,56 @@ export async function createStockpileCommand(
   }
 
   const saved = await store.repositories.stockpiles.upsert(parsed.record);
+
+  store.saveToDisk(now);
+
+  return {
+    ok: true,
+    stockpile: toStockpileSummary(saved)
+  };
+}
+
+export async function updateStockpileStatusCommand(
+  stockpileId: string,
+  body: unknown,
+  now: string,
+  store: JsonFileDbStore = createApiJsonDbStore(now)
+): Promise<UpdateStockpileStatusCommandResponse> {
+  const normalizedId = stockpileId.trim();
+
+  if (normalizedId.length === 0) {
+    return {
+      ok: false,
+      code: "bad_request",
+      message: "stockpile id is required."
+    };
+  }
+
+  const parsed = parseUpdateStockpileStatusCommand(body);
+
+  if (!parsed.ok) {
+    return parsed;
+  }
+
+  const existing = await store.repositories.stockpiles.getById(normalizedId);
+
+  if (existing === null) {
+    return {
+      ok: false,
+      code: "not_found",
+      message: `Stockpile ${normalizedId} was not found.`
+    };
+  }
+
+  const updated: DbStockpileRecord = {
+    ...existing,
+    status: parsed.status,
+    validationState: parsed.validationState ?? `status_${parsed.status}`,
+    confidenceLevel: parsed.confidenceLevel ?? existing.confidenceLevel,
+    updatedAt: now
+  };
+
+  const saved = await store.repositories.stockpiles.upsert(updated);
 
   store.saveToDisk(now);
 

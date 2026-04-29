@@ -2,9 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   cloudApiRouteDefinitions,
   isCloudApiRoutePath,
-  type CloudApiCreateStockpileRequestContract,
+  isCloudApiStockpileStatus,
   type CloudApiHealthPayloadContract,
-  type CloudApiSystemOverviewPayloadContract
+  type CloudApiSystemOverviewPayloadContract,
+  type CloudApiUpdateStockpileStatusRequestContract
 } from "./index.js";
 
 describe("@iyi/api-contracts cloud API", () => {
@@ -13,6 +14,7 @@ describe("@iyi/api-contracts cloud API", () => {
     expect(cloudApiRouteDefinitions.some((route) => route.path === "/tenants")).toBe(true);
     expect(cloudApiRouteDefinitions.some((route) => route.method === "GET" && route.path === "/stockpiles")).toBe(true);
     expect(cloudApiRouteDefinitions.some((route) => route.method === "POST" && route.path === "/stockpiles")).toBe(true);
+    expect(cloudApiRouteDefinitions.some((route) => route.method === "PATCH" && route.path === "/stockpiles/:id/status")).toBe(true);
     expect(cloudApiRouteDefinitions.some((route) => route.path === "/system/overview")).toBe(true);
     expect(cloudApiRouteDefinitions.some((route) => route.path === "/admin/db/snapshot")).toBe(true);
     expect(cloudApiRouteDefinitions.some((route) => route.path === "/admin/db/reset")).toBe(true);
@@ -22,7 +24,17 @@ describe("@iyi/api-contracts cloud API", () => {
     expect(isCloudApiRoutePath("/health")).toBe(true);
     expect(isCloudApiRoutePath("/system/overview")).toBe(true);
     expect(isCloudApiRoutePath("/stockpiles")).toBe(true);
+    expect(isCloudApiRoutePath("/stockpiles/:id/status")).toBe(true);
     expect(isCloudApiRoutePath("/unknown")).toBe(false);
+  });
+
+  it("recognizes stockpile statuses", () => {
+    expect(isCloudApiStockpileStatus("draft")).toBe(true);
+    expect(isCloudApiStockpileStatus("operational")).toBe(true);
+    expect(isCloudApiStockpileStatus("pending_review")).toBe(true);
+    expect(isCloudApiStockpileStatus("validated")).toBe(true);
+    expect(isCloudApiStockpileStatus("archived")).toBe(true);
+    expect(isCloudApiStockpileStatus("deleted")).toBe(false);
   });
 
   it("types health payload", () => {
@@ -37,19 +49,15 @@ describe("@iyi/api-contracts cloud API", () => {
     expect(payload.repositoryMode).toBe("json_file");
   });
 
-  it("types create stockpile request", () => {
-    const payload: CloudApiCreateStockpileRequestContract = {
-      tenantId: "tenant_cooper_tsmith",
-      terminalId: "terminal_altamira",
-      name: "Patio nuevo",
-      material: "pet coke",
-      category: "bulk",
-      estimatedTons: 1250,
-      status: "draft"
+  it("types update stockpile status request", () => {
+    const payload: CloudApiUpdateStockpileStatusRequestContract = {
+      status: "validated",
+      validationState: "supervisor_validated",
+      confidenceLevel: "reviewed"
     };
 
-    expect(payload.tenantId).toBe("tenant_cooper_tsmith");
-    expect(payload.status).toBe("draft");
+    expect(payload.status).toBe("validated");
+    expect(payload.validationState).toBe("supervisor_validated");
   });
 
   it("types system overview payload", () => {

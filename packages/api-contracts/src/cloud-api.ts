@@ -48,6 +48,13 @@ export interface CloudApiTerminalSummaryContract {
   readonly locationLabel: string;
 }
 
+export type CloudApiStockpileStatusContract =
+  | "draft"
+  | "operational"
+  | "pending_review"
+  | "validated"
+  | "archived";
+
 export interface CloudApiStockpileSummaryContract {
   readonly id: string;
   readonly tenantId: string;
@@ -71,10 +78,20 @@ export interface CloudApiCreateStockpileRequestContract {
   readonly estimatedTons?: number;
   readonly validationState?: string;
   readonly confidenceLevel?: string;
-  readonly status?: "draft" | "operational" | "pending_review" | "validated" | "archived";
+  readonly status?: CloudApiStockpileStatusContract;
 }
 
 export interface CloudApiCreateStockpilePayloadContract {
+  readonly stockpile: CloudApiStockpileSummaryContract;
+}
+
+export interface CloudApiUpdateStockpileStatusRequestContract {
+  readonly status: CloudApiStockpileStatusContract;
+  readonly validationState?: string;
+  readonly confidenceLevel?: string;
+}
+
+export interface CloudApiUpdateStockpileStatusPayloadContract {
   readonly stockpile: CloudApiStockpileSummaryContract;
 }
 
@@ -150,6 +167,11 @@ export const cloudApiRouteDefinitions = [
     description: "Create stockpile in API repository layer."
   },
   {
+    method: "PATCH",
+    path: "/stockpiles/:id/status",
+    description: "Update stockpile status in API repository layer."
+  },
+  {
     method: "GET",
     path: "/system/overview",
     description: "Return repository-backed system overview."
@@ -170,4 +192,14 @@ export type CloudApiRoutePathContract = (typeof cloudApiRouteDefinitions)[number
 
 export function isCloudApiRoutePath(value: string): value is CloudApiRoutePathContract {
   return cloudApiRouteDefinitions.some((route) => route.path === value);
+}
+
+export function isCloudApiStockpileStatus(value: string): value is CloudApiStockpileStatusContract {
+  return (
+    value === "draft" ||
+    value === "operational" ||
+    value === "pending_review" ||
+    value === "validated" ||
+    value === "archived"
+  );
 }

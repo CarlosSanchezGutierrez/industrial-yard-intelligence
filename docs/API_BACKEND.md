@@ -98,3 +98,27 @@ Optional body fields:
 - status
 
 This is the first write endpoint in apps/api.
+## Stockpile status update endpoint
+
+PATCH /stockpiles/:id/status
+
+Updates only the stockpile status metadata.
+
+Required body fields:
+
+- status
+
+Optional body fields:
+
+- validationState
+- confidenceLevel
+
+Allowed status values:
+
+- draft
+- operational
+- pending_review
+- validated
+- archived
+
+This prepares the supervisor review flow.

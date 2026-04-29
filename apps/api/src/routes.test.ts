@@ -45,6 +45,15 @@ async function post(pathname: string, body?: unknown) {
     ...(body !== undefined ? { body } : {})
   });
 }
+async function patch(pathname: string, body?: unknown) {
+  return routeApiRequest({
+    method: "PATCH",
+    pathname,
+    requestId: `request_${pathname.replace(/[^a-z0-9]/gi, "_")}`,
+    now,
+    ...(body !== undefined ? { body } : {})
+  });
+}
 
 describe("@iyi/api routes", () => {
   it("creates repository seed", () => {
@@ -244,6 +253,60 @@ describe("@iyi/api routes", () => {
     expect(body.error.message).toContain("terminalId");
   });
 
+  it("updates stockpile status", async () => {
+    const createResponse = await post("/stockpiles", {
+      id: "stockpile_status_route",
+      tenantId: "tenant_cooper_tsmith",
+      terminalId: "terminal_altamira",
+      name: "Route status target",
+      material: "pet coke",
+      status: "draft"
+    });
+
+    expect(createResponse.statusCode).toBe(201);
+
+    const updateResponse = await patch("/stockpiles/stockpile_status_route/status", {
+      status: "validated",
+      validationState: "supervisor_validated",
+      confidenceLevel: "reviewed"
+    });
+
+    const body = JSON.parse(updateResponse.body) as {
+      ok: boolean;
+      data: {
+        stockpile: {
+          id: string;
+          status: string;
+          validationState: string;
+          confidenceLevel: string;
+        };
+      };
+    };
+
+    expect(updateResponse.statusCode).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.data.stockpile.id).toBe("stockpile_status_route");
+    expect(body.data.stockpile.status).toBe("validated");
+    expect(body.data.stockpile.validationState).toBe("supervisor_validated");
+    expect(body.data.stockpile.confidenceLevel).toBe("reviewed");
+  });
+
+  it("returns 404 when updating missing stockpile status", async () => {
+    const response = await patch("/stockpiles/missing_stockpile/status", {
+      status: "validated"
+    });
+
+    const body = JSON.parse(response.body) as {
+      ok: boolean;
+      error: {
+        code: string;
+      };
+    };
+
+    expect(response.statusCode).toBe(404);
+    expect(body.ok).toBe(false);
+    expect(body.error.code).toBe("not_found");
+  });
   it("serves repository-backed system overview", async () => {
     const response = await get("/system/overview");
     const body = JSON.parse(response.body) as {

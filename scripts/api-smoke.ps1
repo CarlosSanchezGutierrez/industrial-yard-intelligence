@@ -162,7 +162,25 @@ Assert-OkResponse -Response $createdStockpile -StepName "Create stockpile"
 Assert-Condition -Condition ($createdStockpile.data.stockpile.id -eq "stockpile_api_smoke_created") -Message "Unexpected created stockpile id."
 Write-Host "OK create stockpile"
 Write-Host ""
-Write-Host "9. System overview"
+Write-Host "9. Update stockpile status"
+$updatedStockpile = Invoke-RestMethod `
+    -Method "PATCH" `
+    -Uri "$ApiBaseUrl/stockpiles/stockpile_api_smoke_created/status" `
+    -Headers @{
+        Accept = "application/json"
+    } `
+    -ContentType "application/json" `
+    -Body (@{
+        status = "validated"
+        validationState = "supervisor_validated"
+        confidenceLevel = "reviewed"
+    } | ConvertTo-Json -Depth 20)
+
+Assert-OkResponse -Response $updatedStockpile -StepName "Update stockpile status"
+Assert-Condition -Condition ($updatedStockpile.data.stockpile.status -eq "validated") -Message "Expected validated stockpile."
+Write-Host "OK update stockpile status"
+Write-Host ""
+Write-Host "10. System overview"
 $overview = Invoke-JsonRequest -Method "GET" -Path "/system/overview"
 Assert-OkResponse -Response $overview -StepName "System overview"
 Assert-Condition -Condition ($overview.data.tenantCount -eq 1) -Message "Expected tenantCount = 1."
@@ -173,7 +191,7 @@ Write-Host "OK system overview"
 
 
 Write-Host ""
-Write-Host "10. Admin DB snapshot"
+Write-Host "11. Admin DB snapshot"
 $dbSnapshot = Invoke-JsonRequest -Method "GET" -Path "/admin/db/snapshot"
 Assert-OkResponse -Response $dbSnapshot -StepName "Admin DB snapshot"
 Assert-Condition -Condition ($dbSnapshot.data.storeFile -like "*api-db.json*") -Message "Expected api-db.json store file."
@@ -182,7 +200,7 @@ Assert-Condition -Condition ($dbSnapshot.data.snapshot.tables.app_tenants.Count 
 Write-Host "OK admin DB snapshot"
 
 Write-Host ""
-Write-Host "11. Admin DB reset"
+Write-Host "12. Admin DB reset"
 $dbReset = Invoke-RestMethod `
     -Method "POST" `
     -Uri "$ApiBaseUrl/admin/db/reset" `
