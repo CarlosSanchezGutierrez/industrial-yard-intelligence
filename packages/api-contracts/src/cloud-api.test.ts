@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   cloudApiRouteDefinitions,
   isCloudApiRoutePath,
+  type CloudApiCreateStockpileRequestContract,
   type CloudApiHealthPayloadContract,
   type CloudApiSystemOverviewPayloadContract
 } from "./index.js";
@@ -10,7 +11,8 @@ describe("@iyi/api-contracts cloud API", () => {
   it("defines stable cloud API routes", () => {
     expect(cloudApiRouteDefinitions.some((route) => route.path === "/health")).toBe(true);
     expect(cloudApiRouteDefinitions.some((route) => route.path === "/tenants")).toBe(true);
-    expect(cloudApiRouteDefinitions.some((route) => route.path === "/stockpiles")).toBe(true);
+    expect(cloudApiRouteDefinitions.some((route) => route.method === "GET" && route.path === "/stockpiles")).toBe(true);
+    expect(cloudApiRouteDefinitions.some((route) => route.method === "POST" && route.path === "/stockpiles")).toBe(true);
     expect(cloudApiRouteDefinitions.some((route) => route.path === "/system/overview")).toBe(true);
     expect(cloudApiRouteDefinitions.some((route) => route.path === "/admin/db/snapshot")).toBe(true);
     expect(cloudApiRouteDefinitions.some((route) => route.path === "/admin/db/reset")).toBe(true);
@@ -19,6 +21,7 @@ describe("@iyi/api-contracts cloud API", () => {
   it("recognizes cloud API route paths", () => {
     expect(isCloudApiRoutePath("/health")).toBe(true);
     expect(isCloudApiRoutePath("/system/overview")).toBe(true);
+    expect(isCloudApiRoutePath("/stockpiles")).toBe(true);
     expect(isCloudApiRoutePath("/unknown")).toBe(false);
   });
 
@@ -32,6 +35,21 @@ describe("@iyi/api-contracts cloud API", () => {
 
     expect(payload.status).toBe("ok");
     expect(payload.repositoryMode).toBe("json_file");
+  });
+
+  it("types create stockpile request", () => {
+    const payload: CloudApiCreateStockpileRequestContract = {
+      tenantId: "tenant_cooper_tsmith",
+      terminalId: "terminal_altamira",
+      name: "Patio nuevo",
+      material: "pet coke",
+      category: "bulk",
+      estimatedTons: 1250,
+      status: "draft"
+    };
+
+    expect(payload.tenantId).toBe("tenant_cooper_tsmith");
+    expect(payload.status).toBe("draft");
   });
 
   it("types system overview payload", () => {

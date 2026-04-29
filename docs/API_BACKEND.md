@@ -75,3 +75,26 @@ POST /admin/db/reset
 Resets the API JSON DB to Cooper/T. Smith seed data.
 
 This is still not the final production database. The next long-term target is PostgreSQL.
+## Stockpile write endpoint
+
+POST /stockpiles
+
+Creates a stockpile in the API JSON DB.
+
+Required body fields:
+
+- tenantId
+- terminalId
+- name
+- material
+
+Optional body fields:
+
+- id
+- category
+- estimatedTons
+- validationState
+- confidenceLevel
+- status
+
+This is the first write endpoint in apps/api.

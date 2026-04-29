@@ -61,6 +61,23 @@ export interface CloudApiStockpileSummaryContract {
   readonly status: string;
 }
 
+export interface CloudApiCreateStockpileRequestContract {
+  readonly id?: string;
+  readonly tenantId: string;
+  readonly terminalId: string;
+  readonly name: string;
+  readonly material: string;
+  readonly category?: string;
+  readonly estimatedTons?: number;
+  readonly validationState?: string;
+  readonly confidenceLevel?: string;
+  readonly status?: "draft" | "operational" | "pending_review" | "validated" | "archived";
+}
+
+export interface CloudApiCreateStockpilePayloadContract {
+  readonly stockpile: CloudApiStockpileSummaryContract;
+}
+
 export interface CloudApiTenantsPayloadContract {
   readonly tenants: readonly CloudApiTenantSummaryContract[];
 }
@@ -79,6 +96,7 @@ export interface CloudApiSystemOverviewPayloadContract {
   readonly auditEntryCount: number;
   readonly evidenceItemCount: number;
 }
+
 export interface CloudApiAdminDbSnapshotPayloadContract {
   readonly storeFile: string;
   readonly snapshot: unknown;
@@ -125,6 +143,11 @@ export const cloudApiRouteDefinitions = [
     method: "GET",
     path: "/stockpiles",
     description: "List stockpiles from API repository layer."
+  },
+  {
+    method: "POST",
+    path: "/stockpiles",
+    description: "Create stockpile in API repository layer."
   },
   {
     method: "GET",
