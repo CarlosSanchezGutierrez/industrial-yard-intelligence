@@ -1,10 +1,8 @@
-import { randomUUID } from "node:crypto";
 import {
   cloudApiRouteDefinitions,
   type CloudApiAdminDbResetPayloadContract,
   type CloudApiAdminDbSnapshotPayloadContract,
   type CloudApiCreateStockpilePayloadContract,
-  type CloudApiCreateStockpileRequestContract,
   type CloudApiDbSchemaPayloadContract,
   type CloudApiDbTablesPayloadContract,
   type CloudApiHealthPayloadContract,
@@ -23,12 +21,15 @@ import {
 } from "@iyi/db";
 import { cooperSmokeSeed } from "@iyi/seed-data";
 import {
-  createApiJsonDbStore,
   createApiUnitOfWork,
   getApiDbFilePath,
   getApiJsonDbSnapshot,
   resetApiJsonDb
 } from "./repository-seed.js";
+import {
+  createStockpileCommand,
+  toStockpileSummary
+} from "./stockpile-service.js";
 
 export interface ApiRouteRequest {
   readonly method: string;
@@ -60,229 +61,6 @@ export interface ApiFailureResponse {
   };
   readonly requestId: string;
   readonly timestamp: string;
-}
-
-interface RecordLike {
-  readonly [key: string]: unknown;
-}
-
-function isRecord(value: unknown): value is RecordLike {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function createSuccess<TData>(
-  data: TData,
-  requestId: string,
-  timestamp: string
-): ApiSuccessResponse<TData> {
-  return {
-    ok: true,
-    data,
-    requestId,
-    timestamp
-  };
-}
-
-function createFailure(
-  code: string,
-  message: string,
-  requestId: string,
-  timestamp: string
-): ApiFailureResponse {
-  return {
-    ok: false,
-    error: {
-      code,
-      message
-    },
-    requestId,
-    timestamp
-  };
-}
-
-function createCorsHeaders(): Readonly<Record<string, string>> {
-  return {
-    "access-control-allow-origin": "*",
-    "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-    "access-control-allow-headers": "content-type,authorization,x-request-id",
-    "access-control-max-age": "86400"
-  };
-}
-
-function jsonResponse(statusCode: number, payload: unknown): ApiRouteResponse {
-  return {
-    statusCode,
-    headers: {
-      ...createCorsHeaders(),
-      "content-type": "application/json; charset=utf-8"
-    },
-    body: `${JSON.stringify(payload, null, 2)}\n`
-  };
-}
-
-function emptyResponse(statusCode: number): ApiRouteResponse {
-  return {
-    statusCode,
-    headers: createCorsHeaders(),
-    body: ""
-  };
-}
-
-function toTenantSummary(record: DbTenantRecord): CloudApiTenantsPayloadContract["tenants"][number] {
-  return {
-    id: record.id,
-    name: record.name,
-    status: record.status,
-    createdAt: record.createdAt,
-    updatedAt: record.updatedAt
-  };
-}
-
-function toStockpileSummary(
-  record: DbStockpileRecord
-): CloudApiStockpilesPayloadContract["stockpiles"][number] {
-  return {
-    id: record.id,
-    tenantId: record.tenantId,
-    terminalId: record.terminalId,
-    name: record.name,
-    material: record.material,
-    category: record.category,
-    estimatedTons: record.estimatedTons,
-    validationState: record.validationState,
-    confidenceLevel: record.confidenceLevel,
-    status: record.status
-  };
-}
-
-async function createSystemOverviewPayload(
-  unitOfWork: Awaited<ReturnType<typeof createApiUnitOfWork>>
-): Promise<CloudApiSystemOverviewPayloadContract> {
-  return {
-    tenantCount: await unitOfWork.repositories.tenants.count(),
-    terminalCount: await unitOfWork.repositories.terminals.count(),
-    userCount: await unitOfWork.repositories.users.count(),
-    deviceCount: await unitOfWork.repositories.devices.count(),
-    stockpileCount: await unitOfWork.repositories.stockpiles.count(),
-    syncEventCount: await unitOfWork.repositories.syncEvents.count(),
-    auditEntryCount: await unitOfWork.repositories.auditEntries.count(),
-    evidenceItemCount: await unitOfWork.repositories.evidenceItems.count()
-  };
-}
-
-function stringBodyValue(body: RecordLike, key: string): string | null {
-  const value = body[key];
-
-  if (typeof value !== "string" || value.trim().length === 0) {
-    return null;
-  }
-
-  return value.trim();
-}
-
-function optionalStringBodyValue(body: RecordLike, key: string): string | undefined {
-  const value = body[key];
-
-  if (typeof value !== "string" || value.trim().length === 0) {
-    return undefined;
-  }
-
-  return value.trim();
-}
-
-function optionalNumberBodyValue(body: RecordLike, key: string, fallback: number): number {
-  const value = body[key];
-
-  if (typeof value !== "number" || !Number.isFinite(value)) {
-    return fallback;
-  }
-
-  return value;
-}
-
-function normalizeStockpileStatus(value: unknown): DbStockpileRecord["status"] {
-  if (
-    value === "draft" ||
-    value === "operational" ||
-    value === "pending_review" ||
-    value === "validated" ||
-    value === "archived"
-  ) {
-    return value;
-  }
-
-  return "draft";
-}
-
-function createStockpileRecordFromBody(
-  body: unknown,
-  now: string
-): { readonly ok: true; readonly record: DbStockpileRecord } | { readonly ok: false; readonly message: string } {
-  if (!isRecord(body)) {
-    return {
-      ok: false,
-      message: "Request body must be a JSON object."
-    };
-  }
-
-  const tenantId = stringBodyValue(body, "tenantId");
-  const terminalId = stringBodyValue(body, "terminalId");
-  const name = stringBodyValue(body, "name");
-  const material = stringBodyValue(body, "material");
-
-  if (tenantId === null) {
-    return {
-      ok: false,
-      message: "tenantId is required."
-    };
-  }
-
-  if (terminalId === null) {
-    return {
-      ok: false,
-      message: "terminalId is required."
-    };
-  }
-
-  if (name === null) {
-    return {
-      ok: false,
-      message: "name is required."
-    };
-  }
-
-  if (material === null) {
-    return {
-      ok: false,
-      message: "material is required."
-    };
-  }
-
-  const request = body as unknown as Partial<CloudApiCreateStockpileRequestContract>;
-  const id = optionalStringBodyValue(body, "id") ?? `stockpile_${randomUUID()}`;
-  const category = optionalStringBodyValue(body, "category") ?? "bulk";
-  const validationState = optionalStringBodyValue(body, "validationState") ?? "created_from_api";
-  const confidenceLevel = optionalStringBodyValue(body, "confidenceLevel") ?? "operator_input";
-  const estimatedTons = optionalNumberBodyValue(body, "estimatedTons", 0);
-  const status = normalizeStockpileStatus(request.status);
-
-  return {
-    ok: true,
-    record: {
-      id,
-      tenantId,
-      terminalId,
-      name,
-      material,
-      category,
-      estimatedTons,
-      validationState,
-      confidenceLevel,
-      status,
-      createdAt: now,
-      updatedAt: now
-    }
-  };
 }
 
 export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRouteResponse> {
@@ -364,22 +142,17 @@ export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRout
   }
 
   if (request.method === "POST" && request.pathname === "/stockpiles") {
-    const parseResult = createStockpileRecordFromBody(request.body, request.now);
+    const result = await createStockpileCommand(request.body, request.now);
 
-    if (!parseResult.ok) {
+    if (!result.ok) {
       return jsonResponse(
-        400,
-        createFailure("bad_request", parseResult.message, request.requestId, request.now)
+        result.code === "conflict" ? 409 : 400,
+        createFailure(result.code, result.message, request.requestId, request.now)
       );
     }
 
-    const store = createApiJsonDbStore(request.now);
-    const saved = await store.repositories.stockpiles.upsert(parseResult.record);
-
-    store.saveToDisk(request.now);
-
     const payload: CloudApiCreateStockpilePayloadContract = {
-      stockpile: toStockpileSummary(saved)
+      stockpile: result.stockpile
     };
 
     return jsonResponse(201, createSuccess(payload, request.requestId, request.now));
