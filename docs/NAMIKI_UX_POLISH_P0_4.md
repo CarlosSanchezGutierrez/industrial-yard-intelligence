@@ -30,6 +30,6 @@ The timeline should not be a static list.
 P0.5:
 
 - Real dashboard summaries from API when stable.
-- Material detail drawer with connected history.
+- Material detail connected to history.
 - Evidence workspace.
 - GPS real permission and current marker.

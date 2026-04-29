@@ -502,12 +502,57 @@ function MaterialTable() {
 
 function TimelineBoard() {
     const [filter, setFilter] = useState("Todos");
+    const [priority, setPriority] = useState("Todas");
+    const [query, setQuery] = useState("");
 
     const eventTypes = ["Todos", "Material", "Medición", "Alerta", "Equipo", "Envío"] as const;
-    const visibleEvents = filter === "Todos" ? eventRows : eventRows.filter((event) => event.type === filter);
+    const priorityTypes = ["Todas", "Alta", "Media", "Normal"] as const;
+
+    const visibleEvents = useMemo(() => {
+        const normalizedQuery = query.trim().toLowerCase();
+
+        return eventRows.filter((event) => {
+            const matchesType = filter === "Todos" || event.type === filter;
+            const matchesPriority = priority === "Todas" || event.priority === priority;
+            const matchesQuery =
+                normalizedQuery.length === 0 ||
+                event.title.toLowerCase().includes(normalizedQuery) ||
+                event.text.toLowerCase().includes(normalizedQuery) ||
+                event.type.toLowerCase().includes(normalizedQuery) ||
+                event.priority.toLowerCase().includes(normalizedQuery);
+
+            return matchesType && matchesPriority && matchesQuery;
+        });
+    }, [filter, priority, query]);
 
     return (
         <div className="nmk-timeline">
+            <div className="nmk-timeline-controls">
+                <label className="nmk-field">
+                    <span>Buscar evento</span>
+                    <input
+                        onChange={(event) => setQuery(event.target.value)}
+                        placeholder="Material, alerta, envío, medición..."
+                        type="search"
+                        value={query}
+                    />
+                </label>
+
+                <label className="nmk-field">
+                    <span>Prioridad</span>
+                    <select
+                        onChange={(event) => setPriority(event.target.value)}
+                        value={priority}
+                    >
+                        {priorityTypes.map((type) => (
+                            <option key={type} value={type}>
+                                {type}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+            </div>
+
             <div className="nmk-filter-row">
                 {eventTypes.map((type) => (
                     <button
@@ -521,20 +566,42 @@ function TimelineBoard() {
                 ))}
             </div>
 
+            <div className="nmk-timeline-summary">
+                <article>
+                    <strong>{visibleEvents.length}</strong>
+                    <span>Eventos visibles</span>
+                </article>
+                <article>
+                    <strong>{eventRows.filter((event) => event.priority === "Alta").length}</strong>
+                    <span>Alta prioridad</span>
+                </article>
+                <article>
+                    <strong>{eventRows.filter((event) => event.type === "Medición").length}</strong>
+                    <span>Mediciones</span>
+                </article>
+            </div>
+
             <div className="nmk-timeline-list">
-                {visibleEvents.map((event) => (
-                    <article className="nmk-event" key={`${event.time}-${event.title}`}>
-                        <time>{event.time}</time>
-                        <div>
-                            <div className="nmk-event-head">
-                                <h3>{event.title}</h3>
-                                <StatusPill value={event.priority} />
+                {visibleEvents.length > 0 ? (
+                    visibleEvents.map((event) => (
+                        <article className="nmk-event" key={`${event.time}-${event.title}`}>
+                            <time>{event.time}</time>
+                            <div>
+                                <div className="nmk-event-head">
+                                    <h3>{event.title}</h3>
+                                    <StatusPill value={event.priority} />
+                                </div>
+                                <p>{event.text}</p>
+                                <span>{event.type}</span>
                             </div>
-                            <p>{event.text}</p>
-                            <span>{event.type}</span>
-                        </div>
-                    </article>
-                ))}
+                        </article>
+                    ))
+                ) : (
+                    <div className="nmk-empty-state">
+                        <h3>Sin eventos para estos filtros</h3>
+                        <p>Cambia la búsqueda, tipo o prioridad para ver más registros.</p>
+                    </div>
+                )}
             </div>
         </div>
     );
