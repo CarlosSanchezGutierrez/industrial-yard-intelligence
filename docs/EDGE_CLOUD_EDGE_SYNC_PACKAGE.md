@@ -33,3 +33,10 @@ The builder creates a `CloudEdgeSyncPackageContract` with:
 ## Next step
 
 Expose a local edge endpoint that returns a sync package generated from the current DB projection snapshot.
+## DB projection adapter
+
+The DB projection snapshot adapter is documented in:
+
+`docs/EDGE_DB_PROJECTION_SYNC_PACKAGE.md`
+
+It converts a current edge DB projection snapshot into a Cloud Edge sync package.

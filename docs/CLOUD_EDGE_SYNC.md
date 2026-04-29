@@ -70,3 +70,8 @@ The edge-side sync package builder is documented in:
 `docs/EDGE_CLOUD_EDGE_SYNC_PACKAGE.md`
 
 It prepares `db_projection_snapshot` packages for future edge-to-cloud sync.
+## Edge DB projection sync package adapter
+
+The edge DB projection package adapter is documented in:
+
+`docs/EDGE_DB_PROJECTION_SYNC_PACKAGE.md`
