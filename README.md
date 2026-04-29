@@ -355,3 +355,12 @@ Main files:
 
 - `apps/web/src/components/NamikiProductShell.tsx`
 - `apps/web/src/styles/zz-namiki-black-operations.css`
+## Frontend surface implementation matrix
+
+Document:
+
+`docs/FRONTEND_SURFACE_IMPLEMENTATION_MATRIX.md`
+
+Purpose:
+
+Converts the frontend surface audit into a concrete implementation plan for showing existing backend/frontend capabilities in the product UI.
