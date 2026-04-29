@@ -75,3 +75,15 @@ The product shell exposes the actual operating value of the architecture without
 - Perimeter drawing
 - Save yard zones
 - Link stockpiles to map zones
+## Professional console pass
+
+This pass corrects the visual direction again:
+
+- Removes the white/gray canvas effect.
+- Forces the app into a black professional console surface.
+- Reduces oversized presentation typography.
+- Uses compact software-style spacing.
+- Keeps operational functions visible.
+- Corrects terminology:
+  - `bastones topográficos con trípode`
+  - `drones con RTK (Real Time Kinematic)`

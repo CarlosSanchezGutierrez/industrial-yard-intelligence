@@ -36,7 +36,7 @@ const pages = [
         id: "captura",
         label: "Captura",
         title: "Captura en campo",
-        subtitle: "GPS, perímetros, evidencia, drones, palos topográficos, notas y mediciones.",
+        subtitle: "GPS, perímetros, evidencia, drones, bastones topográficos con trípode, notas y mediciones.",
         description: "Herramientas de levantamiento.",
     },
     {
@@ -146,8 +146,8 @@ const captureTools = [
     { title: "GPS del celular", text: "Ubicar operador, material o evidencia en el patio." },
     { title: "Dibujo de perímetros", text: "Marcar pilas, zonas de descarga o áreas restringidas." },
     { title: "Fotos de evidencia", text: "Guardar estado físico del material." },
-    { title: "Palos topográficos", text: "Apoyar mediciones físicas de volumen y forma." },
-    { title: "Drones", text: "Vista superior para validar pilas, rutas y áreas." },
+    { title: "Bastones topográficos con trípode", text: "Apoyar mediciones físicas de volumen y forma." },
+    { title: "Drones RTK", text: "Drones con RTK (Real Time Kinematic) para vista superior y validación espacial." },
     { title: "Notas de campo", text: "Observaciones rápidas del operador o supervisor." },
 ] as const;
 
@@ -155,8 +155,8 @@ const equipmentCards = [
     { title: "Payloader", text: "Movimiento y acomodo de material." },
     { title: "Grúas", text: "Descarga y maniobras pesadas." },
     { title: "Básculas", text: "Peso de entrada, salida y validación." },
-    { title: "Drones", text: "Inspección visual y ortomosaico futuro." },
-    { title: "Palos topográficos", text: "Medición física de referencia." },
+    { title: "Drones RTK", text: "Inspección visual con RTK (Real Time Kinematic) y ortomosaico futuro." },
+    { title: "Bastones topográficos con trípode", text: "Medición física de referencia." },
     { title: "Cuadrillas", text: "Operadores, supervisores y apoyo de patio." },
     { title: "Sensores futuros", text: "Base para integración IoT posterior." },
     { title: "Camiones internos", text: "Traslado y movimiento dentro del patio." },
@@ -462,7 +462,7 @@ function InicioPage({
                 <div className="namiki-stat-grid">
                     <StatCard label="Materiales" value="7" text="Pilas visibles para demo." />
                     <StatCard label="Zonas" value="5" text="Áreas base del patio." />
-                    <StatCard label="Herramientas" value="GPS + dron" text="Preparado para campo." />
+                    <StatCard label="Herramientas" value="GPS + RTK" text="Captura de campo." />
                     <StatCard label="Historial" value="Activo" text="Eventos filtrables." />
                 </div>
             </section>

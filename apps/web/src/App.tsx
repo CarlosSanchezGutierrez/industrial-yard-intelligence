@@ -71,6 +71,7 @@ import { NamikiProductShell } from "./components/NamikiProductShell.js";
 import "./styles/namiki-product-shell.css";
 import "./styles/zz-namiki-black-operations.css";
 import "./styles/zzz-namiki-operational-hub.css";
+import "./styles/zzzz-namiki-professional-console.css";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
