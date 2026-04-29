@@ -869,3 +869,125 @@ h2 {
   cursor: not-allowed;
   opacity: 0.58;
 }
+
+.audit-chain-panel {
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  background: rgba(15, 23, 42, 0.76);
+  box-shadow: var(--iyi-shadow-card);
+  border-radius: 1.5rem;
+  margin-bottom: 1.25rem;
+  padding: 1.25rem;
+}
+
+.audit-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  padding: 0.45rem 0.75rem;
+}
+
+.audit-status.valid {
+  border: 1px solid rgba(34, 197, 94, 0.38);
+  background: rgba(34, 197, 94, 0.14);
+  color: #bbf7d0;
+}
+
+.audit-status.invalid {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--iyi-color-text-muted);
+}
+
+.audit-summary-grid {
+  display: grid;
+  grid-template-columns: 0.8fr 0.8fr 2fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.audit-summary-grid article {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 1rem;
+  background: rgba(2, 6, 23, 0.24);
+  padding: 0.9rem;
+}
+
+.audit-summary-grid span {
+  color: var(--iyi-color-text-muted);
+  display: block;
+  font-size: 0.78rem;
+}
+
+.audit-summary-grid strong {
+  display: block;
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+}
+
+.audit-entry-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.audit-entry-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid rgba(34, 197, 94, 0.24);
+  border-radius: 1rem;
+  background: rgba(20, 83, 45, 0.12);
+  padding: 0.95rem;
+}
+
+.audit-entry-card small,
+.audit-hashes span {
+  color: var(--iyi-color-text-muted);
+  display: block;
+  font-size: 0.76rem;
+  margin-top: 0.3rem;
+}
+
+.audit-action {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 0.45rem;
+  border: 1px solid rgba(34, 197, 94, 0.38);
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.12);
+  color: #bbf7d0;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.55rem;
+  text-transform: uppercase;
+}
+
+.audit-hashes {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.audit-hashes strong {
+  color: #bbf7d0;
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  margin-top: 0.3rem;
+}
+
+@media (max-width: 780px) {
+  .audit-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .audit-entry-card {
+    flex-direction: column;
+  }
+
+  .audit-hashes {
+    text-align: left;
+  }
+}

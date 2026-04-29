@@ -68,12 +68,34 @@ export interface EdgeConflictResolution {
   readonly resolvedAt: string;
 }
 
+export interface EdgeAuditSummary {
+  readonly totalEntries: number;
+  readonly chainValid: boolean;
+  readonly verificationMessage: string;
+}
+
+export interface EdgeAuditEntry {
+  readonly auditEventId: string;
+  readonly actionType: string;
+  readonly affectedEntityId: string;
+  readonly affectedEntityType: string;
+  readonly result: string;
+  readonly sourceRuntime: string;
+  readonly userId: string;
+  readonly deviceId: string;
+  readonly createdAt: string;
+  readonly previousHash: string | null;
+  readonly integrityHash: string;
+}
+
 export interface EdgeSyncSnapshot {
   readonly ok: boolean;
   readonly source: "edge" | "unavailable";
   readonly summary: EdgeSyncSummary | null;
   readonly events: readonly EdgeSyncEvent[];
   readonly conflictResolutions: readonly EdgeConflictResolution[];
+  readonly auditSummary: EdgeAuditSummary | null;
+  readonly auditEntries: readonly EdgeAuditEntry[];
   readonly message: string;
 }
 
@@ -93,6 +115,10 @@ export interface EdgeOfflineBackup {
     readonly version: 1;
     readonly exportedAt?: string;
     readonly resolutions: readonly EdgeConflictResolution[];
+  };
+  readonly auditStore?: {
+    readonly version: 1;
+    readonly entries: readonly EdgeAuditEntry[];
   };
 }
 
@@ -122,10 +148,6 @@ interface EdgeSeedResponse {
   readonly ok: boolean;
   readonly data?: {
     readonly seed?: SmokeTenantSeed;
-  };
-  readonly error?: {
-    readonly code: string;
-    readonly message: string;
   };
 }
 
@@ -161,6 +183,20 @@ interface EdgeConflictResolutionsResponse {
   };
 }
 
+interface EdgeAuditSummaryResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly summary?: EdgeAuditSummary;
+  };
+}
+
+interface EdgeAuditEntriesResponse {
+  readonly ok: boolean;
+  readonly data?: {
+    readonly entries?: readonly EdgeAuditEntry[];
+  };
+}
+
 interface EdgeExportResponse {
   readonly ok: boolean;
   readonly data?: {
@@ -184,7 +220,6 @@ interface EdgeImportResponse {
     };
   };
   readonly error?: {
-    readonly code: string;
     readonly message: string;
   };
 }
@@ -360,7 +395,13 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
   const edgeBaseUrl = getEdgeBaseUrl();
 
   try {
-    const [summaryResponse, eventsResponse, resolutionsResponse] = await Promise.all([
+    const [
+      summaryResponse,
+      eventsResponse,
+      resolutionsResponse,
+      auditSummaryResponse,
+      auditEntriesResponse
+    ] = await Promise.all([
       fetch(`${edgeBaseUrl}/sync/summary`, {
         method: "GET",
         headers: {
@@ -378,31 +419,60 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
         headers: {
           accept: "application/json"
         }
+      }),
+      fetch(`${edgeBaseUrl}/audit/summary`, {
+        method: "GET",
+        headers: {
+          accept: "application/json"
+        }
+      }),
+      fetch(`${edgeBaseUrl}/audit/entries`, {
+        method: "GET",
+        headers: {
+          accept: "application/json"
+        }
       })
     ]);
 
-    if (!summaryResponse.ok || !eventsResponse.ok || !resolutionsResponse.ok) {
+    if (
+      !summaryResponse.ok ||
+      !eventsResponse.ok ||
+      !resolutionsResponse.ok ||
+      !auditSummaryResponse.ok ||
+      !auditEntriesResponse.ok
+    ) {
       return {
         ok: false,
         source: "unavailable",
         summary: null,
         events: [],
         conflictResolutions: [],
-        message: "Edge sync monitor endpoints are unavailable."
+        auditSummary: null,
+        auditEntries: [],
+        message: "Edge sync or audit monitor endpoints are unavailable."
       };
     }
 
     const summaryBody = (await summaryResponse.json()) as EdgeSummaryResponse;
     const eventsBody = (await eventsResponse.json()) as EdgeEventsResponse;
     const resolutionsBody = (await resolutionsResponse.json()) as EdgeConflictResolutionsResponse;
+    const auditSummaryBody = (await auditSummaryResponse.json()) as EdgeAuditSummaryResponse;
+    const auditEntriesBody = (await auditEntriesResponse.json()) as EdgeAuditEntriesResponse;
 
     return {
-      ok: summaryBody.ok && eventsBody.ok && resolutionsBody.ok,
+      ok:
+        summaryBody.ok &&
+        eventsBody.ok &&
+        resolutionsBody.ok &&
+        auditSummaryBody.ok &&
+        auditEntriesBody.ok,
       source: "edge",
       summary: summaryBody.data?.summary ?? null,
       events: eventsBody.data?.events ?? [],
       conflictResolutions: resolutionsBody.data?.resolutions ?? [],
-      message: "Loaded sync summary, event history and conflict resolutions from local edge."
+      auditSummary: auditSummaryBody.data?.summary ?? null,
+      auditEntries: auditEntriesBody.data?.entries ?? [],
+      message: "Loaded sync, conflict and audit state from local edge."
     };
   } catch {
     return {
@@ -411,6 +481,8 @@ export async function loadEdgeSyncSnapshot(): Promise<EdgeSyncSnapshot> {
       summary: null,
       events: [],
       conflictResolutions: [],
+      auditSummary: null,
+      auditEntries: [],
       message: `Local edge server unavailable at ${edgeBaseUrl}.`
     };
   }
@@ -446,7 +518,7 @@ export async function resolveSyncConflict(eventId: string): Promise<ResolveConfl
     return {
       ok: true,
       source: "edge",
-      message: `Conflict ${eventId} marked as reviewed.`
+      message: `Conflict ${eventId} marked as reviewed and audited.`
     };
   } catch {
     return {
@@ -485,7 +557,7 @@ export async function exportEdgeSyncStore(): Promise<EdgeStoreExportResult> {
         ok: true,
         source: "edge",
         store: backup,
-        message: `Exported ${backup.syncStore.batches.length} batches, ${backup.syncStore.events.length} events and ${backup.conflictResolutions.resolutions.length} conflict resolutions from local edge.`
+        message: `Exported ${backup.syncStore.batches.length} batches, ${backup.syncStore.events.length} events, ${backup.conflictResolutions.resolutions.length} conflict resolutions and ${backup.auditStore?.entries.length ?? 0} audit entries from local edge.`
       };
     }
 

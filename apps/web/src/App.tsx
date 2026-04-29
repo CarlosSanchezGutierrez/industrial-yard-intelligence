@@ -9,6 +9,8 @@ import {
   loadEdgeSyncSnapshot,
   resolveSyncConflict,
   submitDemoSyncBatch,
+  type EdgeAuditEntry,
+  type EdgeAuditSummary,
   type EdgeConflictResolution,
   type EdgeSyncEvent,
   type EdgeSyncSummary,
@@ -61,6 +63,14 @@ function getConflictDescription(event: EdgeSyncEvent): string {
   return "El edge detectó que el evento no puede aplicarse automáticamente y requiere revisión.";
 }
 
+function shortenHash(hash: string): string {
+  if (hash.length <= 16) {
+    return hash;
+  }
+
+  return `${hash.slice(0, 8)}...${hash.slice(-8)}`;
+}
+
 function downloadJsonFile(fileName: string, value: unknown): void {
   const blob = new Blob([`${JSON.stringify(value, null, 2)}\n`], {
     type: "application/json"
@@ -86,6 +96,8 @@ function App() {
   const [edgeSummary, setEdgeSummary] = useState<EdgeSyncSummary | null>(null);
   const [edgeEvents, setEdgeEvents] = useState<readonly EdgeSyncEvent[]>([]);
   const [conflictResolutions, setConflictResolutions] = useState<readonly EdgeConflictResolution[]>([]);
+  const [auditSummary, setAuditSummary] = useState<EdgeAuditSummary | null>(null);
+  const [auditEntries, setAuditEntries] = useState<readonly EdgeAuditEntry[]>([]);
   const [edgeMonitorMessage, setEdgeMonitorMessage] = useState("Esperando conexión al edge.");
   const [transferMessage, setTransferMessage] = useState("Exporta o restaura el historial local del edge como JSON.");
   const [isTransferring, setIsTransferring] = useState(false);
@@ -96,6 +108,8 @@ function App() {
     setEdgeSummary(snapshot.summary);
     setEdgeEvents(snapshot.events);
     setConflictResolutions(snapshot.conflictResolutions);
+    setAuditSummary(snapshot.auditSummary);
+    setAuditEntries(snapshot.auditEntries);
     setEdgeMonitorMessage(snapshot.message);
   }
 
@@ -121,6 +135,8 @@ function App() {
       setEdgeSummary(snapshot.summary);
       setEdgeEvents(snapshot.events);
       setConflictResolutions(snapshot.conflictResolutions);
+      setAuditSummary(snapshot.auditSummary);
+      setAuditEntries(snapshot.auditEntries);
       setEdgeMonitorMessage(snapshot.message);
     });
 
@@ -150,7 +166,7 @@ function App() {
     const result = await exportEdgeSyncStore();
 
     if (result.ok && result.store !== null) {
-      downloadJsonFile(`iyi-edge-sync-store-${Date.now()}.json`, result.store);
+      downloadJsonFile(`iyi-edge-offline-backup-${Date.now()}.json`, result.store);
     }
 
     setTransferMessage(result.message);
@@ -348,7 +364,7 @@ function App() {
 
           <div className="offline-transfer-panel">
             <p className="eyebrow">Offline transfer</p>
-            <h2>Exportar / importar edge store</h2>
+            <h2>Exportar / importar edge backup</h2>
             <p>{transferMessage}</p>
 
             <div className="offline-transfer-actions">
@@ -453,6 +469,57 @@ function App() {
             ))}
           </div>
         )}
+      </section>
+
+      <section className="audit-chain-panel">
+        <div className="panel-header">
+          <div>
+            <p className="eyebrow">Audit Chain Monitor</p>
+            <h2>Cadena de custodia hash-chain</h2>
+          </div>
+          <span className={`audit-status ${auditSummary?.chainValid ? "valid" : "invalid"}`}>
+            {auditSummary?.chainValid ? "VALID" : "NO DATA"}
+          </span>
+        </div>
+
+        <div className="audit-summary-grid">
+          <article>
+            <span>Audit entries</span>
+            <strong>{auditSummary?.totalEntries ?? 0}</strong>
+          </article>
+          <article>
+            <span>Chain status</span>
+            <strong>{auditSummary?.chainValid ? "OK" : "Pending"}</strong>
+          </article>
+          <article>
+            <span>Verification</span>
+            <strong>{auditSummary?.verificationMessage ?? "No audit chain loaded."}</strong>
+          </article>
+        </div>
+
+        <div className="audit-entry-list">
+          {auditEntries.length === 0 ? (
+            <div className="empty-state">
+              Sin entradas auditadas. Marca un conflicto como revisado para generar una entrada hash-chain.
+            </div>
+          ) : (
+            auditEntries.slice(0, 5).map((entry) => (
+              <article className="audit-entry-card" key={entry.integrityHash}>
+                <div>
+                  <span className="audit-action">{entry.actionType}</span>
+                  <strong>{entry.affectedEntityType} · {entry.affectedEntityId}</strong>
+                  <small>
+                    {entry.userId} · {entry.deviceId} · {entry.createdAt}
+                  </small>
+                </div>
+                <div className="audit-hashes">
+                  <span>prev: {entry.previousHash === null ? "GENESIS" : shortenHash(entry.previousHash)}</span>
+                  <strong>hash: {shortenHash(entry.integrityHash)}</strong>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
       </section>
 
       <section className="intel-grid">
