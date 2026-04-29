@@ -186,3 +186,8 @@ First UI component:
 The web cockpit includes a guided demo navigation panel:
 
 `apps/web/src/components/DemoNavigationPanel.tsx`
+## Phase 2 operator workflow
+
+The cockpit includes an operator workflow progress panel:
+
+`apps/web/src/components/OperatorWorkflowProgressPanel.tsx`

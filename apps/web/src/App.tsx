@@ -47,6 +47,7 @@ import { AuditMutationPanel } from "./components/AuditMutationPanel.js";
 import { CloudEdgeSyncPanel } from "./components/CloudEdgeSyncPanel.js";
 import { DemoCommandCenter } from "./components/DemoCommandCenter.js";
 import { DemoNavigationPanel } from "./components/DemoNavigationPanel.js";
+import { OperatorWorkflowProgressPanel } from "./components/OperatorWorkflowProgressPanel.js";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
@@ -436,6 +437,7 @@ function App() {
     <main className="app-shell" style={applyThemeVariables()}>
             <DemoCommandCenter />
             <DemoNavigationPanel />
+            <OperatorWorkflowProgressPanel />
       <nav className="top-nav">
         <div>
           <strong>Industrial Yard Intelligence</strong>

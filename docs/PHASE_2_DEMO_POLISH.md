@@ -53,3 +53,22 @@ It helps presenters explain the system in this order:
 4. Edge-to-cloud sync safety.
 
 This keeps the demo focused and avoids jumping randomly between panels.
+## Operator workflow progress panel
+
+`OperatorWorkflowProgressPanel` adds a clear industrial demo flow.
+
+Location:
+
+`apps/web/src/components/OperatorWorkflowProgressPanel.tsx`
+
+It presents the sequence:
+
+1. Stack local.
+2. Captura stockpile.
+3. Lifecycle.
+4. Auditoria.
+5. Sync seguro.
+
+Purpose:
+
+Make the cockpit read as an operational product demo instead of disconnected technical panels.
