@@ -1,0 +1,279 @@
+/* P1.3 Navigation UX cleanup.
+   Objetivo: una sola navegación principal.
+   La barra superior queda como identidad + estado + menú.
+   La sección actual queda como contexto, no como segundo menú.
+*/
+
+.nmk-app-shell,
+.nmk-shell,
+.nmk-experience-shell {
+    background: #020617;
+}
+
+/* Top bar */
+.nmk-topbar,
+.nmk-app-topbar,
+.nmk-shell-topbar,
+.nmk-header-bar,
+.nmk-brand-bar {
+    position: relative;
+    z-index: 30;
+    border-color: rgba(148, 163, 184, 0.16) !important;
+    background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.035),
+        0 20px 60px rgba(0, 0, 0, 0.28) !important;
+}
+
+/* Marca */
+.nmk-topbar h1,
+.nmk-app-topbar h1,
+.nmk-shell-topbar h1,
+.nmk-header-bar h1,
+.nmk-brand-bar h1,
+.nmk-topbar strong,
+.nmk-app-topbar strong,
+.nmk-shell-topbar strong,
+.nmk-header-bar strong,
+.nmk-brand-bar strong {
+    letter-spacing: -0.035em !important;
+}
+
+/* Estado conectado */
+.nmk-topbar [class*="status"],
+.nmk-app-topbar [class*="status"],
+.nmk-shell-topbar [class*="status"],
+.nmk-header-bar [class*="status"],
+.nmk-brand-bar [class*="status"] {
+    border-color: rgba(52, 211, 153, 0.28) !important;
+    color: #34d399 !important;
+    background: rgba(6, 78, 59, 0.18) !important;
+}
+
+/* Botón menú */
+.nmk-topbar button,
+.nmk-app-topbar button,
+.nmk-shell-topbar button,
+.nmk-header-bar button,
+.nmk-brand-bar button {
+    min-height: 44px !important;
+    border-color: rgba(56, 189, 248, 0.34) !important;
+    color: #f8fafc !important;
+    background:
+        linear-gradient(180deg, rgba(14, 116, 144, 0.96), rgba(7, 89, 133, 0.96)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 16px 38px rgba(8, 47, 73, 0.28) !important;
+}
+
+/* Menú desplegado / hub */
+.nmk-menu-panel,
+.nmk-navigation-panel,
+.nmk-nav-panel,
+.nmk-menu-grid,
+.nmk-navigation-grid,
+.nmk-module-menu,
+.nmk-command-menu {
+    position: relative;
+    z-index: 20;
+    border-color: rgba(148, 163, 184, 0.16) !important;
+    background:
+        radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.11), transparent 34%),
+        linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.035),
+        0 28px 80px rgba(0, 0, 0, 0.34) !important;
+}
+
+/* Tarjetas del menú */
+.nmk-menu-panel button,
+.nmk-navigation-panel button,
+.nmk-nav-panel button,
+.nmk-menu-grid button,
+.nmk-navigation-grid button,
+.nmk-module-menu button,
+.nmk-command-menu button,
+.nmk-menu-panel a,
+.nmk-navigation-panel a,
+.nmk-nav-panel a,
+.nmk-menu-grid a,
+.nmk-navigation-grid a,
+.nmk-module-menu a,
+.nmk-command-menu a {
+    border-color: rgba(56, 189, 248, 0.22) !important;
+    background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(2, 6, 23, 0.96)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.035),
+        0 16px 42px rgba(0, 0, 0, 0.22) !important;
+    transition:
+        transform 160ms ease,
+        border-color 160ms ease,
+        background 160ms ease,
+        box-shadow 160ms ease !important;
+}
+
+.nmk-menu-panel button:hover,
+.nmk-navigation-panel button:hover,
+.nmk-nav-panel button:hover,
+.nmk-menu-grid button:hover,
+.nmk-navigation-grid button:hover,
+.nmk-module-menu button:hover,
+.nmk-command-menu button:hover,
+.nmk-menu-panel a:hover,
+.nmk-navigation-panel a:hover,
+.nmk-nav-panel a:hover,
+.nmk-menu-grid a:hover,
+.nmk-navigation-grid a:hover,
+.nmk-module-menu a:hover,
+.nmk-command-menu a:hover {
+    border-color: rgba(125, 211, 252, 0.46) !important;
+    transform: translateY(-1px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 22px 54px rgba(8, 47, 73, 0.28) !important;
+}
+
+/* Página actual: menos duplicada, más contextual */
+.nmk-current-section,
+.nmk-section-current,
+.nmk-page-current,
+.nmk-view-current,
+.nmk-page-header,
+.nmk-section-header,
+.nmk-view-header {
+    border-color: rgba(148, 163, 184, 0.14) !important;
+    background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.96)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.03),
+        0 18px 50px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* Quitar la sensación de segundo menú dentro de la franja de sección actual.
+   No elimina opciones del menú principal; solo evita que el header parezca otro menú completo. */
+.nmk-current-section nav,
+.nmk-section-current nav,
+.nmk-page-current nav,
+.nmk-view-current nav,
+.nmk-page-header nav,
+.nmk-section-header nav,
+.nmk-view-header nav,
+.nmk-current-section [class*="tabs"],
+.nmk-section-current [class*="tabs"],
+.nmk-page-current [class*="tabs"],
+.nmk-view-current [class*="tabs"],
+.nmk-page-header [class*="tabs"],
+.nmk-section-header [class*="tabs"],
+.nmk-view-header [class*="tabs"],
+.nmk-current-section [class*="actions"],
+.nmk-section-current [class*="actions"],
+.nmk-page-current [class*="actions"],
+.nmk-view-current [class*="actions"],
+.nmk-page-header [class*="actions"],
+.nmk-section-header [class*="actions"],
+.nmk-view-header [class*="actions"] {
+    display: none !important;
+}
+
+/* Si el proyecto usa una fila compacta de botones sin clase semántica, que se vea secundaria y no compita con el menú. */
+.nmk-page-header > div:last-child:has(button),
+.nmk-section-header > div:last-child:has(button),
+.nmk-current-section > div:last-child:has(button),
+.nmk-section-current > div:last-child:has(button),
+.nmk-view-header > div:last-child:has(button) {
+    display: none !important;
+}
+
+/* Kicker / título */
+.nmk-current-section p:first-child,
+.nmk-section-current p:first-child,
+.nmk-page-current p:first-child,
+.nmk-view-current p:first-child,
+.nmk-page-header p:first-child,
+.nmk-section-header p:first-child,
+.nmk-view-header p:first-child {
+    color: #38bdf8 !important;
+    font-size: 11px !important;
+    font-weight: 850 !important;
+    letter-spacing: 0.18em !important;
+}
+
+.nmk-current-section h1,
+.nmk-section-current h1,
+.nmk-page-current h1,
+.nmk-view-current h1,
+.nmk-page-header h1,
+.nmk-section-header h1,
+.nmk-view-header h1 {
+    color: #f8fafc !important;
+    font-size: clamp(28px, 3vw, 44px) !important;
+    font-weight: 760 !important;
+    letter-spacing: -0.045em !important;
+    line-height: 1 !important;
+}
+
+.nmk-current-section p,
+.nmk-section-current p,
+.nmk-page-current p,
+.nmk-view-current p,
+.nmk-page-header p,
+.nmk-section-header p,
+.nmk-view-header p {
+    color: rgba(203, 213, 225, 0.74) !important;
+}
+
+/* Separación visual: topbar, menú, contenido */
+.nmk-topbar + *,
+.nmk-app-topbar + *,
+.nmk-shell-topbar + *,
+.nmk-header-bar + *,
+.nmk-brand-bar + * {
+    margin-top: 12px !important;
+}
+
+/* Menú principal en desktop: cards más legibles */
+@media (min-width: 1000px) {
+    .nmk-menu-panel,
+    .nmk-navigation-panel,
+    .nmk-nav-panel,
+    .nmk-menu-grid,
+    .nmk-navigation-grid,
+    .nmk-module-menu,
+    .nmk-command-menu {
+        gap: 14px !important;
+    }
+}
+
+/* Mobile: menú como grid respirable */
+@media (max-width: 760px) {
+    .nmk-topbar,
+    .nmk-app-topbar,
+    .nmk-shell-topbar,
+    .nmk-header-bar,
+    .nmk-brand-bar {
+        gap: 10px !important;
+        border-radius: 20px !important;
+    }
+
+    .nmk-menu-panel,
+    .nmk-navigation-panel,
+    .nmk-nav-panel,
+    .nmk-menu-grid,
+    .nmk-navigation-grid,
+    .nmk-module-menu,
+    .nmk-command-menu {
+        border-radius: 22px !important;
+    }
+
+    .nmk-current-section,
+    .nmk-section-current,
+    .nmk-page-current,
+    .nmk-view-current,
+    .nmk-page-header,
+    .nmk-section-header,
+    .nmk-view-header {
+        border-radius: 22px !important;
+    }
+}

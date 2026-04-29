@@ -14,15 +14,15 @@ import { RealGpsWorkspace } from "./RealGpsWorkspace.js";
 import { GpsBackendSyncPanel } from "./GpsBackendSyncPanel.js";
 import { GpsDeviceModeDemoPanel } from "./GpsDeviceModeDemoPanel.js";
 const views = [
-    { id: "inicio", label: "Inicio", short: "Centro", description: "Estado general del patio." },
-    { id: "patio", label: "Patio", short: "Mapa", description: "Mapa operativo, zonas y objetos." },
-    { id: "materiales", label: "Materiales", short: "Pilas", description: "Inventario, estados y responsables." },
-    { id: "captura", label: "Captura", short: "Campo", description: "GPS, evidencia, medición y RTK." },
-    { id: "equipo", label: "Equipo", short: "Recursos", description: "Maquinaria, cuadrillas y herramientas." },
-    { id: "historial", label: "Historial", short: "Eventos", description: "Trazabilidad y filtros." },
-    { id: "analisis", label: "Análisis", short: "Datos", description: "Comparación, demanda y alertas." },
-    { id: "envios", label: "Envíos", short: "Sync", description: "Trabajo local y sincronización." },
-    { id: "interno", label: "Interno", short: "Admin", description: "Validación técnica escondida." },
+    { id: "inicio", label: "Inicio", short: "Centro", description: "Resumen operativo del patio." },
+    { id: "patio", label: "Patio", short: "Mapa", description: "Patio, zonas y ubicación." },
+    { id: "materiales", label: "Materiales", short: "Pilas", description: "Inventario, estado y responsable." },
+    { id: "captura", label: "Captura", short: "Campo", description: "GPS, evidencia y medición." },
+    { id: "equipo", label: "Equipo", short: "Recursos", description: "Maquinaria y cuadrillas." },
+    { id: "historial", label: "Historial", short: "Eventos", description: "Movimientos y trazabilidad." },
+    { id: "analisis", label: "Análisis", short: "Datos", description: "Indicadores y alertas." },
+    { id: "envios", label: "Envíos", short: "Sync", description: "Envíos y sincronización." },
+    { id: "interno", label: "Interno", short: "Admin", description: "Herramientas internas." },
 ] as const;
 
 type ViewId = (typeof views)[number]["id"];
