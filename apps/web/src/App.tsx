@@ -59,8 +59,9 @@ import { PremiumCockpitCommandDeck } from "./components/PremiumCockpitCommandDec
 import { PremiumGpsPreviewPanel } from "./components/PremiumGpsPreviewPanel.js";
 import { PremiumCockpitTabs } from "./components/PremiumCockpitTabs.js";
 import { PremiumUxFrame } from "./components/PremiumUxFrame.js";
-import { NamikiProductShell } from "./components/NamikiProductShell.js";
-import "./styles/namiki-console-system.css";
+import { NamikiProductShell } from "./components/NamikiProductShell.js";
+import { NamikiExperienceShell } from "./components/NamikiExperienceShell.js";
+import "./styles/namiki-experience-system.css";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
@@ -448,6 +449,7 @@ function App() {
   }
   return (
     <main className="app-shell" style={applyThemeVariables()}>
+            <NamikiExperienceShell />
             <NamikiProductShell />
             <PremiumCockpitHero />
             <PremiumCockpitTabs />

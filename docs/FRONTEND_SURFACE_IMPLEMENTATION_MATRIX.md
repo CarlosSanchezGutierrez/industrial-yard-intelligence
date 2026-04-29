@@ -307,3 +307,13 @@ Action taken:
 Reason:
 
 The audit found multiple CSS layers and white/background risks. The product should not keep stacking old premium CSS files because they fight each other and create the white/gray canvas effect.
+## P0.2 Namiki Experience Shell applied
+
+Action taken:
+
+- Added `NamikiExperienceShell`.
+- Added one canonical visual layer:
+  - `apps/web/src/styles/namiki-experience-system.css`
+- Added executive dashboard, map, materials table, capture workspace, equipment board, timeline filters, analysis view, sync view and internal mode.
+- Preserved existing architecture components through controlled drawers.
+- Kept technical/system concepts away from the normal operations story.
