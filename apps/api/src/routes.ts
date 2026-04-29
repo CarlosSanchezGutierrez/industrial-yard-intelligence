@@ -161,7 +161,7 @@ function getStockpileStatusPathId(pathname: string): string | null {
 
 export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRouteResponse> {
     if (request.method === "GET" && request.pathname === "/stockpiles/lifecycle") {
-        return jsonResponse(200, createSuccess(createStockpileLifecyclePayload()));
+        return jsonResponse(200, createSuccess(createStockpileLifecyclePayload(), request.requestId, request.now));
     }
 
   if (request.method === "OPTIONS") {

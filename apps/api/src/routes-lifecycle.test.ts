@@ -36,10 +36,14 @@ function getData(body: unknown): unknown {
 
 describe("GET /stockpiles/lifecycle", () => {
     it("returns stockpile lifecycle metadata from routeApiRequest", async () => {
-        const response = await routeApiRequest({
+        const request = {
             method: "GET",
             pathname: "/stockpiles/lifecycle",
-        });
+            requestId: "routes-lifecycle-test",
+            now: new Date("2026-01-01T00:00:00.000Z"),
+        } as unknown as Parameters<typeof routeApiRequest>[0];
+
+        const response = await routeApiRequest(request);
 
         expect(getStatusCode(response)).toBe(200);
 
