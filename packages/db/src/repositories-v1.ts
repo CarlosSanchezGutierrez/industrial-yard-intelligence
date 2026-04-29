@@ -130,11 +130,19 @@ export class InMemoryDbRepository<TRecord extends DbAnyRecord>
   }
 
   async count(options?: DbListOptions): Promise<number> {
-    const records = await this.list({
-      tenantId: options?.tenantId,
-      limit: Number.MAX_SAFE_INTEGER,
-      offset: 0
-    });
+    const listOptions: DbListOptions =
+      options?.tenantId !== undefined
+        ? {
+            tenantId: options.tenantId,
+            limit: Number.MAX_SAFE_INTEGER,
+            offset: 0
+          }
+        : {
+            limit: Number.MAX_SAFE_INTEGER,
+            offset: 0
+          };
+
+    const records = await this.list(listOptions);
 
     return records.length;
   }
@@ -166,7 +174,7 @@ export class InMemoryDbRepository<TRecord extends DbAnyRecord>
 export class InMemoryDbUnitOfWork implements DbUnitOfWork {
   readonly repositories: DbRepositorySet;
 
-  constructor(initial?: Partial<{
+  constructor(initial: Partial<{
     readonly tenants: readonly DbRecordMap["app_tenants"][];
     readonly terminals: readonly DbRecordMap["terminals"][];
     readonly users: readonly DbRecordMap["app_users"][];
