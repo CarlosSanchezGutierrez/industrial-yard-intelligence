@@ -56,3 +56,13 @@ docs/PHASE_2_DEMO_PRESENTER_SCRIPT.md
 Before running this runtime smoke, validate static closure:
 
 pnpm phase2:close -- -CheckOnly
+## Runtime note
+
+`phase2:runtime` accepts empty CLI base URL arguments and falls back to:
+
+- Cloud API: `http://localhost:8788`
+- Edge: `http://localhost:8787`
+
+If either service is offline, start the stack first:
+
+`pnpm dev:stack:windows`

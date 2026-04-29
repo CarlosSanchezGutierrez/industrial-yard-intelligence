@@ -139,25 +139,32 @@ foreach ($marker in $requiredDocMarkers) {
     Assert-TextContains -RelativePath "docs\PHASE_2_DEMO_POLISH.md" -Needle $marker
 }
 
-Assert-TextContains -RelativePath "apps\web\src\components\RuntimeConnectionStatusPanel.tsx" -Needle "/sync/status"
-Assert-TextContains -RelativePath "apps\web\src\components\DemoDataResetPanel.tsx" -Needle "/admin/db/reset"
-Assert-TextContains -RelativePath "apps\web\src\components\StockpileDemoSummaryPanel.tsx" -Needle "/stockpiles"
-Assert-TextContains -RelativePath "apps\web\src\components\AuditTimelineStoryPanel.tsx" -Needle "/audit/mutations"
-Assert-TextContains -RelativePath "apps\web\src\components\SyncDemoStoryPanel.tsx" -Needle "/sync/packages/db-projection"
-Assert-TextContains -RelativePath "apps\web\src\components\SyncDemoStoryPanel.tsx" -Needle "/sync/preview"
-Assert-TextContains -RelativePath "apps\web\src\components\SyncDemoStoryPanel.tsx" -Needle "/sync/ingest"
-Assert-TextContains -RelativePath "apps\web\src\components\YardOperationsMapPanel.tsx" -Needle "Yard hub"
-Assert-TextContains -RelativePath "apps\web\src\components\CockpitSectionNavigationPanel.tsx" -Needle "#sync-story"
-Assert-TextContains -RelativePath "apps\web\src\components\DemoCommandCenter.tsx" -Needle 'id="demo-command-center"'
-Assert-TextContains -RelativePath "apps\web\src\components\RuntimeConnectionStatusPanel.tsx" -Needle 'id="runtime-status"'
-Assert-TextContains -RelativePath "apps\web\src\components\IndustrialValueSnapshotPanel.tsx" -Needle 'id="industrial-value"'
-Assert-TextContains -RelativePath "apps\web\src\components\StockpileDemoSummaryPanel.tsx" -Needle 'id="stockpile-summary"'
-Assert-TextContains -RelativePath "apps\web\src\components\AuditTimelineStoryPanel.tsx" -Needle 'id="audit-story"'
-Assert-TextContains -RelativePath "apps\web\src\components\SyncDemoStoryPanel.tsx" -Needle 'id="sync-story"'
-Assert-TextContains -RelativePath "apps\web\src\components\YardOperationsMapPanel.tsx" -Needle 'id="yard-map"'
+$componentChecks = @(
+    @{ Path = "apps\web\src\components\RuntimeConnectionStatusPanel.tsx"; Needle = "/sync/status" },
+    @{ Path = "apps\web\src\components\DemoDataResetPanel.tsx"; Needle = "/admin/db/reset" },
+    @{ Path = "apps\web\src\components\StockpileDemoSummaryPanel.tsx"; Needle = "/stockpiles" },
+    @{ Path = "apps\web\src\components\AuditTimelineStoryPanel.tsx"; Needle = "/audit/mutations" },
+    @{ Path = "apps\web\src\components\SyncDemoStoryPanel.tsx"; Needle = "/sync/packages/db-projection" },
+    @{ Path = "apps\web\src\components\SyncDemoStoryPanel.tsx"; Needle = "/sync/preview" },
+    @{ Path = "apps\web\src\components\SyncDemoStoryPanel.tsx"; Needle = "/sync/ingest" },
+    @{ Path = "apps\web\src\components\YardOperationsMapPanel.tsx"; Needle = "Yard hub" },
+    @{ Path = "apps\web\src\components\CockpitSectionNavigationPanel.tsx"; Needle = "#sync-story" },
+    @{ Path = "apps\web\src\components\DemoCommandCenter.tsx"; Needle = 'id="demo-command-center"' },
+    @{ Path = "apps\web\src\components\RuntimeConnectionStatusPanel.tsx"; Needle = 'id="runtime-status"' },
+    @{ Path = "apps\web\src\components\IndustrialValueSnapshotPanel.tsx"; Needle = 'id="industrial-value"' },
+    @{ Path = "apps\web\src\components\StockpileDemoSummaryPanel.tsx"; Needle = 'id="stockpile-summary"' },
+    @{ Path = "apps\web\src\components\AuditTimelineStoryPanel.tsx"; Needle = 'id="audit-story"' },
+    @{ Path = "apps\web\src\components\SyncDemoStoryPanel.tsx"; Needle = 'id="sync-story"' },
+    @{ Path = "apps\web\src\components\YardOperationsMapPanel.tsx"; Needle = 'id="yard-map"' }
+)
+
+foreach ($check in $componentChecks) {
+    Assert-TextContains -RelativePath $check.Path -Needle $check.Needle
+}
 
 if (-not $SkipPackageScripts) {
     Assert-JsonScript -ScriptName "phase2:check"
+    Assert-JsonScript -ScriptName "phase2:runtime"
     Assert-JsonScript -ScriptName "dev:web"
     Assert-JsonScript -ScriptName "dev:stack:windows"
 }

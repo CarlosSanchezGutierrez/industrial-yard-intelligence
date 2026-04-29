@@ -1,6 +1,10 @@
 param(
+    [AllowEmptyString()]
     [string] $ApiBaseUrl = "",
+
+    [AllowEmptyString()]
     [string] $EdgeBaseUrl = "",
+
     [switch] $SkipReset
 )
 
@@ -8,8 +12,8 @@ $ErrorActionPreference = "Stop"
 
 function Resolve-IyiBaseUrl {
     param(
-        [Parameter(Mandatory = $true)]
-        [string] $Provided,
+        [AllowEmptyString()]
+        [string] $Provided = "",
 
         [Parameter(Mandatory = $true)]
         [string[]] $EnvironmentNames,
@@ -75,12 +79,13 @@ function Invoke-IyiGet {
         return Invoke-RestMethod `
             -Method GET `
             -Uri $Uri `
+            -TimeoutSec 10 `
             -Headers @{
                 "x-request-id" = "phase-2-demo-runtime-smoke"
             }
     }
     catch {
-        throw "GET $Name failed at $Uri. $($_.Exception.Message)"
+        throw "GET $Name failed at $Uri. Start the local stack first with: pnpm dev:stack:windows. $($_.Exception.Message)"
     }
 }
 
@@ -107,6 +112,7 @@ function Invoke-IyiPost {
         return Invoke-RestMethod `
             -Method POST `
             -Uri $Uri `
+            -TimeoutSec 10 `
             -ContentType "application/json" `
             -Headers @{
                 "x-request-id" = "phase-2-demo-runtime-smoke"
@@ -114,7 +120,7 @@ function Invoke-IyiPost {
             -Body $jsonBody
     }
     catch {
-        throw "POST $Name failed at $Uri. $($_.Exception.Message)"
+        throw "POST $Name failed at $Uri. Start the local stack first with: pnpm dev:stack:windows. $($_.Exception.Message)"
     }
 }
 
