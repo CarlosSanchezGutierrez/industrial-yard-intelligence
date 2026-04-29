@@ -83,7 +83,8 @@ Write-Host "==> Phase 2 demo polish check"
 
 $requiredFiles = @(
     "apps\web\src\App.tsx",
-    "apps\web\src\components\DemoCommandCenter.tsx",`r`n    "apps\web\src\components\CockpitSectionNavigationPanel.tsx",
+    "apps\web\src\components\DemoCommandCenter.tsx",
+    "apps\web\src\components\CockpitSectionNavigationPanel.tsx",
     "apps\web\src\components\DemoNavigationPanel.tsx",
     "apps\web\src\components\OperatorWorkflowProgressPanel.tsx",
     "apps\web\src\components\RuntimeConnectionStatusPanel.tsx",
@@ -103,7 +104,8 @@ foreach ($requiredFile in $requiredFiles) {
 }
 
 $requiredAppMarkers = @(
-    "DemoCommandCenter",`r`n    "CockpitSectionNavigationPanel",
+    "DemoCommandCenter",
+    "CockpitSectionNavigationPanel",
     "DemoNavigationPanel",
     "OperatorWorkflowProgressPanel",
     "RuntimeConnectionStatusPanel",
@@ -120,7 +122,8 @@ foreach ($marker in $requiredAppMarkers) {
 }
 
 $requiredDocMarkers = @(
-    "DemoCommandCenter",`r`n    "CockpitSectionNavigationPanel",
+    "DemoCommandCenter",
+    "CockpitSectionNavigationPanel",
     "DemoNavigationPanel",
     "OperatorWorkflowProgressPanel",
     "RuntimeConnectionStatusPanel",
@@ -143,7 +146,15 @@ Assert-TextContains -RelativePath "apps\web\src\components\AuditTimelineStoryPan
 Assert-TextContains -RelativePath "apps\web\src\components\SyncDemoStoryPanel.tsx" -Needle "/sync/packages/db-projection"
 Assert-TextContains -RelativePath "apps\web\src\components\SyncDemoStoryPanel.tsx" -Needle "/sync/preview"
 Assert-TextContains -RelativePath "apps\web\src\components\SyncDemoStoryPanel.tsx" -Needle "/sync/ingest"
-Assert-TextContains -RelativePath "apps\web\src\components\YardOperationsMapPanel.tsx" -Needle "Yard hub"`r`nAssert-TextContains -RelativePath "apps\web\src\components\CockpitSectionNavigationPanel.tsx" -Needle "#sync-story"`r`nAssert-TextContains -RelativePath "apps\web\src\components\SyncDemoStoryPanel.tsx" -Needle "id=`"sync-story`""
+Assert-TextContains -RelativePath "apps\web\src\components\YardOperationsMapPanel.tsx" -Needle "Yard hub"
+Assert-TextContains -RelativePath "apps\web\src\components\CockpitSectionNavigationPanel.tsx" -Needle "#sync-story"
+Assert-TextContains -RelativePath "apps\web\src\components\DemoCommandCenter.tsx" -Needle 'id="demo-command-center"'
+Assert-TextContains -RelativePath "apps\web\src\components\RuntimeConnectionStatusPanel.tsx" -Needle 'id="runtime-status"'
+Assert-TextContains -RelativePath "apps\web\src\components\IndustrialValueSnapshotPanel.tsx" -Needle 'id="industrial-value"'
+Assert-TextContains -RelativePath "apps\web\src\components\StockpileDemoSummaryPanel.tsx" -Needle 'id="stockpile-summary"'
+Assert-TextContains -RelativePath "apps\web\src\components\AuditTimelineStoryPanel.tsx" -Needle 'id="audit-story"'
+Assert-TextContains -RelativePath "apps\web\src\components\SyncDemoStoryPanel.tsx" -Needle 'id="sync-story"'
+Assert-TextContains -RelativePath "apps\web\src\components\YardOperationsMapPanel.tsx" -Needle 'id="yard-map"'
 
 if (-not $SkipPackageScripts) {
     Assert-JsonScript -ScriptName "phase2:check"
