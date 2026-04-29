@@ -47,3 +47,20 @@ The wrapper calls the existing edge DB projection snapshot route internally and 
 The edge router remains synchronous.
 
 `wrapEdgeCloudSyncExportRoute` must not return a Promise because the existing edge tests and HTTP server expect `EdgeRouteResponse` directly.
+## Runtime smoke coverage
+
+`scripts/demo-smoke.ps1` validates:
+
+GET /sync/packages/db-projection
+
+Required assertions:
+
+- response includes generatedAt
+- response includes recordCount
+- response includes package
+- package manifest uses `db_projection_snapshot`
+- package direction is `edge_to_cloud`
+- package schema is `cloud-edge-sync-v1`
+- package payload hash uses `sha256:<64 hex chars>`
+- package payload record count matches export record count
+- package includes snapshot payload

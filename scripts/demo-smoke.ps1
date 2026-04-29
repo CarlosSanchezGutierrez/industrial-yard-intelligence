@@ -174,3 +174,118 @@ Write-Host "OK package import restored state"
 Write-Host ""
 Write-Host "SMOKE TEST PASSED"
 Write-Host "Package: $OutputPath"
+
+Write-Host "==> Edge DB projection sync export package"
+
+function Get-IyiEdgeSyncExportSmokeBaseUrl {
+    $candidateVariableNames = @(
+        "EdgeBaseUrl",
+        "BaseUrl",
+        "IyiEdgeBaseUrl"
+    )
+
+    foreach ($candidateVariableName in $candidateVariableNames) {
+        $candidateVariable = Get-Variable -Name $candidateVariableName -Scope Script -ErrorAction SilentlyContinue
+
+        if ($null -ne $candidateVariable -and -not [string]::IsNullOrWhiteSpace([string] $candidateVariable.Value)) {
+            return ([string] $candidateVariable.Value).TrimEnd("/")
+        }
+    }
+
+    $candidateEnvironmentNames = @(
+        "IYI_EDGE_BASE_URL",
+        "VITE_IYI_EDGE_BASE_URL",
+        "EDGE_BASE_URL"
+    )
+
+    foreach ($candidateEnvironmentName in $candidateEnvironmentNames) {
+        $candidateEnvironmentValue = [System.Environment]::GetEnvironmentVariable($candidateEnvironmentName)
+
+        if (-not [string]::IsNullOrWhiteSpace($candidateEnvironmentValue)) {
+            return $candidateEnvironmentValue.TrimEnd("/")
+        }
+    }
+
+    return "http://localhost:8787"
+}
+
+function Unwrap-IyiEdgeSyncExportPayload {
+    param(
+        [Parameter(Mandatory = $true)]
+        [object] $Response
+    )
+
+    if ($Response.PSObject.Properties.Name -contains "data") {
+        return $Response.data
+    }
+
+    return $Response
+}
+
+$edgeSyncExportBaseUrl = Get-IyiEdgeSyncExportSmokeBaseUrl
+$edgeSyncExportPackageId = "sync_pkg_edge_smoke_db_projection"
+
+$edgeSyncExportResponse = Invoke-RestMethod `
+    -Method GET `
+    -Uri "$edgeSyncExportBaseUrl/sync/packages/db-projection?packageId=$edgeSyncExportPackageId" `
+    -Headers @{
+        "x-request-id" = "edge-smoke-sync-export-db-projection"
+    }
+
+if ($null -eq $edgeSyncExportResponse) {
+    throw "Edge DB projection sync export response was empty."
+}
+
+$edgeSyncExportPayload = Unwrap-IyiEdgeSyncExportPayload -Response $edgeSyncExportResponse
+
+if ($null -eq $edgeSyncExportPayload.generatedAt) {
+    throw "Edge DB projection sync export did not include generatedAt."
+}
+
+if ($null -eq $edgeSyncExportPayload.recordCount) {
+    throw "Edge DB projection sync export did not include recordCount."
+}
+
+if ([int] $edgeSyncExportPayload.recordCount -lt 1) {
+    throw "Edge DB projection sync export expected at least one record."
+}
+
+if ($null -eq $edgeSyncExportPayload.package) {
+    throw "Edge DB projection sync export did not include package."
+}
+
+if ($null -eq $edgeSyncExportPayload.package.manifest) {
+    throw "Edge DB projection sync export package did not include manifest."
+}
+
+if ($edgeSyncExportPayload.package.manifest.packageId -ne $edgeSyncExportPackageId) {
+    throw "Edge DB projection sync export packageId mismatch."
+}
+
+if ($edgeSyncExportPayload.package.manifest.packageKind -ne "db_projection_snapshot") {
+    throw "Edge DB projection sync export packageKind mismatch."
+}
+
+if ($edgeSyncExportPayload.package.manifest.direction -ne "edge_to_cloud") {
+    throw "Edge DB projection sync export direction mismatch."
+}
+
+if ($edgeSyncExportPayload.package.manifest.schemaVersion -ne "cloud-edge-sync-v1") {
+    throw "Edge DB projection sync export schemaVersion mismatch."
+}
+
+if ($null -eq $edgeSyncExportPayload.package.manifest.payloadHash) {
+    throw "Edge DB projection sync export did not include payloadHash."
+}
+
+if ($edgeSyncExportPayload.package.manifest.payloadHash -notmatch "^sha256:[a-f0-9]{64}$") {
+    throw "Edge DB projection sync export payloadHash format is invalid."
+}
+
+if ([int] $edgeSyncExportPayload.package.manifest.payloadRecordCount -ne [int] $edgeSyncExportPayload.recordCount) {
+    throw "Edge DB projection sync export payloadRecordCount should match recordCount."
+}
+
+if ($null -eq $edgeSyncExportPayload.package.payload) {
+    throw "Edge DB projection sync export package did not include payload."
+}

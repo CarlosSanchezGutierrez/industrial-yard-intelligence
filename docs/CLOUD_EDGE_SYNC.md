@@ -87,3 +87,8 @@ The edge runtime exposes:
 GET /sync/packages/db-projection
 
 This returns a `db_projection_snapshot` Cloud Edge sync package generated from the current edge DB projection snapshot.
+## Edge export smoke coverage
+
+`scripts/demo-smoke.ps1` validates that the edge runtime can expose a `db_projection_snapshot` sync package from:
+
+GET /sync/packages/db-projection

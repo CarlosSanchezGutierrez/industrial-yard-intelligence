@@ -36,3 +36,8 @@ The isolated export handler is documented in:
 It prepares the route-level response for future:
 
 GET /sync/packages/db-projection
+## Runtime smoke
+
+The edge demo smoke script validates the DB projection sync package export route:
+
+GET /sync/packages/db-projection
