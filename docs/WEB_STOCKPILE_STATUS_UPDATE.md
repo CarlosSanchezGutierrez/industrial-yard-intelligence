@@ -26,3 +26,10 @@ Allowed statuses:
 - archived
 
 This is the first supervisor-style write flow in the web cockpit.
+## Dynamic lifecycle options
+
+The status update panel loads allowed status transitions from:
+
+GET /stockpiles/lifecycle
+
+The selected stockpile current status is used to filter valid target statuses before calling the update endpoint.
