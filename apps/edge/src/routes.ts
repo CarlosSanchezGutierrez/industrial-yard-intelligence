@@ -7,6 +7,15 @@ import {
   type SyncSubmitRequest
 } from "@iyi/api-contracts";
 import { cooperSmokeSeed } from "@iyi/seed-data";
+import {
+  exportAuditStore,
+  getAuditEntries,
+  getAuditStoreFilePath,
+  getAuditSummary,
+  importAuditStore,
+  recordConflictResolutionAudit,
+  verifyEdgeAuditChain
+} from "./audit-store.js";
 import { reconcileSyncBatch } from "@iyi/sync-core";
 import {
   exportConflictResolutionStore,
@@ -129,7 +138,8 @@ function createOfflineBackup(now: string): EdgeOfflineBackup {
     version: 1,
     exportedAt: now,
     syncStore: exportEdgeStore(now),
-    conflictResolutions: exportConflictResolutionStore(now)
+    conflictResolutions: exportConflictResolutionStore(now),
+    auditStore: exportAuditStore()
   };
 }
 
@@ -143,6 +153,7 @@ function createManifest(now: string) {
     persistence: "json_file_development_store",
     storeFile: getEdgeStoreFilePath(),
     conflictResolutionFile: getConflictResolutionFilePath(),
+    auditStoreFile: getAuditStoreFilePath(),
     routes: [
       {
         method: "GET",
@@ -188,6 +199,21 @@ function createManifest(now: string) {
         method: "POST",
         path: "/sync/conflicts/resolve",
         description: "Mark a conflict event as reviewed by supervisor."
+      },
+      {
+        method: "GET",
+        path: "/audit/entries",
+        description: "List append-only audit entries."
+      },
+      {
+        method: "GET",
+        path: "/audit/summary",
+        description: "Show audit chain verification summary."
+      },
+      {
+        method: "GET",
+        path: "/audit/verify",
+        description: "Verify audit hash chain integrity."
       }
     ]
   };
@@ -238,14 +264,24 @@ function handleStoreImport(request: EdgeRouteRequest): EdgeRouteResponse {
         replaceExistingStore
       );
 
+      const auditImportResult =
+        "auditStore" in importPayload
+          ? importAuditStore(importPayload.auditStore, replaceExistingStore)
+          : {
+              importedAuditEntries: 0,
+              replacedExistingStore: replaceExistingStore
+            };
+
       return jsonResponse(
         200,
         createApiSuccess(
           {
             importResult,
             conflictImportResult,
+            auditImportResult,
             summary: getSyncSummary(),
-            resolutions: getConflictResolutions()
+            resolutions: getConflictResolutions(),
+            auditSummary: getAuditSummary()
           },
           request.requestId,
           request.now
@@ -307,11 +343,18 @@ function handleConflictResolution(request: EdgeRouteRequest): EdgeRouteResponse 
     ...(resolvedByDeviceId !== undefined ? { resolvedByDeviceId } : {})
   });
 
+  const auditEntry = recordConflictResolutionAudit({
+    resolution,
+    createdAt: request.now
+  });
+
   return jsonResponse(
     200,
     createApiSuccess(
       {
         resolution,
+        auditEntry,
+        auditSummary: getAuditSummary(),
         resolutions: getConflictResolutions()
       },
       request.requestId,
@@ -411,6 +454,45 @@ export function routeEdgeRequest(request: EdgeRouteRequest): EdgeRouteResponse {
 
   if (request.method === "POST" && request.pathname === "/sync/import") {
     return handleStoreImport(request);
+  }
+
+  if (request.method === "GET" && request.pathname === "/audit/entries") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          entries: getAuditEntries()
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  }
+
+  if (request.method === "GET" && request.pathname === "/audit/summary") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          summary: getAuditSummary()
+        },
+        request.requestId,
+        request.now
+      )
+    );
+  }
+
+  if (request.method === "GET" && request.pathname === "/audit/verify") {
+    return jsonResponse(
+      200,
+      createApiSuccess(
+        {
+          verification: verifyEdgeAuditChain()
+        },
+        request.requestId,
+        request.now
+      )
+    );
   }
 
   if (request.method === "GET" && request.pathname === "/sync/conflicts/resolutions") {

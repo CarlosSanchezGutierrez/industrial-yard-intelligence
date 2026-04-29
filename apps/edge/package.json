@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@iyi/api-contracts": "workspace:*",
+    "@iyi/audit": "workspace:^",
     "@iyi/kernel": "workspace:*",
     "@iyi/seed-data": "workspace:*",
     "@iyi/sync-core": "workspace:*",

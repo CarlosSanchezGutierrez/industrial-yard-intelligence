@@ -26,6 +26,9 @@ importers:
       '@iyi/api-contracts':
         specifier: workspace:*
         version: link:../../packages/api-contracts
+      '@iyi/audit':
+        specifier: workspace:^
+        version: link:../../packages/audit
       '@iyi/kernel':
         specifier: workspace:*
         version: link:../../packages/kernel
