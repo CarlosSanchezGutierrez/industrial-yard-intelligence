@@ -1,6 +1,22 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import L, { type LatLngExpression } from "leaflet";
+import {
+    Circle,
+    MapContainer,
+    Marker,
+    Polygon,
+    Polyline,
+    Popup,
+    TileLayer,
+    useMap,
+    useMapEvents,
+} from "react-leaflet";
+
+import "leaflet/dist/leaflet.css";
 
 type GpsState = "idle" | "requesting" | "tracking" | "granted" | "denied" | "unsupported" | "error";
+
+type MapMode = "select-point" | "draw-perimeter";
 
 type ReverseAddress = {
     readonly house_number?: string;
@@ -21,6 +37,14 @@ type ReverseAddress = {
 
 type ReverseGeocodeResult = {
     readonly display_name?: string;
+    readonly address?: ReverseAddress;
+};
+
+type SearchResult = {
+    readonly place_id: number;
+    readonly display_name: string;
+    readonly lat: string;
+    readonly lon: string;
     readonly address?: ReverseAddress;
 };
 
@@ -50,13 +74,10 @@ type GeoPoint = {
     readonly fieldReference: string;
 };
 
-type ProjectedPoint = {
-    readonly left: number;
-    readonly top: number;
-};
+const savedPointsStorageKey = "namiki:gps:saved-points:v2";
+const perimeterStorageKey = "namiki:gps:perimeter:v2";
 
-const savedPointsStorageKey = "namiki:gps:saved-points:v1";
-const perimeterStorageKey = "namiki:gps:perimeter:v1";
+const altamiraFallbackCenter: LatLngExpression = [22.4003, -97.9386];
 
 const materialOptions = [
     "Pet coke",
@@ -77,16 +98,48 @@ const evidenceTypeOptions = [
     "Observación",
 ] as const;
 
+const currentIcon = L.divIcon({
+    className: "nmk-real-map-marker nmk-real-map-marker-current",
+    html: "<span>Actual</span>",
+    iconAnchor: [43, 18],
+    iconSize: [86, 36],
+});
+
+const searchIcon = L.divIcon({
+    className: "nmk-real-map-marker nmk-real-map-marker-search",
+    html: "<span>Búsqueda</span>",
+    iconAnchor: [48, 18],
+    iconSize: [96, 36],
+});
+
+function createSavedIcon(index: number) {
+    return L.divIcon({
+        className: "nmk-real-map-marker nmk-real-map-marker-saved",
+        html: `<span>${index}</span>`,
+        iconAnchor: [16, 16],
+        iconSize: [32, 32],
+    });
+}
+
+function createPerimeterIcon(index: number) {
+    return L.divIcon({
+        className: "nmk-real-map-marker nmk-real-map-marker-vertex",
+        html: `<span>${index}</span>`,
+        iconAnchor: [15, 15],
+        iconSize: [30, 30],
+    });
+}
+
 function formatCoordinate(value: number) {
     return value.toFixed(6);
 }
 
 function formatAccuracy(value: number) {
-    return `${Math.round(value)} m`;
-}
+    if (value <= 0) {
+        return "Manual";
+    }
 
-function clamp(value: number, min: number, max: number) {
-    return Math.max(min, Math.min(max, value));
+    return `${Math.round(value)} m`;
 }
 
 function nowLabel() {
@@ -168,6 +221,36 @@ async function reverseGeocode(latitude: number, longitude: number): Promise<Addr
     }
 }
 
+async function searchPlaces(query: string): Promise<readonly SearchResult[]> {
+    const normalizedQuery = query.trim();
+
+    if (normalizedQuery.length < 3) {
+        return [];
+    }
+
+    const url = new URL("https://nominatim.openstreetmap.org/search");
+    url.searchParams.set("format", "jsonv2");
+    url.searchParams.set("addressdetails", "1");
+    url.searchParams.set("limit", "5");
+    url.searchParams.set("q", normalizedQuery);
+
+    try {
+        const response = await fetch(url.toString(), {
+            headers: {
+                Accept: "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            return [];
+        }
+
+        return (await response.json()) as readonly SearchResult[];
+    } catch {
+        return [];
+    }
+}
+
 function getErrorMessage(error: GeolocationPositionError) {
     if (error.code === error.PERMISSION_DENIED) {
         return "Permiso de ubicación denegado. Activa la ubicación del navegador para probar GPS.";
@@ -216,34 +299,8 @@ function safeParsePoints(value: string | null): readonly GeoPoint[] {
     }
 }
 
-function projectPoint(point: GeoPoint, currentPoint: GeoPoint | null, index: number): ProjectedPoint {
-    if (!currentPoint) {
-        return {
-            left: clamp(20 + index * 8, 8, 92),
-            top: clamp(72 - index * 7, 10, 88),
-        };
-    }
-
-    const longitudeOffset = (point.longitude - currentPoint.longitude) * 100000;
-    const latitudeOffset = (point.latitude - currentPoint.latitude) * 100000;
-
-    return {
-        left: clamp(50 + longitudeOffset, 8, 92),
-        top: clamp(50 - latitudeOffset, 10, 88),
-    };
-}
-
-function polygonPoints(points: readonly GeoPoint[], currentPoint: GeoPoint | null) {
-    return points
-        .map((point, index) => {
-            const projected = projectPoint(point, currentPoint, index);
-            return `${projected.left},${projected.top}`;
-        })
-        .join(" ");
-}
-
-function buildGeoJsonFeature(point: GeoPoint) {
-    return {
+function buildGeoJson(points: readonly GeoPoint[], perimeterPoints: readonly GeoPoint[], currentPoint: GeoPoint | null) {
+    const pointFeatures = points.map((point) => ({
         type: "Feature",
         properties: {
             id: point.id,
@@ -259,15 +316,101 @@ function buildGeoJsonFeature(point: GeoPoint) {
             type: "Point",
             coordinates: [point.longitude, point.latitude],
         },
+    }));
+
+    const currentFeature = currentPoint
+        ? [
+              {
+                  type: "Feature",
+                  properties: {
+                      id: currentPoint.id,
+                      label: currentPoint.label,
+                      material: currentPoint.material,
+                      evidenceType: currentPoint.evidenceType,
+                      accuracy: currentPoint.accuracy,
+                      capturedAt: currentPoint.capturedAt,
+                      address: currentPoint.address.full,
+                      fieldReference: currentPoint.fieldReference,
+                  },
+                  geometry: {
+                      type: "Point",
+                      coordinates: [currentPoint.longitude, currentPoint.latitude],
+                  },
+              },
+          ]
+        : [];
+
+    const perimeterFeature =
+        perimeterPoints.length >= 3
+            ? [
+                  {
+                      type: "Feature",
+                      properties: {
+                          id: "PERIMETER-DEMO",
+                          label: "Perímetro demo",
+                          vertices: perimeterPoints.length,
+                      },
+                      geometry: {
+                          type: "Polygon",
+                          coordinates: [
+                              [
+                                  ...perimeterPoints.map((point) => [point.longitude, point.latitude]),
+                                  [perimeterPoints[0].longitude, perimeterPoints[0].latitude],
+                              ],
+                          ],
+                      },
+                  },
+              ]
+            : [];
+
+    return {
+        type: "FeatureCollection",
+        features: [...currentFeature, ...pointFeatures, ...perimeterFeature],
     };
+}
+
+function latLngForPoint(point: GeoPoint): LatLngExpression {
+    return [point.latitude, point.longitude];
+}
+
+function MapClickCapture({
+    onMapClick,
+}: {
+    readonly onMapClick: (latitude: number, longitude: number) => void;
+}) {
+    useMapEvents({
+        click(event) {
+            onMapClick(event.latlng.lat, event.latlng.lng);
+        },
+    });
+
+    return null;
+}
+
+function MapController({
+    center,
+}: {
+    readonly center: LatLngExpression;
+}) {
+    const map = useMap();
+
+    useEffect(() => {
+        map.setView(center, Math.max(map.getZoom(), 16), {
+            animate: true,
+        });
+    }, [center, map]);
+
+    return null;
 }
 
 export function RealGpsWorkspace() {
     const watchIdRef = useRef<number | null>(null);
 
     const [gpsState, setGpsState] = useState<GpsState>("idle");
+    const [mapMode, setMapMode] = useState<MapMode>("select-point");
     const [errorMessage, setErrorMessage] = useState("");
     const [currentPoint, setCurrentPoint] = useState<GeoPoint | null>(null);
+    const [searchPoint, setSearchPoint] = useState<GeoPoint | null>(null);
     const [savedPoints, setSavedPoints] = useState<readonly GeoPoint[]>([]);
     const [perimeterPoints, setPerimeterPoints] = useState<readonly GeoPoint[]>([]);
     const [pointLabel, setPointLabel] = useState<string>("Punto de evidencia");
@@ -275,6 +418,31 @@ export function RealGpsWorkspace() {
     const [evidenceType, setEvidenceType] = useState<string>("Punto de material");
     const [fieldReference, setFieldReference] = useState<string>("Entre calles / acceso / referencia visual pendiente");
     const [reverseStatus, setReverseStatus] = useState("Sin dirección");
+    const [searchQuery, setSearchQuery] = useState("Puerto de Altamira, Tamaulipas");
+    const [searchResults, setSearchResults] = useState<readonly SearchResult[]>([]);
+    const [copyStatus, setCopyStatus] = useState("GeoJSON listo para copiar");
+
+    const mapCenter = useMemo<LatLngExpression>(() => {
+        if (currentPoint) {
+            return latLngForPoint(currentPoint);
+        }
+
+        if (searchPoint) {
+            return latLngForPoint(searchPoint);
+        }
+
+        return altamiraFallbackCenter;
+    }, [currentPoint, searchPoint]);
+
+    const perimeterPositions = useMemo(
+        () => perimeterPoints.map((point) => latLngForPoint(point)),
+        [perimeterPoints],
+    );
+
+    const geoJsonPreview = useMemo(
+        () => JSON.stringify(buildGeoJson(savedPoints, perimeterPoints, currentPoint), null, 2),
+        [currentPoint, perimeterPoints, savedPoints],
+    );
 
     const stateLabel = useMemo(() => {
         if (gpsState === "requesting") return "Solicitando ubicación";
@@ -286,16 +454,6 @@ export function RealGpsWorkspace() {
 
         return "Sin ubicación";
     }, [gpsState]);
-
-    const geoJsonPreview = useMemo(() => {
-        if (!currentPoint) {
-            return "Sin punto actual";
-        }
-
-        return JSON.stringify(buildGeoJsonFeature(currentPoint), null, 2);
-    }, [currentPoint]);
-
-    const perimeterPreview = useMemo(() => polygonPoints(perimeterPoints, currentPoint), [perimeterPoints, currentPoint]);
 
     useEffect(() => {
         setSavedPoints(safeParsePoints(window.localStorage.getItem(savedPointsStorageKey)));
@@ -318,10 +476,10 @@ export function RealGpsWorkspace() {
         };
     }, []);
 
-    async function buildPointFromPosition(position: GeolocationPosition, label: string, status: string): Promise<GeoPoint> {
+    async function buildPoint(latitude: number, longitude: number, accuracy: number, label: string, status: string, source: string): Promise<GeoPoint> {
         setReverseStatus("Resolviendo dirección...");
 
-        const address = await reverseGeocode(position.coords.latitude, position.coords.longitude);
+        const address = await reverseGeocode(latitude, longitude);
 
         setReverseStatus(address.source);
 
@@ -330,11 +488,11 @@ export function RealGpsWorkspace() {
             label,
             material: targetMaterial,
             evidenceType,
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy,
+            latitude,
+            longitude,
+            accuracy,
             capturedAt: nowLabel(),
-            source: "GPS del dispositivo",
+            source,
             status,
             address,
             fieldReference: fieldReference.trim() || "Referencia de campo pendiente",
@@ -354,7 +512,14 @@ export function RealGpsWorkspace() {
 
         window.navigator.geolocation.getCurrentPosition(
             (position) => {
-                void buildPointFromPosition(position, "Ubicación actual", "Actual").then((nextPoint) => {
+                void buildPoint(
+                    position.coords.latitude,
+                    position.coords.longitude,
+                    position.coords.accuracy,
+                    "Ubicación actual",
+                    "Actual",
+                    "GPS del dispositivo",
+                ).then((nextPoint) => {
                     setCurrentPoint(nextPoint);
                     setGpsState("granted");
                 });
@@ -388,7 +553,14 @@ export function RealGpsWorkspace() {
 
         watchIdRef.current = window.navigator.geolocation.watchPosition(
             (position) => {
-                void buildPointFromPosition(position, "Ubicación en vivo", "En vivo").then((nextPoint) => {
+                void buildPoint(
+                    position.coords.latitude,
+                    position.coords.longitude,
+                    position.coords.accuracy,
+                    "Ubicación en vivo",
+                    "En vivo",
+                    "GPS del dispositivo",
+                ).then((nextPoint) => {
                     setCurrentPoint(nextPoint);
                     setGpsState("tracking");
                 });
@@ -419,12 +591,10 @@ export function RealGpsWorkspace() {
             return;
         }
 
-        const label = pointLabel.trim() || "Punto de campo";
-
         const pointToSave: GeoPoint = {
             ...currentPoint,
             id: `GPS-${Date.now()}`,
-            label,
+            label: pointLabel.trim() || "Punto de campo",
             material: targetMaterial,
             evidenceType,
             capturedAt: nowLabel(),
@@ -455,6 +625,35 @@ export function RealGpsWorkspace() {
         setPerimeterPoints((current) => [...current, perimeterPoint]);
     }
 
+    function handleMapClick(latitude: number, longitude: number) {
+        if (mapMode === "draw-perimeter") {
+            void buildPoint(
+                latitude,
+                longitude,
+                0,
+                `Vértice ${perimeterPoints.length + 1}`,
+                "Vértice",
+                "Mapa / selección manual",
+            ).then((point) => {
+                setCurrentPoint(point);
+                setPerimeterPoints((current) => [...current, point]);
+            });
+
+            return;
+        }
+
+        void buildPoint(
+            latitude,
+            longitude,
+            0,
+            "Punto seleccionado en mapa",
+            "Seleccionado",
+            "Mapa / selección manual",
+        ).then((point) => {
+            setCurrentPoint(point);
+        });
+    }
+
     function clearPerimeter() {
         setPerimeterPoints([]);
     }
@@ -463,14 +662,70 @@ export function RealGpsWorkspace() {
         setSavedPoints([]);
     }
 
+    async function runAddressSearch() {
+        setSearchResults([]);
+        setErrorMessage("");
+        setReverseStatus("Buscando dirección...");
+
+        const results = await searchPlaces(searchQuery);
+
+        setSearchResults(results);
+        setReverseStatus(results.length > 0 ? "Resultados encontrados" : "Sin resultados");
+    }
+
+    function useSearchResult(result: SearchResult) {
+        const latitude = Number(result.lat);
+        const longitude = Number(result.lon);
+
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+            return;
+        }
+
+        const address = buildAddressSummary({
+            display_name: result.display_name,
+            address: result.address,
+        });
+
+        const point: GeoPoint = {
+            id: `SEARCH-${Date.now()}`,
+            label: "Resultado de búsqueda",
+            material: targetMaterial,
+            evidenceType,
+            latitude,
+            longitude,
+            accuracy: 0,
+            capturedAt: nowLabel(),
+            source: "Búsqueda de dirección",
+            status: "Referencia",
+            address,
+            fieldReference: fieldReference.trim() || "Referencia buscada manualmente",
+        };
+
+        setSearchPoint(point);
+        setCurrentPoint(point);
+        setReverseStatus("Dirección seleccionada");
+    }
+
+    async function copyGeoJson() {
+        const payload = JSON.stringify(buildGeoJson(savedPoints, perimeterPoints, currentPoint), null, 2);
+
+        if (!window.navigator.clipboard) {
+            setCopyStatus("Clipboard no disponible. Usa el bloque GeoJSON visible.");
+            return;
+        }
+
+        await window.navigator.clipboard.writeText(payload);
+        setCopyStatus("GeoJSON copiado");
+    }
+
     return (
-        <section className="nmk-gps-workspace nmk-gps-premium">
+        <section className="nmk-gps-workspace nmk-gps-real-map">
             <div className="nmk-gps-header">
                 <div>
-                    <p>GPS real</p>
-                    <h2>Ubicación completa del dispositivo</h2>
+                    <p>GPS avanzado</p>
+                    <h2>Mapa real, dirección y perímetros</h2>
                     <span>
-                        Pide ubicación real, interpreta dirección, guarda puntos, asocia material/evidencia y prepara perímetros visuales.
+                        Usa GPS real, mapa con OpenStreetMap, búsqueda de lugar, dirección aproximada, puntos guardados y perímetros visuales.
                     </span>
                 </div>
 
@@ -480,14 +735,54 @@ export function RealGpsWorkspace() {
                 </div>
             </div>
 
-            <div className="nmk-gps-premium-grid">
-                <section className="nmk-gps-control-panel">
+            <section className="nmk-gps-real-layout">
+                <aside className="nmk-gps-control-panel nmk-gps-real-controls">
                     <div className="nmk-gps-actions nmk-gps-actions-premium">
                         <button onClick={requestLocation} type="button">Pedir ubicación</button>
                         <button onClick={startTracking} type="button">Rastrear en vivo</button>
-                        <button onClick={stopTracking} type="button">Detener rastreo</button>
+                        <button onClick={stopTracking} type="button">Detener</button>
                         <button disabled={!currentPoint} onClick={saveCurrentPoint} type="button">Guardar punto</button>
                     </div>
+
+                    <div className="nmk-gps-mode-toggle">
+                        <button
+                            className={mapMode === "select-point" ? "is-active" : ""}
+                            onClick={() => setMapMode("select-point")}
+                            type="button"
+                        >
+                            Click = punto
+                        </button>
+                        <button
+                            className={mapMode === "draw-perimeter" ? "is-active" : ""}
+                            onClick={() => setMapMode("draw-perimeter")}
+                            type="button"
+                        >
+                            Click = vértice
+                        </button>
+                    </div>
+
+                    <div className="nmk-gps-search-box">
+                        <label className="nmk-field">
+                            <span>Buscar lugar o dirección</span>
+                            <input
+                                onChange={(event) => setSearchQuery(event.target.value)}
+                                placeholder="Ejemplo: Puerto de Altamira, Tamaulipas"
+                                type="search"
+                                value={searchQuery}
+                            />
+                        </label>
+                        <button onClick={() => void runAddressSearch()} type="button">Buscar</button>
+                    </div>
+
+                    {searchResults.length > 0 ? (
+                        <div className="nmk-gps-search-results">
+                            {searchResults.map((result) => (
+                                <button key={result.place_id} onClick={() => useSearchResult(result)} type="button">
+                                    {result.display_name}
+                                </button>
+                            ))}
+                        </div>
+                    ) : null}
 
                     <div className="nmk-gps-form-grid">
                         <label className="nmk-field">
@@ -549,134 +844,161 @@ export function RealGpsWorkspace() {
                             <strong>{savedPoints.length}</strong>
                         </article>
                     </div>
-                </section>
+                </aside>
 
-                <section className="nmk-gps-address-card">
-                    <div className="nmk-gps-section-title">
-                        <p>Ubicación interpretada</p>
-                        <h3>Dirección aproximada</h3>
-                    </div>
+                <section className="nmk-real-leaflet-card">
+                    <MapContainer center={mapCenter} className="nmk-real-leaflet-map" maxZoom={22} minZoom={3} scrollWheelZoom zoom={17}>
+                        <TileLayer
+                            attribution='&copy; OpenStreetMap contributors'
+                            maxZoom={22}
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <MapController center={mapCenter} />
+                        <MapClickCapture onMapClick={handleMapClick} />
 
-                    <div className="nmk-address-main">
-                        <strong>{currentPoint?.address.full ?? "Pide ubicación para resolver dirección"}</strong>
-                        <span>{currentPoint?.fieldReference ?? "Agrega referencia manual de acceso, entre calles o punto visual."}</span>
-                    </div>
-
-                    <div className="nmk-address-grid">
-                        <article>
-                            <span>País</span>
-                            <strong>{currentPoint?.address.country ?? "—"}</strong>
-                        </article>
-                        <article>
-                            <span>Estado</span>
-                            <strong>{currentPoint?.address.state ?? "—"}</strong>
-                        </article>
-                        <article>
-                            <span>Ciudad</span>
-                            <strong>{currentPoint?.address.city ?? "—"}</strong>
-                        </article>
-                        <article>
-                            <span>Colonia / zona</span>
-                            <strong>{currentPoint?.address.neighborhood ?? "—"}</strong>
-                        </article>
-                        <article>
-                            <span>Calle</span>
-                            <strong>{currentPoint?.address.street ?? "—"}</strong>
-                        </article>
-                        <article>
-                            <span>Código postal</span>
-                            <strong>{currentPoint?.address.postalCode ?? "—"}</strong>
-                        </article>
-                    </div>
-                </section>
-            </div>
-
-            <section className="nmk-gps-visual-panel">
-                <div className="nmk-gps-map nmk-gps-premium-map">
-                    <div className="nmk-gps-map-grid" />
-
-                    <svg className="nmk-gps-svg" preserveAspectRatio="none" viewBox="0 0 100 100">
-                        {perimeterPoints.length >= 3 ? (
-                            <polygon className="nmk-gps-polygon-fill" points={perimeterPreview} />
+                        {currentPoint ? (
+                            <>
+                                <Marker icon={currentIcon} position={latLngForPoint(currentPoint)}>
+                                    <Popup>
+                                        <strong>{currentPoint.label}</strong>
+                                        <br />
+                                        {currentPoint.address.full}
+                                        <br />
+                                        Precisión: {formatAccuracy(currentPoint.accuracy)}
+                                    </Popup>
+                                </Marker>
+                                {currentPoint.accuracy > 0 ? (
+                                    <Circle
+                                        center={latLngForPoint(currentPoint)}
+                                        pathOptions={{ color: "#38bdf8", fillColor: "#38bdf8", fillOpacity: 0.08, weight: 1 }}
+                                        radius={Math.max(currentPoint.accuracy, 5)}
+                                    />
+                                ) : null}
+                            </>
                         ) : null}
-                        {perimeterPoints.length >= 2 ? (
-                            <polyline className="nmk-gps-polygon-line" points={perimeterPreview} />
+
+                        {searchPoint ? (
+                            <Marker icon={searchIcon} position={latLngForPoint(searchPoint)}>
+                                <Popup>{searchPoint.address.full}</Popup>
+                            </Marker>
                         ) : null}
-                    </svg>
 
-                    {savedPoints.slice(0, 16).map((point, index) => {
-                        const projected = projectPoint(point, currentPoint, index);
+                        {savedPoints.map((point, index) => (
+                            <Marker icon={createSavedIcon(index + 1)} key={point.id} position={latLngForPoint(point)}>
+                                <Popup>
+                                    <strong>{point.label}</strong>
+                                    <br />
+                                    {point.material} · {point.evidenceType}
+                                    <br />
+                                    {point.address.full}
+                                </Popup>
+                            </Marker>
+                        ))}
 
-                        return (
-                            <span
-                                className="nmk-gps-saved-marker"
-                                key={point.id}
-                                style={{ left: `${projected.left}%`, top: `${projected.top}%` }}
-                                title={`${point.label} · ${point.address.full}`}
-                            >
-                                {index + 1}
-                            </span>
-                        );
-                    })}
+                        {perimeterPoints.map((point, index) => (
+                            <Marker icon={createPerimeterIcon(index + 1)} key={point.id} position={latLngForPoint(point)}>
+                                <Popup>{point.label}</Popup>
+                            </Marker>
+                        ))}
 
-                    {perimeterPoints.map((point, index) => {
-                        const projected = projectPoint(point, currentPoint, index);
+                        {perimeterPositions.length >= 2 ? (
+                            <Polyline pathOptions={{ color: "#fbbf24", dashArray: "6 6", weight: 2 }} positions={perimeterPositions} />
+                        ) : null}
 
-                        return (
-                            <span
-                                className="nmk-gps-perimeter-marker"
-                                key={point.id}
-                                style={{ left: `${projected.left}%`, top: `${projected.top}%` }}
-                                title={point.label}
-                            >
-                                {index + 1}
-                            </span>
-                        );
-                    })}
+                        {perimeterPositions.length >= 3 ? (
+                            <Polygon pathOptions={{ color: "#fbbf24", fillColor: "#fbbf24", fillOpacity: 0.12, weight: 2 }} positions={perimeterPositions} />
+                        ) : null}
+                    </MapContainer>
 
-                    <span className={currentPoint ? "nmk-gps-live-marker is-active" : "nmk-gps-live-marker"}>
-                        {currentPoint ? "Actual" : "Sin GPS"}
-                    </span>
-
-                    <div className="nmk-gps-map-label">
-                        <strong>Mapa visual de captura</strong>
-                        <span>Marcador actual, puntos guardados, vértices y perímetro demo.</span>
+                    <div className="nmk-real-map-overlay">
+                        <strong>{mapMode === "draw-perimeter" ? "Modo perímetro" : "Modo punto"}</strong>
+                        <span>
+                            {mapMode === "draw-perimeter"
+                                ? "Haz click en el mapa para agregar vértices."
+                                : "Haz click en el mapa para seleccionar una ubicación."}
+                        </span>
                     </div>
+                </section>
+            </section>
+
+            <section className="nmk-gps-address-card">
+                <div className="nmk-gps-section-title">
+                    <p>Ubicación interpretada</p>
+                    <h3>Dirección aproximada</h3>
                 </div>
 
-                <aside className="nmk-gps-map-tools">
-                    <div className="nmk-gps-section-title">
-                        <p>Perímetro</p>
-                        <h3>Delimitación visual</h3>
-                    </div>
+                <div className="nmk-address-main">
+                    <strong>{currentPoint?.address.full ?? "Pide ubicación, busca dirección o da click en el mapa"}</strong>
+                    <span>{currentPoint?.fieldReference ?? "Agrega referencia manual de acceso, entre calles o punto visual."}</span>
+                </div>
 
-                    <div className="nmk-gps-tool-actions">
-                        <button disabled={!currentPoint} onClick={addCurrentPointToPerimeter} type="button">
-                            Agregar vértice actual
-                        </button>
-                        <button disabled={perimeterPoints.length === 0} onClick={clearPerimeter} type="button">
-                            Limpiar perímetro
-                        </button>
-                        <button disabled={savedPoints.length === 0} onClick={clearSavedPoints} type="button">
-                            Limpiar puntos
-                        </button>
-                    </div>
+                <div className="nmk-address-grid">
+                    <article>
+                        <span>País</span>
+                        <strong>{currentPoint?.address.country ?? "—"}</strong>
+                    </article>
+                    <article>
+                        <span>Estado</span>
+                        <strong>{currentPoint?.address.state ?? "—"}</strong>
+                    </article>
+                    <article>
+                        <span>Ciudad</span>
+                        <strong>{currentPoint?.address.city ?? "—"}</strong>
+                    </article>
+                    <article>
+                        <span>Colonia / zona</span>
+                        <strong>{currentPoint?.address.neighborhood ?? "—"}</strong>
+                    </article>
+                    <article>
+                        <span>Calle</span>
+                        <strong>{currentPoint?.address.street ?? "—"}</strong>
+                    </article>
+                    <article>
+                        <span>Código postal</span>
+                        <strong>{currentPoint?.address.postalCode ?? "—"}</strong>
+                    </article>
+                </div>
+            </section>
 
-                    <div className="nmk-gps-map-stats">
-                        <article>
-                            <strong>{perimeterPoints.length}</strong>
-                            <span>Vértices</span>
-                        </article>
-                        <article>
-                            <strong>{perimeterPoints.length >= 3 ? "Listo" : "Pendiente"}</strong>
-                            <span>Polígono</span>
-                        </article>
-                        <article>
-                            <strong>{targetMaterial}</strong>
-                            <span>Asociación</span>
-                        </article>
-                    </div>
-                </aside>
+            <section className="nmk-gps-map-tools nmk-real-map-tools">
+                <div className="nmk-gps-section-title">
+                    <p>Herramientas de mapa</p>
+                    <h3>Registro, perímetro y exportación</h3>
+                </div>
+
+                <div className="nmk-gps-tool-actions">
+                    <button disabled={!currentPoint} onClick={addCurrentPointToPerimeter} type="button">
+                        Agregar ubicación actual como vértice
+                    </button>
+                    <button disabled={perimeterPoints.length === 0} onClick={clearPerimeter} type="button">
+                        Limpiar perímetro
+                    </button>
+                    <button disabled={savedPoints.length === 0} onClick={clearSavedPoints} type="button">
+                        Limpiar puntos guardados
+                    </button>
+                    <button onClick={() => void copyGeoJson()} type="button">
+                        Copiar GeoJSON
+                    </button>
+                </div>
+
+                <div className="nmk-gps-map-stats">
+                    <article>
+                        <strong>{perimeterPoints.length}</strong>
+                        <span>Vértices</span>
+                    </article>
+                    <article>
+                        <strong>{perimeterPoints.length >= 3 ? "Listo" : "Pendiente"}</strong>
+                        <span>Polígono</span>
+                    </article>
+                    <article>
+                        <strong>{savedPoints.length}</strong>
+                        <span>Puntos guardados</span>
+                    </article>
+                    <article>
+                        <strong>{copyStatus}</strong>
+                        <span>Exportación</span>
+                    </article>
+                </div>
             </section>
 
             <div className="nmk-gps-bottom-grid">
@@ -702,7 +1024,7 @@ export function RealGpsWorkspace() {
                         <article>
                             <div>
                                 <strong>Sin puntos guardados</strong>
-                                <span>Primero pide ubicación y después guarda un punto.</span>
+                                <span>Primero pide ubicación, busca un lugar o da click en el mapa.</span>
                             </div>
                             <p>El punto queda persistido en el navegador para que la demo se sienta registrada.</p>
                         </article>
@@ -712,7 +1034,7 @@ export function RealGpsWorkspace() {
                 <div className="nmk-gps-next-actions">
                     <div className="nmk-gps-section-title">
                         <p>Objeto técnico preparado</p>
-                        <h3>GeoJSON del punto actual</h3>
+                        <h3>GeoJSON exportable</h3>
                     </div>
 
                     <pre className="nmk-gps-json">{geoJsonPreview}</pre>

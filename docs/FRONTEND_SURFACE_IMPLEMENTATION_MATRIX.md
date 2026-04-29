@@ -396,3 +396,20 @@ Files:
 - `apps/web/src/components/RealGpsWorkspace.tsx`
 - `apps/web/src/styles/namiki-polish-p0-7-gps-premium.css`
 - `docs/NAMIKI_UX_POLISH_P0_7.md`
+## P0.8 real map Leaflet GPS applied
+
+Action taken:
+
+- Added Leaflet and React Leaflet.
+- Replaced conceptual GPS map with real OpenStreetMap tile map.
+- Added click-to-select point.
+- Added click-to-draw perimeter vertices.
+- Added place/address search.
+- Added marker layers.
+- Added GeoJSON export/copy.
+
+Files:
+
+- `apps/web/src/components/RealGpsWorkspace.tsx`
+- `apps/web/src/styles/namiki-polish-p0-8-real-map.css`
+- `docs/NAMIKI_UX_POLISH_P0_8.md`

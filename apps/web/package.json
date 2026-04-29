@@ -16,10 +16,13 @@
     "@iyi/kernel": "workspace:*",
     "@iyi/seed-data": "workspace:*",
     "@iyi/sync-protocol": "workspace:*",
+    "leaflet": "^1.9.4",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "react-leaflet": "^5.0.0"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.9.21",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@vitejs/plugin-react": "latest",
