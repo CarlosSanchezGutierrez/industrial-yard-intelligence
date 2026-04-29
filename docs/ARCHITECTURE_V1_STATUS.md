@@ -226,3 +226,12 @@ Runtime gate document:
 Command:
 
 `pnpm architecture:runtime`
+## Manifest
+
+Architecture v1 manifest:
+
+`docs/ARCHITECTURE_V1_MANIFEST.md`
+
+Command:
+
+`pnpm architecture:manifest`

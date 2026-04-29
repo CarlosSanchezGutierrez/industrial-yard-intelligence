@@ -152,3 +152,12 @@ pnpm dev:stack:windows
 pnpm architecture:runtime
 
 This validates the live API, Edge and sync runtime paths.
+## Architecture v1 manifest
+
+Run:
+
+pnpm architecture:manifest
+
+Document:
+
+`docs/ARCHITECTURE_V1_MANIFEST.md`

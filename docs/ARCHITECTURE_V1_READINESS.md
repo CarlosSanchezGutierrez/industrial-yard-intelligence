@@ -78,3 +78,12 @@ Final local gate:
 Command:
 
 `pnpm architecture:gate`
+## Manifest
+
+Architecture v1 manifest:
+
+`docs/ARCHITECTURE_V1_MANIFEST.md`
+
+Command:
+
+`pnpm architecture:manifest -- -CheckOnly`

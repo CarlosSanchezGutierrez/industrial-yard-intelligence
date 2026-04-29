@@ -170,3 +170,12 @@ Current v1 status report:
 Status command:
 
 `pnpm architecture:status`
+## Architecture manifest
+
+Final v1 manifest:
+
+`docs/ARCHITECTURE_V1_MANIFEST.md`
+
+Command:
+
+`pnpm architecture:manifest`

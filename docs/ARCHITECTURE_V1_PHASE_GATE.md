@@ -75,3 +75,10 @@ With the local stack running, run:
 pnpm architecture:runtime
 
 This validates the live API, Edge and integrated Cloud Edge sync runtime path.
+## Manifest check
+
+Run:
+
+`pnpm architecture:manifest -- -CheckOnly`
+
+This validates the final docs/scripts expected for v1 demo handoff.
