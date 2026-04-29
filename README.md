@@ -101,3 +101,15 @@ Run the architecture skeleton checklist with:
 pnpm architecture:check
 
 This validates required v1 files, route markers, smoke scripts and docs.
+## Architecture v1 documents
+
+Core architecture documents:
+
+- `docs/ARCHITECTURE_V1_BLUEPRINT.md`
+- `docs/ARCHITECTURE_V1_PHASE_GATE.md`
+- `docs/ARCHITECTURE_V1_ROADMAP.md`
+- `docs/ARCHITECTURE_V1_READINESS.md`
+
+Architecture decision records live under:
+
+- `docs/adr/`

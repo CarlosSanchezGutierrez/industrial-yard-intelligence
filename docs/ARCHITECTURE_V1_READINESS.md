@@ -41,3 +41,17 @@ After this check, build, test, typecheck, smoke scripts and ci-local pass, the a
 - mobile app
 - advanced geospatial UX
 - evidence media hardening
+## Related architecture documents
+
+- `docs/ARCHITECTURE_V1_BLUEPRINT.md`
+- `docs/ARCHITECTURE_V1_PHASE_GATE.md`
+- `docs/ARCHITECTURE_V1_ROADMAP.md`
+
+## Architecture decision records
+
+- `docs/adr/0001-local-first-edge-architecture.md`
+- `docs/adr/0002-shared-contracts-over-duplicated-types.md`
+- `docs/adr/0003-json-db-before-postgres.md`
+- `docs/adr/0004-audit-before-production-sync.md`
+- `docs/adr/0005-sync-preview-before-apply.md`
+- `docs/adr/0006-domain-rules-outside-http.md`
