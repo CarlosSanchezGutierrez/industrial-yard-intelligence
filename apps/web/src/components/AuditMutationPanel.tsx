@@ -47,7 +47,7 @@ function getMutationDescription(entry: CloudApiAuditMutationEntryContract): stri
         return `${mutation.previousStatus} -> ${mutation.nextStatus}`;
     }
 
-    return mutation.type;
+    return "Unknown mutation";
 }
 
 export function AuditMutationPanel() {
