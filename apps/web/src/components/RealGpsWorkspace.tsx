@@ -37,7 +37,7 @@ type ReverseAddress = {
 
 type ReverseGeocodeResult = {
     readonly display_name?: string;
-    readonly address?: ReverseAddress;
+    readonly address?: ReverseAddress | undefined;
 };
 
 type SearchResult = {
@@ -45,7 +45,7 @@ type SearchResult = {
     readonly display_name: string;
     readonly lat: string;
     readonly lon: string;
-    readonly address?: ReverseAddress;
+    readonly address?: ReverseAddress | undefined;
 };
 
 type AddressSummary = {
@@ -355,7 +355,7 @@ function buildGeoJson(points: readonly GeoPoint[], perimeterPoints: readonly Geo
                           coordinates: [
                               [
                                   ...perimeterPoints.map((point) => [point.longitude, point.latitude]),
-                                  [perimeterPoints[0].longitude, perimeterPoints[0].latitude],
+                                  [perimeterPoints[0]!.longitude, perimeterPoints[0]!.latitude],
                               ],
                           ],
                       },
