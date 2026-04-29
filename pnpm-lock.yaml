@@ -89,6 +89,12 @@ importers:
         specifier: workspace:*
         version: link:../sync-protocol
 
+  packages/audit:
+    dependencies:
+      '@iyi/kernel':
+        specifier: workspace:*
+        version: link:../kernel
+
   packages/db:
     dependencies:
       '@iyi/kernel':
