@@ -4,3 +4,4 @@ export * from "./conventions.js";
 export * from "./migrations.js";
 export * from "./schema-plan.js";
 export * from "./drizzle-schema.js";
+export * from "./schema-v1.js";
