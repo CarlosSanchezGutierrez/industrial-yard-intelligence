@@ -39,6 +39,10 @@ function writeResponse(
   headers: Readonly<Record<string, string>>,
   body: string
 ): void {
+  if (response.headersSent || response.writableEnded || response.destroyed) {
+      return;
+  }
+  // IYI_HEADERS_SENT_GUARD
   response.writeHead(statusCode, headers);
   response.end(body);
 }
