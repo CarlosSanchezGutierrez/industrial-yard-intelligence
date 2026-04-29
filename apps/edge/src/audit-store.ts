@@ -16,6 +16,7 @@ import {
   asUserId
 } from "@iyi/kernel";
 import type { ConflictResolutionRecord } from "./conflict-resolutions.js";
+import type { StoredEvidenceItem } from "./evidence-store.js";
 
 interface AuditStoreFile {
   readonly version: 1;
@@ -226,6 +227,57 @@ export function recordConflictResolutionAudit(input: {
   return lastEntry;
 }
 
+export function recordEvidenceRegisteredAudit(input: {
+  readonly evidence: StoredEvidenceItem;
+  readonly createdAt: string;
+}): AuditEntry {
+  const store = loadAuditStore();
+  const evidence = input.evidence;
+
+  const updatedEntries = appendAuditEntry(store.entries, {
+    tenantId: asTenantId(String(evidence.metadata.tenantId)),
+    ...(evidence.metadata.terminalId !== undefined
+      ? { terminalId: asTerminalId(String(evidence.metadata.terminalId)) }
+      : {}),
+    auditEventId: asEventId(`audit_${randomUUID()}`),
+    actionType: "EVIDENCE_REGISTERED",
+    affectedEntityId: asEntityId(String(evidence.metadata.evidenceId)),
+    affectedEntityType: "evidence",
+    previousValue: null,
+    newValue: {
+      evidenceId: String(evidence.metadata.evidenceId),
+      evidenceKind: evidence.metadata.evidenceKind,
+      storageProvider: evidence.metadata.storageProvider,
+      storageKey: evidence.metadata.storageKey,
+      fileName: evidence.metadata.fileName ?? null,
+      mimeType: evidence.metadata.mimeType ?? null,
+      integrityAlgorithm: evidence.metadata.integrity.algorithm,
+      integrityHash: evidence.metadata.integrity.hashValue,
+      byteSize: evidence.metadata.integrity.byteSize,
+      immutable: evidence.metadata.immutable,
+      registeredAt: evidence.registeredAt
+    },
+    result: "success",
+    sourceRuntime: "edge",
+    userId: asUserId(String(evidence.metadata.ownerUserId)),
+    deviceId: asDeviceId(String(evidence.metadata.ownerDeviceId)),
+    ...(evidence.metadata.relatedEventId !== undefined
+      ? { syncEventId: asEventId(String(evidence.metadata.relatedEventId)) }
+      : {}),
+    createdAt: input.createdAt
+  });
+
+  store.entries = [...updatedEntries];
+  persistAuditStore(store);
+
+  const lastEntry = store.entries[store.entries.length - 1];
+
+  if (lastEntry === undefined) {
+    throw new Error("Audit entry was not appended.");
+  }
+
+  return lastEntry;
+}
 export function exportAuditStore(): AuditStoreFile {
   const store = loadAuditStore();
 

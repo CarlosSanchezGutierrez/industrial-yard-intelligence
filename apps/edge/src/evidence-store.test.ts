@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { resetEvidenceStore, routeEdgeRequest } from "./index.js";
+import { resetAuditStore, resetEvidenceStore, routeEdgeRequest } from "./index.js";
 
 describe("@iyi/edge evidence integration", () => {
   beforeEach(() => {
     resetEvidenceStore();
+    resetAuditStore();
   });
 
   it("registers text evidence with sha256 integrity", () => {
@@ -62,6 +63,68 @@ describe("@iyi/edge evidence integration", () => {
     expect(body.data.summary.failedItems).toBe(0);
   });
 
+  it("audits evidence registration with hash-chain entry", () => {
+    const response = routeEdgeRequest({
+      method: "POST",
+      pathname: "/evidence/register",
+      requestId: "request_evidence_audit",
+      now: "2026-04-28T12:00:00.000Z",
+      body: {
+        content: "simulated photo bytes for audit",
+        evidenceKind: "photo",
+        storageKey: "evidence/photos/photo-audit-001.txt",
+        fileName: "photo-audit-001.txt",
+        mimeType: "text/plain"
+      }
+    });
+
+    const body = JSON.parse(response.body) as {
+      ok: boolean;
+      data: {
+        auditEntry: {
+          actionType: string;
+          affectedEntityType: string;
+          affectedEntityId: string;
+          integrityHash: string;
+        };
+        auditSummary: {
+          totalEntries: number;
+          chainValid: boolean;
+        };
+      };
+    };
+
+    expect(response.statusCode).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.data.auditEntry.actionType).toBe("EVIDENCE_REGISTERED");
+    expect(body.data.auditEntry.affectedEntityType).toBe("evidence");
+    expect(body.data.auditEntry.affectedEntityId).toContain("evidence_");
+    expect(body.data.auditEntry.integrityHash).toHaveLength(64);
+    expect(body.data.auditSummary.totalEntries).toBe(1);
+    expect(body.data.auditSummary.chainValid).toBe(true);
+
+    const auditResponse = routeEdgeRequest({
+      method: "GET",
+      pathname: "/audit/summary",
+      requestId: "request_audit_summary",
+      now: "2026-04-28T12:00:01.000Z"
+    });
+
+    const auditBody = JSON.parse(auditResponse.body) as {
+      ok: boolean;
+      data: {
+        summary: {
+          totalEntries: number;
+          chainValid: boolean;
+        };
+      };
+    };
+
+    expect(auditResponse.statusCode).toBe(200);
+    expect(auditBody.ok).toBe(true);
+    expect(auditBody.data.summary.totalEntries).toBe(1);
+    expect(auditBody.data.summary.chainValid).toBe(true);
+  });
   it("rejects evidence registration without content", () => {
     const response = routeEdgeRequest({
       method: "POST",

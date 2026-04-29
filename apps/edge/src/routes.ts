@@ -15,6 +15,7 @@ import {
   getAuditSummary,
   importAuditStore,
   recordConflictResolutionAudit,
+  recordEvidenceRegisteredAudit,
   verifyEdgeAuditChain
 } from "./audit-store.js";
 import {
@@ -379,11 +380,18 @@ function handleEvidenceRegister(request: EdgeRouteRequest): EdgeRouteResponse {
       ...(relatedEventId !== undefined ? { relatedEventId } : {})
     });
 
+    const auditEntry = recordEvidenceRegisteredAudit({
+      evidence,
+      createdAt: request.now
+    });
+
     return jsonResponse(
       200,
       createApiSuccess(
         {
           evidence,
+          auditEntry,
+          auditSummary: getAuditSummary(),
           summary: getEvidenceSummary(),
           verification: verifyEvidenceStore()
         },
