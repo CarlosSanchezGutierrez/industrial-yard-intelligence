@@ -21,7 +21,8 @@ import {
   type DbUnitOfWork
 } from "@iyi/db";
 import { cooperSmokeSeed } from "@iyi/seed-data";
-import { createStockpileLifecyclePayload } from "./stockpile-lifecycle-response.js";
+import { createStockpileLifecyclePayload } from "./stockpile-lifecycle-response.js";
+import { wrapCloudApiRouteRequestWithAudit } from "./audit-mutation-route-wrapper.js";
 import {
   createApiUnitOfWork,
   getApiDbFilePath,
@@ -159,7 +160,7 @@ function getStockpileStatusPathId(pathname: string): string | null {
   return decodeURIComponent(match[1] ?? "");
 }
 
-export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRouteResponse> {
+async function routeApiRequestCore(request: ApiRouteRequest): Promise<ApiRouteResponse> {
     if (request.method === "GET" && request.pathname === "/stockpiles/lifecycle") {
         return jsonResponse(200, createSuccess(createStockpileLifecyclePayload(), request.requestId, request.now));
     }
@@ -318,3 +319,4 @@ export async function routeApiRequest(request: ApiRouteRequest): Promise<ApiRout
     )
   );
 }
+export const routeApiRequest = wrapCloudApiRouteRequestWithAudit(routeApiRequestCore);
