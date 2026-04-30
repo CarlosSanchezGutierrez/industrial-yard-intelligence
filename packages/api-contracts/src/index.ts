@@ -13,3 +13,4 @@ export * from "./aplomoCommon.js";
 export * from "./aplomoDeviceContracts.js";
 export * from "./aplomoTelemetryContracts.js";
 export * from "./aplomoRoutes.js";
+export * from "./aplomoDataGovernanceContracts.js";

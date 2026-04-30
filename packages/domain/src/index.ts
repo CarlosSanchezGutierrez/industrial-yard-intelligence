@@ -7,3 +7,4 @@ export * from "./aplomoDevice.js";
 export * from "./aplomoConnection.js";
 export * from "./aplomoTelemetry.js";
 export * from "./aplomoRoles.js";
+export * from "./aplomoDataGovernance.js";
