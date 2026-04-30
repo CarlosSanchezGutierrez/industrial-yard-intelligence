@@ -7,3 +7,4 @@ export * from "./aplomoOperationalAlertEngine.js";
 export * from "./aplomoOperationalScoreEngine.js";
 export * from "./aplomoGovernedDataExportEngine.js";
 export * from "./aplomoPersistencePorts.js";
+export * from "./aplomoSupabasePersistenceAdapter.js";
