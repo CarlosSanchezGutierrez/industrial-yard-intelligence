@@ -1,40 +1,24 @@
-import { mountAplomoInternalTools } from "./internal/mountAplomoInternalTools.js";
-import { StrictMode } from "react";
+import { StrictMode, createElement } from "react";
 import { createRoot } from "react-dom/client";
-
-
-
 import App from "./App.js";
-import { installNamikiIntroOverlay } from "./namikiIntroOverlay.js";
 import { AplomoDemoAccessLanding } from "./internal/AplomoDemoAccessLanding.js";
 
-
-// APLOMO_ROOT_GATE_START
-function AplomoRootGate() {
+function AplomoAppShell() {
   const path = window.location.pathname;
-  const appPrefixes = ["/aplomo-admin", "/admin", "/app"];
-  const isAppPath = appPrefixes.some((prefix) => path === prefix || path.startsWith(prefix + "/"));
+  const isAppPath = path === "/aplomo-admin" || path.startsWith("/aplomo-admin/");
 
-  if (!isAppPath) {
-    return <AplomoDemoAccessLanding />;
+  if (isAppPath) {
+    return createElement(App);
   }
 
-  return <AplomoRootGate />;
+  return createElement(AplomoDemoAccessLanding);
 }
-// APLOMO_ROOT_GATE_END
 
 const rootElement = document.getElementById("root");
 
 if (!rootElement) {
-    throw new Error("Root element #root was not found.");
+  throw new Error("Root element not found.");
 }
+const appShell = createElement(AplomoAppShell);
 
-createRoot(rootElement).render(
-    <StrictMode>
-        <AplomoRootGate />
-    </StrictMode>,
-);
-
-installNamikiIntroOverlay();
-
-mountAplomoInternalTools();
+createRoot(rootElement).render(createElement(StrictMode, null, appShell));

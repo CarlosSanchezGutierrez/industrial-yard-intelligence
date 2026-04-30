@@ -1,14 +1,11 @@
 # Aplomo Demo Login Landing
 
-Landing inicial estable para acceso demo por roles.
+Landing estable de acceso demo.
 
-Rutas cubiertas por el gate de entrada: /, /login, /demo, /welcome, /intro, /start, /onboarding, /presentation, /presentacion, /inicio.
+La app ahora usa un gate duro desde main para evitar la pantalla azul de la presentacion improvisada.
 
-Rutas de app real: /aplomo-admin, /admin, /app.
+Rutas de entrada demo: cualquier ruta que no sea /aplomo-admin.
+
+Ruta de app real: /aplomo-admin.
 
 Contrasena demo recomendada local: AplomoDemo-2026!
-
-Para resetear usuarios demo:
-
-$env:APLOMO_DEMO_PASSWORD = "AplomoDemo-2026!"
-.\scripts\create-aplomo-demo-auth-users.ps1
