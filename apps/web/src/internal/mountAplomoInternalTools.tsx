@@ -1,3 +1,5 @@
+import { AplomoSaasNavigationPanel } from "./AplomoSaasNavigationPanel.js";
+import { shouldMountAplomoSaasRoute } from "./aplomoSaasRoutes.js";
 import { isolateAplomoInternalConsole } from "./aplomoInternalConsoleIsolation.js";
 import { AplomoTenantInvitePanel } from "./AplomoTenantInvitePanel.js";
 import { AplomoTenantAdminPanel } from "./AplomoTenantAdminPanel.js";
@@ -25,7 +27,7 @@ const shouldMountAplomoInternalTools = (): boolean => {
 
   const params = new URLSearchParams(window.location.search);
 
-  return params.get("aplomoInternal") === "1";
+  return shouldMountAplomoSaasRoute();
 };
 
 
@@ -116,6 +118,7 @@ function AplomoInternalToolsShell() {
             Cerrar herramientas internas
           </button>
 
+          <AplomoSaasNavigationPanel />
           <AplomoSupabaseMvpPanel />
           <AplomoSupabaseGpsCapturePanel />
           <AplomoSupabaseLiveMapPanel />
