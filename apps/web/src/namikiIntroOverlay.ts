@@ -324,6 +324,173 @@ function installStyles() {
                 width: 100%;
             }
         }
+
+        /* Aplomo compact intro override start */
+        .namiki-intro-overlay {
+            padding: 14px;
+        }
+
+        .namiki-intro-card {
+            height: min(660px, calc(100vh - 28px));
+            min-height: 0;
+            grid-template-rows: auto minmax(0, 1fr) auto;
+            padding: clamp(16px, 2.4vw, 28px);
+        }
+
+        .namiki-intro-body {
+            min-height: 0;
+            overflow: auto;
+            align-content: center;
+            padding-right: 4px;
+        }
+
+        .namiki-intro-title {
+            font-size: clamp(38px, 6.2vw, 76px);
+            line-height: 0.94;
+        }
+
+        .namiki-intro-text {
+            max-width: 720px;
+            margin-top: 16px;
+            font-size: clamp(14px, 1.35vw, 18px);
+            line-height: 1.45;
+        }
+
+        .namiki-intro-chips {
+            gap: 8px;
+            margin-top: 18px;
+        }
+
+        .namiki-intro-chips span {
+            padding: 7px 10px;
+            font-size: 12px;
+        }
+
+        .namiki-intro-company {
+            max-width: 480px;
+            margin-top: 18px;
+            padding: 12px;
+        }
+
+        .namiki-intro-company select {
+            min-height: 44px;
+        }
+
+        .namiki-intro-roadmap {
+            margin-top: 14px;
+        }
+
+        .namiki-intro-actions button {
+            min-height: 44px;
+            padding: 0 16px;
+        }
+
+        @media (max-width: 760px) {
+            .namiki-intro-overlay {
+                padding: 8px;
+            }
+
+            .namiki-intro-card {
+                height: calc(100dvh - 16px);
+                min-height: 0;
+                border-radius: 22px;
+                padding: 14px;
+                gap: 10px;
+            }
+
+            .namiki-intro-top {
+                gap: 8px;
+            }
+
+            .namiki-intro-brand strong {
+                font-size: 16px;
+            }
+
+            .namiki-intro-brand span {
+                font-size: 12px;
+            }
+
+            .namiki-intro-badge {
+                padding: 7px 10px;
+                font-size: 12px;
+            }
+
+            .namiki-intro-body {
+                align-content: start;
+            }
+
+            .namiki-intro-eyebrow {
+                font-size: 10px;
+                letter-spacing: 0.16em;
+            }
+
+            .namiki-intro-title {
+                margin-top: 10px;
+                font-size: clamp(31px, 10vw, 38px);
+                line-height: 0.98;
+                letter-spacing: -0.055em;
+            }
+
+            .namiki-intro-text {
+                margin-top: 12px;
+                font-size: 14px;
+                line-height: 1.38;
+            }
+
+            .namiki-intro-chips {
+                gap: 6px;
+                margin-top: 12px;
+            }
+
+            .namiki-intro-chips span {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+
+            .namiki-intro-company {
+                margin-top: 12px;
+                padding: 10px;
+            }
+
+            .namiki-intro-company select {
+                min-height: 40px;
+                font-size: 13px;
+            }
+
+            .namiki-intro-roadmap {
+                gap: 8px;
+                margin-top: 10px;
+            }
+
+            .namiki-intro-roadmap article {
+                padding: 10px;
+            }
+
+            .namiki-intro-roadmap strong,
+            .namiki-intro-roadmap span {
+                font-size: 12px;
+            }
+
+            .namiki-intro-bottom {
+                gap: 8px;
+            }
+
+            .namiki-intro-progress span {
+                width: 26px;
+                height: 5px;
+            }
+
+            .namiki-intro-actions {
+                gap: 8px;
+            }
+
+            .namiki-intro-actions button {
+                min-height: 42px;
+                font-size: 13px;
+            }
+        }
+        /* Aplomo compact intro override end */
+
     `;
 
     document.head.appendChild(style);
@@ -437,6 +604,14 @@ export function installNamikiIntroOverlay() {
 
             if (action === "next") {
                 if (index >= slides.length - 1) {
+                    try {
+                        if (window.location.hash === "#/inicio" || window.location.hash === "#/" || window.location.hash === "#") {
+                            window.history.replaceState(null, "", "/");
+                        }
+                    } catch {
+                        // keep the current URL if the browser blocks history updates
+                    }
+
                     overlay.remove();
                     return;
                 }
