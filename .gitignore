@@ -155,3 +155,4 @@ apps/api/.api-data/
 
 .vercel/
 .vercel
+apps/web/.env.local
