@@ -1,6 +1,7 @@
 import { useMemo, useState, type CSSProperties } from "react";
 
 import { findAplomoDemoContextByCompanySlug } from "../integrations/demoContextRepository.js";
+import { uploadAplomoEvidenceFile, type AplomoEvidenceUploadInput } from "../integrations/evidenceRepository.js";
 import {
   listRecentAplomoGpsCaptures,
   type AplomoGpsCaptureRow,
@@ -22,6 +23,8 @@ type FieldState = {
   latitude: string;
   longitude: string;
   accuracyMeters: string;
+  evidenceCaptureId: string;
+  evidenceDescription: string;
 };
 
 const styles = {
@@ -39,6 +42,12 @@ const styles = {
     fontSize: 16,
     fontWeight: 700,
     letterSpacing: "0.01em",
+  },
+  subtitle: {
+    margin: "18px 0 0",
+    fontSize: 13,
+    fontWeight: 800,
+    color: "#f8fafc",
   },
   text: {
     margin: "8px 0 0",
@@ -65,6 +74,14 @@ const styles = {
     color: "#f8fafc",
     padding: "10px 12px",
     outline: "none",
+  },
+  fileInput: {
+    width: "100%",
+    borderRadius: 12,
+    border: "1px dashed rgba(148, 163, 184, 0.42)",
+    background: "rgba(15, 23, 42, 0.72)",
+    color: "#f8fafc",
+    padding: "10px 12px",
   },
   buttonRow: {
     display: "flex",
@@ -171,18 +188,27 @@ export function AplomoCloudSyncDevPanel() {
     latitude: "22.4070",
     longitude: "-97.9385",
     accuracyMeters: "8.5",
+    evidenceCaptureId: "",
+    evidenceDescription: "Evidencia de prueba desde panel interno Aplomo.",
   });
 
+  const [selectedEvidenceFile, setSelectedEvidenceFile] = useState<File | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [isLoadingContext, setIsLoadingContext] = useState(false);
   const [isLoadingCaptures, setIsLoadingCaptures] = useState(false);
   const [isReadingGps, setIsReadingGps] = useState(false);
+  const [isUploadingEvidence, setIsUploadingEvidence] = useState(false);
   const [resultText, setResultText] = useState("");
 
   const canTrySync = fields.companyId.trim().length > 0 && !isSending;
   const canLoadContext = !isLoadingContext;
   const canListCaptures = fields.companyId.trim().length > 0 && !isLoadingCaptures;
   const canReadGps = !isReadingGps;
+  const canUploadEvidence =
+    fields.companyId.trim().length > 0 &&
+    fields.evidenceCaptureId.trim().length > 0 &&
+    selectedEvidenceFile !== null &&
+    !isUploadingEvidence;
 
   const updateField = (key: keyof FieldState, value: string) => {
     setFields((current) => ({
@@ -358,6 +384,13 @@ export function AplomoCloudSyncDevPanel() {
 
       const result = await syncAplomoGpsCapture(payload);
 
+      if (result.ok) {
+        setFields((current) => ({
+          ...current,
+          evidenceCaptureId: result.captureId,
+        }));
+      }
+
       setResultText(formatResult(result));
     } catch (error) {
       const message = error instanceof Error ? error.message : "Error desconocido";
@@ -394,10 +427,20 @@ export function AplomoCloudSyncDevPanel() {
         return;
       }
 
+      const firstCapture = result.data[0];
+
+      if (firstCapture) {
+        setFields((current) => ({
+          ...current,
+          evidenceCaptureId: firstCapture.id,
+        }));
+      }
+
       setResultText(
         [
           "Estado: capturas recientes cargadas",
           `Total mostrado: ${result.data.length}`,
+          firstCapture ? `Capture ID seleccionado para evidencia: ${firstCapture.id}` : "",
           "",
           ...result.data.map((capture, index) => formatCapture(capture, index)),
         ].join("\n\n"),
@@ -407,6 +450,68 @@ export function AplomoCloudSyncDevPanel() {
       setResultText(`Estado: error\nMensaje: ${message}`);
     } finally {
       setIsLoadingCaptures(false);
+    }
+  };
+
+  const handleUploadEvidence = async () => {
+    if (!canUploadEvidence || !selectedEvidenceFile) {
+      return;
+    }
+
+    setIsUploadingEvidence(true);
+    setResultText("");
+
+    try {
+      const description = fields.evidenceDescription.trim();
+
+      const uploadPayload: AplomoEvidenceUploadInput = {
+        companyId: fields.companyId.trim(),
+        gpsCaptureId: fields.evidenceCaptureId.trim(),
+        file: selectedEvidenceFile,
+        fileName: selectedEvidenceFile.name,
+      };
+
+      const uploadedByProfileId = fields.capturedByProfileId.trim();
+      if (uploadedByProfileId.length > 0) {
+        uploadPayload.uploadedByProfileId = uploadedByProfileId;
+      }
+
+      const contentType = selectedEvidenceFile.type.trim();
+      if (contentType.length > 0) {
+        uploadPayload.contentType = contentType;
+      }
+
+      if (description.length > 0) {
+        uploadPayload.description = description;
+      }
+
+      const result = await uploadAplomoEvidenceFile(uploadPayload);
+
+      if (!result.ok) {
+        setResultText(
+          [
+            "Estado: no se pudo subir evidencia",
+            `Modo: ${result.mode}`,
+            `Mensaje: ${result.error}`,
+          ].join("\n"),
+        );
+        return;
+      }
+
+      setResultText(
+        [
+          "Estado: evidencia subida",
+          `Evidence ID: ${result.data.id}`,
+          `Storage path: ${result.storagePath}`,
+          `Archivo: ${result.data.file_name ?? selectedEvidenceFile.name}`,
+          `Tipo: ${result.data.mime_type ?? "sin mime"}`,
+        ].join("\n"),
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      setResultText(`Estado: error\nMensaje: ${message}`);
+    } finally {
+      setIsUploadingEvidence(false);
     }
   };
 
@@ -543,6 +648,52 @@ export function AplomoCloudSyncDevPanel() {
           onClick={handleListCaptures}
         >
           {isLoadingCaptures ? "Consultando..." : "Listar capturas"}
+        </button>
+      </div>
+
+      <h3 style={styles.subtitle}>Evidencia</h3>
+
+      <div style={styles.grid}>
+        <label style={styles.label}>
+          GPS Capture ID
+          <input
+            style={styles.input}
+            value={fields.evidenceCaptureId}
+            onChange={(event) => updateField("evidenceCaptureId", event.target.value)}
+            placeholder="UUID de gps_captures.id"
+          />
+        </label>
+
+        <label style={styles.label}>
+          Descripción evidencia
+          <input
+            style={styles.input}
+            value={fields.evidenceDescription}
+            onChange={(event) => updateField("evidenceDescription", event.target.value)}
+          />
+        </label>
+
+        <label style={styles.label}>
+          Archivo
+          <input
+            style={styles.fileInput}
+            type="file"
+            accept="image/*,application/pdf"
+            onChange={(event) => {
+              setSelectedEvidenceFile(event.currentTarget.files?.[0] ?? null);
+            }}
+          />
+        </label>
+      </div>
+
+      <div style={styles.buttonRow}>
+        <button
+          type="button"
+          style={canUploadEvidence ? styles.button : styles.mutedButton}
+          disabled={!canUploadEvidence}
+          onClick={handleUploadEvidence}
+        >
+          {isUploadingEvidence ? "Subiendo evidencia..." : "Subir evidencia"}
         </button>
       </div>
 
