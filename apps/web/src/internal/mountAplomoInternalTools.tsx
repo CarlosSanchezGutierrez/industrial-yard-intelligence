@@ -1,3 +1,4 @@
+import { AplomoAiReadinessPanel } from "./AplomoAiReadinessPanel.js";
 import { AplomoPlatformSupportHealthCrosswalkPanel } from "./AplomoPlatformSupportHealthCrosswalkPanel.js";
 import { AplomoPlatformSupportWorkflowPanel } from "./AplomoPlatformSupportWorkflowPanel.js";
 import { AplomoPlatformHealthTrendsPanel } from "./AplomoPlatformHealthTrendsPanel.js";
@@ -145,6 +146,9 @@ function AplomoInternalToolsShell() {
             <AplomoPlatformSupportWorkflowPanel />
           <AplomoRouteScopedPanel panelId="platform_admin">
             <AplomoPlatformSupportHealthCrosswalkPanel />
+          <AplomoRouteScopedPanel panelId="platform_admin">
+            <AplomoAiReadinessPanel />
+          </AplomoRouteScopedPanel>
           </AplomoRouteScopedPanel>
           </AplomoRouteScopedPanel>
           </AplomoRouteScopedPanel>
