@@ -16,3 +16,4 @@ export * from "./aplomoRoutes.js";
 export * from "./aplomoDataGovernanceContracts.js";
 export * from "./aplomoIndustrialDeviceIntegrationContracts.js";
 export * from "./aplomoDataInteroperabilityContracts.js";
+export * from "./aplomoSaasDataPlatformContracts.js";
