@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 
 import { AplomoCloudSyncDevPanel } from "./AplomoCloudSyncDevPanel.js";
 import { AplomoOperationsAdminPanel } from "./AplomoOperationsAdminPanel.js";
+import { AplomoOperationsMapPanel } from "./AplomoOperationsMapPanel.js";
 
 const hostId = "aplomo-internal-tools-root";
 const storageKey = "aplomo_internal_tools";
@@ -18,7 +19,7 @@ const styles = {
   shell: {
     display: "grid",
     gap: 14,
-    maxWidth: 1280,
+    maxWidth: 1320,
     margin: "0 auto",
   },
   closeButton: {
@@ -90,6 +91,7 @@ function AplomoInternalToolsShell() {
           Cerrar herramientas internas
         </button>
 
+        <AplomoOperationsMapPanel />
         <AplomoOperationsAdminPanel />
         <AplomoCloudSyncDevPanel />
       </div>
