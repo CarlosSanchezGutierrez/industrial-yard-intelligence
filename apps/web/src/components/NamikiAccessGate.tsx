@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import "../styles/namiki-access-gate.css";
 
@@ -12,8 +12,6 @@ type TenantOption = {
     readonly description: string;
 };
 
-const accessStorageKey = "namiki:access-gate:v2";
-
 const tenantOptions: readonly TenantOption[] = [
     {
         id: "cooper-t-smith",
@@ -24,34 +22,21 @@ const tenantOptions: readonly TenantOption[] = [
     },
 ];
 
-function readStoredTenant(): TenantId | null {
-    try {
-        const value = window.localStorage.getItem(accessStorageKey);
-        return value === "cooper-t-smith" ? value : null;
-    } catch {
-        return null;
-    }
-}
+const selectedTenant = tenantOptions[0]!;
 
 function saveTenant(value: TenantId) {
     try {
-        window.localStorage.setItem(accessStorageKey, value);
+        window.localStorage.setItem("namiki:tenant:selected", value);
     } catch {
         return;
     }
 }
 
 export function NamikiAccessGate({ children }: { readonly children: ReactNode }) {
-    const [selectedTenant, setSelectedTenant] = useState<TenantId>("cooper-t-smith");
-    const [isUnlocked, setIsUnlocked] = useState(() => readStoredTenant() !== null);
-
-    const tenant = useMemo(
-        () => tenantOptions.find((item) => item.id === selectedTenant) ?? tenantOptions[0]!,
-        [selectedTenant],
-    );
+    const [isUnlocked, setIsUnlocked] = useState(false);
 
     function enterSystem() {
-        saveTenant(selectedTenant);
+        saveTenant(selectedTenant.id);
         setIsUnlocked(true);
     }
 
@@ -60,20 +45,18 @@ export function NamikiAccessGate({ children }: { readonly children: ReactNode })
     }
 
     return (
-        <main className="nmk-access-screen">
+        <main className="nmk-access-screen" aria-label="Acceso Modelo Namiki">
             <section className="nmk-access-shell">
                 <header className="nmk-access-topbar">
                     <div className="nmk-access-brand">
-                        <span />
+                        <span aria-hidden="true" />
                         <div>
                             <strong>Modelo Namiki</strong>
                             <p>Software de patios industriales</p>
                         </div>
                     </div>
 
-                    <div className="nmk-access-status">
-                        MVP operativo
-                    </div>
+                    <div className="nmk-access-status">MVP operativo</div>
                 </header>
 
                 <section className="nmk-access-main">
@@ -98,7 +81,7 @@ export function NamikiAccessGate({ children }: { readonly children: ReactNode })
                             </article>
                             <article>
                                 <strong>Captura de campo</strong>
-                                <span>Ubicación, evidencia y medición desde cualquier dispositivo.</span>
+                                <span>Ubicación, evidencia, precisión y perímetros.</span>
                             </article>
                             <article>
                                 <strong>Sincronización</strong>
@@ -118,25 +101,18 @@ export function NamikiAccessGate({ children }: { readonly children: ReactNode })
 
                         <label className="nmk-access-field">
                             <span>Empresa</span>
-                            <select
-                                onChange={(event) => setSelectedTenant(event.target.value as TenantId)}
-                                value={selectedTenant}
-                            >
-                                {tenantOptions.map((option) => (
-                                    <option key={option.id} value={option.id}>
-                                        {option.name}
-                                    </option>
-                                ))}
+                            <select value={selectedTenant.id} disabled>
+                                <option value={selectedTenant.id}>{selectedTenant.name}</option>
                             </select>
                         </label>
 
                         <article className="nmk-access-company-card">
                             <div>
-                                <strong>{tenant.name}</strong>
-                                <span>{tenant.status}</span>
+                                <strong>{selectedTenant.name}</strong>
+                                <span>{selectedTenant.status}</span>
                             </div>
-                            <p>{tenant.location}</p>
-                            <small>{tenant.description}</small>
+                            <p>{selectedTenant.location}</p>
+                            <small>{selectedTenant.description}</small>
                         </article>
 
                         <button className="nmk-access-enter" onClick={enterSystem} type="button">
