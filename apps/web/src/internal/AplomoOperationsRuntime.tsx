@@ -23,6 +23,8 @@ type AplomoOperationsRuntimeContextValue = {
   tick: number;
   snapshot: AplomoOperationsSnapshot;
   governedEvents: AplomoGovernedTelemetryOutput[];
+  selectedDeviceId: string;
+  setSelectedDeviceId: (deviceId: string) => void;
   advanceTicks: (count: number) => void;
   resetDemo: () => void;
 };
@@ -43,6 +45,7 @@ export function AplomoOperationsRuntimeProvider({
   const [governedEvents, setGovernedEvents] = useState<
     AplomoGovernedTelemetryOutput[]
   >(runtime.initialState.governedEvents);
+  const [selectedDeviceId, setSelectedDeviceId] = useState("all");
 
   const advanceTicks = (count: number) => {
     const safeCount = Math.max(1, Math.min(Math.floor(count), 250));
@@ -70,6 +73,7 @@ export function AplomoOperationsRuntimeProvider({
     setTick(0);
     setSnapshot(nextRuntime.initialState.snapshot);
     setGovernedEvents(nextRuntime.initialState.governedEvents);
+    setSelectedDeviceId("all");
   };
 
   return (
@@ -79,6 +83,8 @@ export function AplomoOperationsRuntimeProvider({
         tick,
         snapshot,
         governedEvents,
+        selectedDeviceId,
+        setSelectedDeviceId,
         advanceTicks,
         resetDemo,
       }}
