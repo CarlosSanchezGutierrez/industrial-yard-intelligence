@@ -2,6 +2,7 @@ import { useState, type CSSProperties } from "react";
 import { createRoot } from "react-dom/client";
 
 import { AplomoCloudSyncDevPanel } from "./AplomoCloudSyncDevPanel.js";
+import { AplomoDataPlatformReadinessPanel } from "./AplomoDataPlatformReadinessPanel.js";
 import { AplomoDeviceDetailPanel } from "./AplomoDeviceDetailPanel.js";
 import { AplomoDeviceTimelinePanel } from "./AplomoDeviceTimelinePanel.js";
 import { AplomoGovernedDataExportPanel } from "./AplomoGovernedDataExportPanel.js";
@@ -102,6 +103,7 @@ function AplomoInternalToolsShell() {
           <AplomoOperationsMapPanel />
           <AplomoOperationalScorePanel />
           <AplomoOperationalAlertsPanel />
+          <AplomoDataPlatformReadinessPanel />
           <AplomoGovernedDataExportPanel />
           <AplomoDeviceDetailPanel />
           <AplomoDeviceTimelinePanel />
