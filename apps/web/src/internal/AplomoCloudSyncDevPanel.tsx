@@ -1,7 +1,14 @@
 import { useMemo, useState, type CSSProperties } from "react";
 
 import { findAplomoDemoContextByCompanySlug } from "../integrations/demoContextRepository.js";
-import { uploadAplomoEvidenceFile, type AplomoEvidenceUploadInput } from "../integrations/evidenceRepository.js";
+import {
+  createAplomoEvidenceSignedUrl,
+  listAplomoEvidenceFilesForCapture,
+  listRecentAplomoEvidenceFilesForCompany,
+  uploadAplomoEvidenceFile,
+  type AplomoEvidenceFileRow,
+  type AplomoEvidenceUploadInput,
+} from "../integrations/evidenceRepository.js";
 import {
   listRecentAplomoGpsCaptures,
   type AplomoGpsCaptureRow,
@@ -25,6 +32,7 @@ type FieldState = {
   accuracyMeters: string;
   evidenceCaptureId: string;
   evidenceDescription: string;
+  evidenceStoragePath: string;
 };
 
 const styles = {
@@ -175,6 +183,18 @@ const formatCapture = (capture: AplomoGpsCaptureRow, index: number): string => {
   ].join("\n");
 };
 
+const formatEvidence = (evidence: AplomoEvidenceFileRow, index: number): string => {
+  return [
+    `#${index + 1}`,
+    `ID: ${evidence.id}`,
+    `Archivo: ${evidence.file_name ?? "sin nombre"}`,
+    `Tipo: ${evidence.mime_type ?? evidence.file_type}`,
+    `Storage path: ${evidence.storage_path}`,
+    `Captura: ${evidence.gps_capture_id ?? "sin captura"}`,
+    `Creada: ${evidence.created_at}`,
+  ].join("\n");
+};
+
 export function AplomoCloudSyncDevPanel() {
   const syncStatus = useMemo(() => getAplomoGpsSyncStatus(), []);
 
@@ -190,6 +210,7 @@ export function AplomoCloudSyncDevPanel() {
     accuracyMeters: "8.5",
     evidenceCaptureId: "",
     evidenceDescription: "Evidencia de prueba desde panel interno Aplomo.",
+    evidenceStoragePath: "",
   });
 
   const [selectedEvidenceFile, setSelectedEvidenceFile] = useState<File | null>(null);
@@ -198,6 +219,8 @@ export function AplomoCloudSyncDevPanel() {
   const [isLoadingCaptures, setIsLoadingCaptures] = useState(false);
   const [isReadingGps, setIsReadingGps] = useState(false);
   const [isUploadingEvidence, setIsUploadingEvidence] = useState(false);
+  const [isLoadingEvidence, setIsLoadingEvidence] = useState(false);
+  const [isOpeningEvidence, setIsOpeningEvidence] = useState(false);
   const [resultText, setResultText] = useState("");
 
   const canTrySync = fields.companyId.trim().length > 0 && !isSending;
@@ -209,6 +232,12 @@ export function AplomoCloudSyncDevPanel() {
     fields.evidenceCaptureId.trim().length > 0 &&
     selectedEvidenceFile !== null &&
     !isUploadingEvidence;
+  const canListEvidenceByCapture =
+    fields.evidenceCaptureId.trim().length > 0 && !isLoadingEvidence;
+  const canListEvidenceByCompany =
+    fields.companyId.trim().length > 0 && !isLoadingEvidence;
+  const canOpenEvidence =
+    fields.evidenceStoragePath.trim().length > 0 && !isOpeningEvidence;
 
   const updateField = (key: keyof FieldState, value: string) => {
     setFields((current) => ({
@@ -498,6 +527,11 @@ export function AplomoCloudSyncDevPanel() {
         return;
       }
 
+      setFields((current) => ({
+        ...current,
+        evidenceStoragePath: result.storagePath,
+      }));
+
       setResultText(
         [
           "Estado: evidencia subida",
@@ -512,6 +546,161 @@ export function AplomoCloudSyncDevPanel() {
       setResultText(`Estado: error\nMensaje: ${message}`);
     } finally {
       setIsUploadingEvidence(false);
+    }
+  };
+
+  const handleListEvidenceByCapture = async () => {
+    if (!canListEvidenceByCapture) {
+      return;
+    }
+
+    setIsLoadingEvidence(true);
+    setResultText("");
+
+    try {
+      const result = await listAplomoEvidenceFilesForCapture(
+        fields.evidenceCaptureId.trim(),
+        5,
+      );
+
+      if (!result.ok) {
+        setResultText(
+          [
+            "Estado: no se pudo listar evidencia",
+            `Modo: ${result.mode}`,
+            `Mensaje: ${result.error}`,
+          ].join("\n"),
+        );
+        return;
+      }
+
+      if (result.data.length === 0) {
+        setResultText("Estado: consulta correcta\nEvidencias de captura: 0");
+        return;
+      }
+
+      const firstEvidence = result.data[0];
+
+      if (firstEvidence) {
+        setFields((current) => ({
+          ...current,
+          evidenceStoragePath: firstEvidence.storage_path,
+        }));
+      }
+
+      setResultText(
+        [
+          "Estado: evidencias de captura cargadas",
+          `Total mostrado: ${result.data.length}`,
+          firstEvidence ? `Storage path seleccionado: ${firstEvidence.storage_path}` : "",
+          "",
+          ...result.data.map((evidence, index) => formatEvidence(evidence, index)),
+        ].join("\n\n"),
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      setResultText(`Estado: error\nMensaje: ${message}`);
+    } finally {
+      setIsLoadingEvidence(false);
+    }
+  };
+
+  const handleListEvidenceByCompany = async () => {
+    if (!canListEvidenceByCompany) {
+      return;
+    }
+
+    setIsLoadingEvidence(true);
+    setResultText("");
+
+    try {
+      const result = await listRecentAplomoEvidenceFilesForCompany(
+        fields.companyId.trim(),
+        5,
+      );
+
+      if (!result.ok) {
+        setResultText(
+          [
+            "Estado: no se pudo listar evidencia",
+            `Modo: ${result.mode}`,
+            `Mensaje: ${result.error}`,
+          ].join("\n"),
+        );
+        return;
+      }
+
+      if (result.data.length === 0) {
+        setResultText("Estado: consulta correcta\nEvidencias recientes: 0");
+        return;
+      }
+
+      const firstEvidence = result.data[0];
+
+      if (firstEvidence) {
+        setFields((current) => ({
+          ...current,
+          evidenceStoragePath: firstEvidence.storage_path,
+          evidenceCaptureId: firstEvidence.gps_capture_id ?? current.evidenceCaptureId,
+        }));
+      }
+
+      setResultText(
+        [
+          "Estado: evidencias recientes cargadas",
+          `Total mostrado: ${result.data.length}`,
+          firstEvidence ? `Storage path seleccionado: ${firstEvidence.storage_path}` : "",
+          "",
+          ...result.data.map((evidence, index) => formatEvidence(evidence, index)),
+        ].join("\n\n"),
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      setResultText(`Estado: error\nMensaje: ${message}`);
+    } finally {
+      setIsLoadingEvidence(false);
+    }
+  };
+
+  const handleOpenEvidence = async () => {
+    if (!canOpenEvidence) {
+      return;
+    }
+
+    setIsOpeningEvidence(true);
+    setResultText("");
+
+    try {
+      const result = await createAplomoEvidenceSignedUrl(
+        fields.evidenceStoragePath.trim(),
+        300,
+      );
+
+      if (!result.ok) {
+        setResultText(
+          [
+            "Estado: no se pudo abrir evidencia",
+            `Modo: ${result.mode}`,
+            `Mensaje: ${result.error}`,
+          ].join("\n"),
+        );
+        return;
+      }
+
+      window.open(result.signedUrl, "_blank", "noopener,noreferrer");
+
+      setResultText(
+        [
+          "Estado: URL firmada generada",
+          "Mensaje: Se abrió la evidencia en una pestaña nueva.",
+          "Expira en: 300 segundos",
+        ].join("\n"),
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      setResultText(`Estado: error\nMensaje: ${message}`);
+    } finally {
+      setIsOpeningEvidence(false);
     }
   };
 
@@ -665,6 +854,16 @@ export function AplomoCloudSyncDevPanel() {
         </label>
 
         <label style={styles.label}>
+          Storage path
+          <input
+            style={styles.input}
+            value={fields.evidenceStoragePath}
+            onChange={(event) => updateField("evidenceStoragePath", event.target.value)}
+            placeholder="Ruta privada en bucket aplomo-evidence"
+          />
+        </label>
+
+        <label style={styles.label}>
           Descripción evidencia
           <input
             style={styles.input}
@@ -694,6 +893,33 @@ export function AplomoCloudSyncDevPanel() {
           onClick={handleUploadEvidence}
         >
           {isUploadingEvidence ? "Subiendo evidencia..." : "Subir evidencia"}
+        </button>
+
+        <button
+          type="button"
+          style={canListEvidenceByCapture ? styles.secondaryButton : styles.mutedButton}
+          disabled={!canListEvidenceByCapture}
+          onClick={handleListEvidenceByCapture}
+        >
+          {isLoadingEvidence ? "Consultando..." : "Listar evidencia de captura"}
+        </button>
+
+        <button
+          type="button"
+          style={canListEvidenceByCompany ? styles.secondaryButton : styles.mutedButton}
+          disabled={!canListEvidenceByCompany}
+          onClick={handleListEvidenceByCompany}
+        >
+          {isLoadingEvidence ? "Consultando..." : "Listar evidencia empresa"}
+        </button>
+
+        <button
+          type="button"
+          style={canOpenEvidence ? styles.secondaryButton : styles.mutedButton}
+          disabled={!canOpenEvidence}
+          onClick={handleOpenEvidence}
+        >
+          {isOpeningEvidence ? "Abriendo..." : "Abrir evidencia"}
         </button>
       </div>
 

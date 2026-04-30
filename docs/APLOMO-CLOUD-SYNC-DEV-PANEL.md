@@ -25,6 +25,9 @@ https://aplomosystems.com/?aplomoInternal=1
 - Seleccionar una captura para evidencia.
 - Subir foto o PDF a Supabase Storage.
 - Guardar metadata de evidencia en `evidence_files`.
+- Listar evidencia por captura.
+- Listar evidencia reciente por empresa.
+- Generar URL firmada y abrir evidencia privada.
 
 ## Requisito
 
@@ -49,6 +52,8 @@ Y Supabase debe tener ejecutados:
 5. Presionar `Listar capturas`.
 6. Seleccionar archivo.
 7. Presionar `Subir evidencia`.
+8. Presionar `Listar evidencia de captura`.
+9. Presionar `Abrir evidencia`.
 
 ## Importante
 
