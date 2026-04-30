@@ -1,3 +1,4 @@
+import { mountAplomoInternalTools } from "./internal/mountAplomoInternalTools.js";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -19,3 +20,5 @@ createRoot(rootElement).render(
 );
 
 installNamikiIntroOverlay();
+
+mountAplomoInternalTools();
