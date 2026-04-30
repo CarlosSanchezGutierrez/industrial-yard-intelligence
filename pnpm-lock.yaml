@@ -94,6 +94,9 @@ importers:
       '@iyi/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@iyi/domain':
+        specifier: workspace:^
+        version: link:../../packages/domain
       '@iyi/kernel':
         specifier: workspace:*
         version: link:../../packages/kernel

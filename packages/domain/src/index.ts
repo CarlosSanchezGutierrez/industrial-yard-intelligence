@@ -9,3 +9,4 @@ export * from "./aplomoTelemetry.js";
 export * from "./aplomoRoles.js";
 export * from "./aplomoDataGovernance.js";
 export * from "./aplomoIndustrialDeviceIntegration.js";
+export * from "./aplomoDataInteroperability.js";
