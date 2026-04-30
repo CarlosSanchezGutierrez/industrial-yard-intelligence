@@ -126,6 +126,10 @@ const toNumber = (value: string): number | undefined => {
   return Number.isFinite(parsed) ? parsed : undefined;
 };
 
+const formatCoordinate = (value: number): string => value.toFixed(7);
+
+const formatAccuracy = (value: number): string => value.toFixed(1);
+
 const formatResult = (result: AplomoGpsSyncResult): string => {
   if (result.ok) {
     return [
@@ -172,17 +176,75 @@ export function AplomoCloudSyncDevPanel() {
   const [isSending, setIsSending] = useState(false);
   const [isLoadingContext, setIsLoadingContext] = useState(false);
   const [isLoadingCaptures, setIsLoadingCaptures] = useState(false);
+  const [isReadingGps, setIsReadingGps] = useState(false);
   const [resultText, setResultText] = useState("");
 
   const canTrySync = fields.companyId.trim().length > 0 && !isSending;
   const canLoadContext = !isLoadingContext;
   const canListCaptures = fields.companyId.trim().length > 0 && !isLoadingCaptures;
+  const canReadGps = !isReadingGps;
 
   const updateField = (key: keyof FieldState, value: string) => {
     setFields((current) => ({
       ...current,
       [key]: value,
     }));
+  };
+
+  const handleUseDeviceGps = async () => {
+    if (!canReadGps) {
+      return;
+    }
+
+    if (!("geolocation" in navigator)) {
+      setResultText("Estado: GPS no disponible\nMensaje: Este navegador no soporta geolocalización.");
+      return;
+    }
+
+    setIsReadingGps(true);
+    setResultText("Estado: solicitando GPS\nMensaje: Autoriza ubicación en el navegador.");
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        const accuracy = position.coords.accuracy;
+
+        setFields((current) => ({
+          ...current,
+          latitude: formatCoordinate(latitude),
+          longitude: formatCoordinate(longitude),
+          accuracyMeters: formatAccuracy(accuracy),
+        }));
+
+        setResultText(
+          [
+            "Estado: GPS leído",
+            `Latitud: ${formatCoordinate(latitude)}`,
+            `Longitud: ${formatCoordinate(longitude)}`,
+            `Precisión: ${formatAccuracy(accuracy)} m`,
+          ].join("\n"),
+        );
+
+        setIsReadingGps(false);
+      },
+      (error) => {
+        setResultText(
+          [
+            "Estado: GPS falló",
+            `Código: ${error.code}`,
+            `Mensaje: ${error.message}`,
+          ].join("\n"),
+        );
+
+        setIsReadingGps(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0,
+      },
+    );
   };
 
   const handleLoadDemoContext = async () => {
@@ -454,6 +516,15 @@ export function AplomoCloudSyncDevPanel() {
           onClick={handleLoadDemoContext}
         >
           {isLoadingContext ? "Buscando..." : "Cargar contexto demo"}
+        </button>
+
+        <button
+          type="button"
+          style={canReadGps ? styles.secondaryButton : styles.mutedButton}
+          disabled={!canReadGps}
+          onClick={handleUseDeviceGps}
+        >
+          {isReadingGps ? "Leyendo GPS..." : "Usar GPS del dispositivo"}
         </button>
 
         <button
