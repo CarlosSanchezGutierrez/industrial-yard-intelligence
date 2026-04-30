@@ -21,7 +21,7 @@ export type AplomoRouteScopedPanelId =
 
 export type AplomoRouteScopedPanelProps = {
   panelId: AplomoRouteScopedPanelId;
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 export type AplomoSaasAccessState = {
