@@ -10,7 +10,7 @@ export type AplomoDataAssetType =
   | "ai_context"
   | "manual";
 
-export type AplomoDataSensitivity = "public" | "internal" | "confidential" | "restricted";
+export type AplomoLineageDataSensitivity = "public" | "internal" | "confidential" | "restricted";
 export type AplomoDataQualityTier = "bronze" | "silver" | "gold" | "platinum";
 
 export type AplomoDataQualityRuleType =
@@ -23,7 +23,7 @@ export type AplomoDataQualityRuleType =
   | "referential_integrity"
   | "custom";
 
-export type AplomoDataQualityDimension =
+export type AplomoLineageDataQualityDimension =
   | "completeness"
   | "validity"
   | "uniqueness"
@@ -65,7 +65,7 @@ export interface AplomoDataAsset {
   tableName: string;
   domainArea: string;
   ownerRole: string;
-  sensitivity: AplomoDataSensitivity;
+  sensitivity: AplomoLineageDataSensitivity;
   qualityTier: AplomoDataQualityTier;
   isAiReady: boolean;
   isBiReady: boolean;
@@ -82,7 +82,7 @@ export interface AplomoDataQualityRule {
   assetKey: string;
   ruleName: string;
   ruleType: AplomoDataQualityRuleType;
-  dimension: AplomoDataQualityDimension;
+  dimension: AplomoLineageDataQualityDimension;
   severity: AplomoDataQualitySeverity;
   expectation: string;
   sqlCheck: string;
