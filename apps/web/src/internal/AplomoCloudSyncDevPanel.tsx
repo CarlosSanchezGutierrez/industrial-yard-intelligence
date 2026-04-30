@@ -1,6 +1,6 @@
 import { useMemo, useState, type CSSProperties } from "react";
 
-import { findAplomoCompanyBySlug } from "../integrations/companyRepository.js";
+import { findAplomoDemoContextByCompanySlug } from "../integrations/demoContextRepository.js";
 import {
   getAplomoGpsSyncStatus,
   syncAplomoGpsCapture,
@@ -10,6 +10,10 @@ import {
 
 type FieldState = {
   companyId: string;
+  siteId: string;
+  yardId: string;
+  zoneId: string;
+  capturedByProfileId: string;
   notes: string;
   latitude: string;
   longitude: string;
@@ -140,6 +144,10 @@ export function AplomoCloudSyncDevPanel() {
 
   const [fields, setFields] = useState<FieldState>({
     companyId: "",
+    siteId: "",
+    yardId: "",
+    zoneId: "",
+    capturedByProfileId: "",
     notes: "Captura de prueba desde panel interno Aplomo.",
     latitude: "22.4070",
     longitude: "-97.9385",
@@ -147,11 +155,11 @@ export function AplomoCloudSyncDevPanel() {
   });
 
   const [isSending, setIsSending] = useState(false);
-  const [isLoadingCompany, setIsLoadingCompany] = useState(false);
+  const [isLoadingContext, setIsLoadingContext] = useState(false);
   const [resultText, setResultText] = useState("");
 
   const canTrySync = fields.companyId.trim().length > 0 && !isSending;
-  const canLoadCompany = !isLoadingCompany;
+  const canLoadContext = !isLoadingContext;
 
   const updateField = (key: keyof FieldState, value: string) => {
     setFields((current) => ({
@@ -160,21 +168,21 @@ export function AplomoCloudSyncDevPanel() {
     }));
   };
 
-  const handleLoadDemoCompany = async () => {
-    if (!canLoadCompany) {
+  const handleLoadDemoContext = async () => {
+    if (!canLoadContext) {
       return;
     }
 
-    setIsLoadingCompany(true);
+    setIsLoadingContext(true);
     setResultText("");
 
     try {
-      const result = await findAplomoCompanyBySlug(demoCompanySlug);
+      const result = await findAplomoDemoContextByCompanySlug(demoCompanySlug);
 
       if (!result.ok) {
         setResultText(
           [
-            "Estado: no se pudo cargar empresa demo",
+            "Estado: no se pudo cargar contexto demo",
             `Modo: ${result.mode}`,
             `Mensaje: ${result.error}`,
           ].join("\n"),
@@ -184,22 +192,29 @@ export function AplomoCloudSyncDevPanel() {
 
       setFields((current) => ({
         ...current,
-        companyId: result.data.id,
+        companyId: result.data.company.id,
+        siteId: result.data.site?.id ?? "",
+        yardId: result.data.yard?.id ?? "",
+        zoneId: result.data.zone?.id ?? "",
+        capturedByProfileId: result.data.operatorProfile?.id ?? "",
       }));
 
       setResultText(
         [
-          "Estado: empresa demo cargada",
-          `Empresa: ${result.data.name}`,
-          `Slug: ${result.data.slug}`,
-          `Company ID: ${result.data.id}`,
+          "Estado: contexto demo cargado",
+          `Empresa: ${result.data.company.name}`,
+          `Sitio: ${result.data.site?.name ?? "sin sitio"}`,
+          `Patio: ${result.data.yard?.name ?? "sin patio"}`,
+          `Zona: ${result.data.zone?.name ?? "sin zona"}`,
+          `Operador: ${result.data.operatorProfile?.full_name ?? "sin operador"}`,
+          `Supervisor: ${result.data.supervisorProfile?.full_name ?? "sin supervisor"}`,
         ].join("\n"),
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : "Error desconocido";
       setResultText(`Estado: error\nMensaje: ${message}`);
     } finally {
-      setIsLoadingCompany(false);
+      setIsLoadingContext(false);
     }
   };
 
@@ -222,6 +237,22 @@ export function AplomoCloudSyncDevPanel() {
         captureType: "point",
         status: "draft",
       };
+
+      if (fields.siteId.trim()) {
+        payload.siteId = fields.siteId.trim();
+      }
+
+      if (fields.yardId.trim()) {
+        payload.yardId = fields.yardId.trim();
+      }
+
+      if (fields.zoneId.trim()) {
+        payload.zoneId = fields.zoneId.trim();
+      }
+
+      if (fields.capturedByProfileId.trim()) {
+        payload.capturedByProfileId = fields.capturedByProfileId.trim();
+      }
 
       if (typeof latitude === "number") {
         payload.latitude = latitude;
@@ -269,12 +300,52 @@ export function AplomoCloudSyncDevPanel() {
 
       <div style={styles.grid}>
         <label style={styles.label}>
-          Company ID de Supabase
+          Company ID
           <input
             style={styles.input}
             value={fields.companyId}
             onChange={(event) => updateField("companyId", event.target.value)}
             placeholder="UUID de companies.id"
+          />
+        </label>
+
+        <label style={styles.label}>
+          Site ID
+          <input
+            style={styles.input}
+            value={fields.siteId}
+            onChange={(event) => updateField("siteId", event.target.value)}
+            placeholder="UUID de sites.id"
+          />
+        </label>
+
+        <label style={styles.label}>
+          Yard ID
+          <input
+            style={styles.input}
+            value={fields.yardId}
+            onChange={(event) => updateField("yardId", event.target.value)}
+            placeholder="UUID de yards.id"
+          />
+        </label>
+
+        <label style={styles.label}>
+          Zone ID
+          <input
+            style={styles.input}
+            value={fields.zoneId}
+            onChange={(event) => updateField("zoneId", event.target.value)}
+            placeholder="UUID de zones.id"
+          />
+        </label>
+
+        <label style={styles.label}>
+          Operador Profile ID
+          <input
+            style={styles.input}
+            value={fields.capturedByProfileId}
+            onChange={(event) => updateField("capturedByProfileId", event.target.value)}
+            placeholder="UUID de profiles.id"
           />
         </label>
 
@@ -318,11 +389,11 @@ export function AplomoCloudSyncDevPanel() {
       <div style={styles.buttonRow}>
         <button
           type="button"
-          style={canLoadCompany ? styles.secondaryButton : styles.mutedButton}
-          disabled={!canLoadCompany}
-          onClick={handleLoadDemoCompany}
+          style={canLoadContext ? styles.secondaryButton : styles.mutedButton}
+          disabled={!canLoadContext}
+          onClick={handleLoadDemoContext}
         >
-          {isLoadingCompany ? "Buscando..." : "Cargar empresa demo"}
+          {isLoadingContext ? "Buscando..." : "Cargar contexto demo"}
         </button>
 
         <button
