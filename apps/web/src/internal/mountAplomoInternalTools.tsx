@@ -118,7 +118,6 @@ function AplomoInternalToolsShell() {
   }
 
   return (
-    <AplomoOperationsRuntimeProvider>
       <div style={styles.host}>
         <div style={styles.shell}>
           <button
@@ -201,7 +200,6 @@ function AplomoInternalToolsShell() {
           </AplomoRouteScopedPanel>
         </div>
       </div>
-    </AplomoOperationsRuntimeProvider>
   );
 }
 
