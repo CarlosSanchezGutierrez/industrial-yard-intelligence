@@ -154,3 +154,4 @@ apps/edge/.edge-data/
 apps/api/.api-data/
 
 .vercel/
+.vercel
