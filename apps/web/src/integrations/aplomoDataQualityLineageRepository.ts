@@ -11,7 +11,7 @@ function asBoolean(value: unknown, fallback = false): boolean { return typeof va
 function asJsonRecord(value: unknown): Record<string, unknown> { return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {}; }
 function asRows(value: unknown): DbRow[] { return Array.isArray(value) ? value.map((item) => asJsonRecord(item)) : []; }
 
-async function unwrapRows(query: Promise<{ data: unknown; error: { message?: string } | null }>): Promise<DbRow[]> {
+async function unwrapRows(query: PromiseLike<{ data: unknown; error: { message?: string } | null }>): Promise<DbRow[]> {
   const result = await query;
   if (result.error) { throw new Error(result.error.message ?? "Supabase request failed"); }
   return asRows(result.data);
@@ -105,13 +105,7 @@ export async function listAplomoDataQualityLineage(): Promise<AplomoDataQualityL
     unwrapRows(supabaseAny.from("aplomo_data_lineage_edges").select("*").order("edge_key", { ascending: true }))
   ]);
 
-  const snapshot: AplomoDataQualityLineageSnapshot = {
-    assets: assetRows.map(mapAsset),
-    rules: ruleRows.map(mapRule),
-    qualityRuns: runRows.map(mapRun),
-    lineageEdges: edgeRows.map(mapEdge)
-  };
-
+  const snapshot: AplomoDataQualityLineageSnapshot = { assets: assetRows.map(mapAsset), rules: ruleRows.map(mapRule), qualityRuns: runRows.map(mapRun), lineageEdges: edgeRows.map(mapEdge) };
   return { snapshot, metrics: calculateAplomoDataQualityLineageMetrics(snapshot) };
 }
 
