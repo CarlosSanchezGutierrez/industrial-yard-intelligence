@@ -1,3 +1,4 @@
+import { AplomoSupabaseLiveMapPanel } from "./AplomoSupabaseLiveMapPanel.js";
 import { AplomoSupabaseGpsCapturePanel } from "./AplomoSupabaseGpsCapturePanel.js";
 import { AplomoSupabaseMvpPanel } from "./AplomoSupabaseMvpPanel.js";
 import { useState, type CSSProperties } from "react";
@@ -104,6 +105,7 @@ function AplomoInternalToolsShell() {
 
           <AplomoSupabaseMvpPanel />
           <AplomoSupabaseGpsCapturePanel />
+          <AplomoSupabaseLiveMapPanel />
           <AplomoOperationsMapPanel />
           <AplomoOperationalScorePanel />
           <AplomoOperationalAlertsPanel />
