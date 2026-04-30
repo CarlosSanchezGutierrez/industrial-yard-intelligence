@@ -9,7 +9,7 @@ import {
   exportAplomoDataQualityLineageCsv,
   exportAplomoDataQualityLineageJson,
   listAplomoDataQualityLineage
-} from "../integrations/aplomoDataQualityLineageRepository";
+} from "../integrations/aplomoDataQualityLineageRepository.js";
 
 type TabKey = "assets" | "rules" | "runs" | "lineage";
 

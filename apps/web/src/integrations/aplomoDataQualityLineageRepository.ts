@@ -12,7 +12,7 @@ import type {
   AplomoDataQualityLineageExportResponse,
   AplomoDataQualityLineageListResponse
 } from "@iyi/api-contracts";
-import { supabase } from "./supabaseClient";
+import { supabase } from "./supabaseClient.js";
 
 type DbRow = Record<string, unknown>;
 

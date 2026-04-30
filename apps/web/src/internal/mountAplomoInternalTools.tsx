@@ -33,7 +33,7 @@ import { AplomoOperationalAlertsPanel } from "./AplomoOperationalAlertsPanel.js"
 import { AplomoOperationalScorePanel } from "./AplomoOperationalScorePanel.js";
 import { AplomoOperationsAdminPanel } from "./AplomoOperationsAdminPanel.js";
 import { AplomoOperationsMapPanel } from "./AplomoOperationsMapPanel.js";
-import { AplomoDataQualityLineagePanel } from "./AplomoDataQualityLineagePanel";
+import { AplomoDataQualityLineagePanel } from "./AplomoDataQualityLineagePanel.js";
 const shouldMountAplomoInternalTools = (): boolean => {
   if (typeof window === "undefined") {
     return false;
