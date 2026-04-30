@@ -33,7 +33,7 @@ import { AplomoOperationalAlertsPanel } from "./AplomoOperationalAlertsPanel.js"
 import { AplomoOperationalScorePanel } from "./AplomoOperationalScorePanel.js";
 import { AplomoOperationsAdminPanel } from "./AplomoOperationsAdminPanel.js";
 import { AplomoOperationsMapPanel } from "./AplomoOperationsMapPanel.js";
-import { AplomoOperationsRuntimeProvider } from "./AplomoOperationsRuntime.js";
+import { AplomoOperationsRuntimeProvider } from "./AplomoOperationsRuntime.js";rnimport { AplomoDataQualityLineagePanel } from "./AplomoDataQualityLineagePanel";
 const shouldMountAplomoInternalTools = (): boolean => {
   if (typeof window === "undefined") {
     return false;
@@ -156,7 +156,7 @@ function AplomoInternalToolsShell() {
           <AplomoRouteScopedPanel panelId="platform_admin">
             <AplomoSystemSurfaceAuditMatrixPanel />
           <AplomoRouteScopedPanel panelId="platform_admin">
-            <AplomoSchemaMigrationLedgerPanel />
+             <AplomoDataQualityLineagePanel />
           </AplomoRouteScopedPanel>
           </AplomoRouteScopedPanel>
           </AplomoRouteScopedPanel>

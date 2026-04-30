@@ -14,3 +14,4 @@ export * from "./aplomoSaasDataPlatform.js";
 export * from "./aplomoSaasAccessModel.js";
 export * from "./aplomoPlatformCapabilityRegistry.js";
 export * from "./aplomoSchemaGovernance.js";
+export * from "./aplomoDataQualityLineage.js";
