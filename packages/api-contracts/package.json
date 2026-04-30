@@ -18,6 +18,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@iyi/domain": "workspace:^",
     "@iyi/kernel": "workspace:*",
     "@iyi/sync-protocol": "workspace:*"
   }

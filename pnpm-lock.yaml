@@ -140,6 +140,9 @@ importers:
 
   packages/api-contracts:
     dependencies:
+      '@iyi/domain':
+        specifier: workspace:^
+        version: link:../domain
       '@iyi/kernel':
         specifier: workspace:*
         version: link:../kernel
