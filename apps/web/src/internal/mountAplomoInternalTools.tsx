@@ -1,3 +1,4 @@
+import { AplomoTenantInvitePanel } from "./AplomoTenantInvitePanel.js";
 import { AplomoTenantAdminPanel } from "./AplomoTenantAdminPanel.js";
 import { AplomoSupabaseLiveMapPanel } from "./AplomoSupabaseLiveMapPanel.js";
 import { AplomoSupabaseGpsCapturePanel } from "./AplomoSupabaseGpsCapturePanel.js";
@@ -108,6 +109,7 @@ function AplomoInternalToolsShell() {
           <AplomoSupabaseGpsCapturePanel />
           <AplomoSupabaseLiveMapPanel />
           <AplomoTenantAdminPanel />
+          <AplomoTenantInvitePanel />
           <AplomoOperationsMapPanel />
           <AplomoOperationalScorePanel />
           <AplomoOperationalAlertsPanel />

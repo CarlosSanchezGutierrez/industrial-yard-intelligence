@@ -1,89 +1,90 @@
 {
-    "name":  "industrial-yard-intelligence",
-    "version":  "0.0.0",
-    "private":  true,
-    "description":  "Industrial Yard Intelligence Platform for offline spatial operations, materials, equipment, movements, evidence, and future professional measurement workflows.",
-    "packageManager":  "pnpm@10.0.0",
-    "type":  "module",
-    "engines":  {
-                    "node":  "\u003e=24.0.0",
-                    "pnpm":  "\u003e=10.0.0"
-                },
-    "scripts":  {
-                    "typecheck":  "pnpm -r --if-present build \u0026\u0026 pnpm -r --if-present typecheck",
-                    "lint":  "pnpm -r --if-present lint",
-                    "format":  "prettier . --write",
-                    "format:check":  "prettier . --check",
-                    "test":  "pnpm -r --if-present build \u0026\u0026 pnpm -r --if-present test",
-                    "build":  "pnpm -r --if-present build",
-                    "demo:smoke":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo-smoke.ps1",
-                    "demo:smoke:edge":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo-smoke.ps1 -EdgeBaseUrl http://localhost:8787",
-                    "ci:local":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ci-local.ps1",
-                    "ci:local:dirty":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ci-local.ps1 -SkipGitStatus",
-                    "ci:local:fast":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ci-local.ps1 -SkipInstall -SkipGitStatus",
-                    "api:smoke":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/api-smoke.ps1",
-                    "api:smoke:local":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/api-smoke.ps1 -ApiBaseUrl http://localhost:8788",
-                    "dev:api":  "pnpm --filter @iyi/api dev",
-                    "dev:edge":  "pnpm --filter @iyi/edge dev",
-                    "dev:web":  "pnpm --filter @iyi/web dev",
-                    "dev:stack:windows":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev-stack-windows.ps1",
-                    "smoke:runtime":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/runtime-smoke.ps1",
-                    "smoke:runtime:local":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/runtime-smoke.ps1 -ApiBaseUrl http://localhost:8788 -EdgeBaseUrl http://localhost:8787",
-                    "sync:smoke":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cloud-edge-sync-smoke.ps1",
-                    "architecture:check":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-readiness.ps1",
-                    "demo:operator":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo-operator-v1.ps1",
-                    "architecture:status":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-status.ps1",
-                    "architecture:gate":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-gate.ps1",
-                    "architecture:runtime":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-runtime-gate.ps1",
-                    "architecture:manifest":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-manifest.ps1",
-                    "architecture:close":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-close.ps1",
-                    "phase2:check":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/phase-2-demo-polish-check.ps1",
-                    "phase2:runtime":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/phase-2-demo-runtime-smoke.ps1",
-                    "phase2:status":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/phase-2-demo-polish-status.ps1",
-                    "phase2:presenter":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/phase-2-demo-presenter.ps1",
-                    "phase2:close":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/phase-2-demo-polish-close.ps1",
-                    "gps:smoke":  "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/gps-capture-api-smoke.ps1",
-                    "aplomo:build":  "pnpm --filter @iyi/web... build",
-                    "aplomo:typecheck":  "pnpm typecheck",
-                    "aplomo:qa":  "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-qa.ps1",
-                    "aplomo:supabase-check":  "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-supabase-check.ps1",
-                    "aplomo:supabase-smoke":  "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-supabase-smoke.ps1",
-                    "aplomo:supabase-smoke:strict":  "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-supabase-smoke.ps1 -RequireConfigured",
-                    "aplomo:supabase-insert-test":  "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-supabase-smoke.ps1 -RequireConfigured -InsertTestCapture",
-                    "aplomo:evidence-smoke":  "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-evidence-smoke.ps1",
-                    "aplomo:evidence-smoke:strict":  "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-evidence-smoke.ps1 -RequireConfigured",
-                    "aplomo:evidence-upload-test":  "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-evidence-smoke.ps1 -RequireConfigured -UploadTestEvidence",
-                    "aplomo:pre-pilot":  "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-pre-pilot-validate.ps1",
-                    "aplomo:pre-pilot:fast":  "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-pre-pilot-validate.ps1 -SkipBuild",
-                    "aplomo:pre-pilot:strict":  "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-pre-pilot-validate.ps1 -RequireSupabase"
-                },
-    "keywords":  [
-                     "industrial",
-                     "gis",
-                     "offline-first",
-                     "local-first",
-                     "yard-operations",
-                     "edge-server",
-                     "spatial-operations"
-                 ],
-    "author":  "Carlos Sanchez Gutierrez",
-    "license":  "UNLICENSED",
-    "devDependencies":  {
-                            "@types/node":  "^25.6.0",
-                            "prettier":  "^3.8.3",
-                            "typescript":  "^6.0.3",
-                            "vitest":  "^4.1.5"
-                        },
-    "dependencies":  {
-                         "tslib":  "^2.8.1"
-                     },
-    "pnpm":  {
-                 "packageExtensions":  {
-                                           "@supabase/functions-js@*":  {
-                                                                            "dependencies":  {
-                                                                                                 "tslib":  "^2.8.1"
-                                                                                             }
-                                                                        }
-                                       }
-             }
+    "name": "industrial-yard-intelligence",
+    "version": "0.0.0",
+    "private": true,
+    "description": "Industrial Yard Intelligence Platform for offline spatial operations, materials, equipment, movements, evidence, and future professional measurement workflows.",
+    "packageManager": "pnpm@10.0.0",
+    "type": "module",
+    "engines": {
+        "node": ">=24.0.0",
+        "pnpm": ">=10.0.0"
+    },
+    "scripts": {
+        "typecheck": "pnpm -r --if-present build && pnpm -r --if-present typecheck",
+        "lint": "pnpm -r --if-present lint",
+        "format": "prettier . --write",
+        "format:check": "prettier . --check",
+        "test": "pnpm -r --if-present build && pnpm -r --if-present test",
+        "build": "pnpm -r --if-present build",
+        "demo:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo-smoke.ps1",
+        "demo:smoke:edge": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo-smoke.ps1 -EdgeBaseUrl http://localhost:8787",
+        "ci:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ci-local.ps1",
+        "ci:local:dirty": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ci-local.ps1 -SkipGitStatus",
+        "ci:local:fast": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/ci-local.ps1 -SkipInstall -SkipGitStatus",
+        "api:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/api-smoke.ps1",
+        "api:smoke:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/api-smoke.ps1 -ApiBaseUrl http://localhost:8788",
+        "dev:api": "pnpm --filter @iyi/api dev",
+        "dev:edge": "pnpm --filter @iyi/edge dev",
+        "dev:web": "pnpm --filter @iyi/web dev",
+        "dev:stack:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev-stack-windows.ps1",
+        "smoke:runtime": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/runtime-smoke.ps1",
+        "smoke:runtime:local": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/runtime-smoke.ps1 -ApiBaseUrl http://localhost:8788 -EdgeBaseUrl http://localhost:8787",
+        "sync:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/cloud-edge-sync-smoke.ps1",
+        "architecture:check": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-readiness.ps1",
+        "demo:operator": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/demo-operator-v1.ps1",
+        "architecture:status": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-status.ps1",
+        "architecture:gate": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-gate.ps1",
+        "architecture:runtime": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-runtime-gate.ps1",
+        "architecture:manifest": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-manifest.ps1",
+        "architecture:close": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/architecture-v1-close.ps1",
+        "phase2:check": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/phase-2-demo-polish-check.ps1",
+        "phase2:runtime": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/phase-2-demo-runtime-smoke.ps1",
+        "phase2:status": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/phase-2-demo-polish-status.ps1",
+        "phase2:presenter": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/phase-2-demo-presenter.ps1",
+        "phase2:close": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/phase-2-demo-polish-close.ps1",
+        "gps:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/gps-capture-api-smoke.ps1",
+        "aplomo:build": "pnpm --filter @iyi/web... build",
+        "aplomo:typecheck": "pnpm typecheck",
+        "aplomo:qa": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-qa.ps1",
+        "aplomo:supabase-check": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-supabase-check.ps1",
+        "aplomo:supabase-smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-supabase-smoke.ps1",
+        "aplomo:supabase-smoke:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-supabase-smoke.ps1 -RequireConfigured",
+        "aplomo:supabase-insert-test": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-supabase-smoke.ps1 -RequireConfigured -InsertTestCapture",
+        "aplomo:evidence-smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-evidence-smoke.ps1",
+        "aplomo:evidence-smoke:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-evidence-smoke.ps1 -RequireConfigured",
+        "aplomo:evidence-upload-test": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-evidence-smoke.ps1 -RequireConfigured -UploadTestEvidence",
+        "aplomo:pre-pilot": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-pre-pilot-validate.ps1",
+        "aplomo:pre-pilot:fast": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-pre-pilot-validate.ps1 -SkipBuild",
+        "aplomo:pre-pilot:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/aplomo-pre-pilot-validate.ps1 -RequireSupabase"
+    },
+    "keywords": [
+        "industrial",
+        "gis",
+        "offline-first",
+        "local-first",
+        "yard-operations",
+        "edge-server",
+        "spatial-operations"
+    ],
+    "author": "Carlos Sanchez Gutierrez",
+    "license": "UNLICENSED",
+    "devDependencies": {
+        "@types/node": "^25.6.0",
+        "prettier": "^3.8.3",
+        "typescript": "^6.0.3",
+        "vitest": "^4.1.5"
+    },
+    "dependencies": {
+        "@supabase/supabase-js": "^2.105.1",
+        "tslib": "^2.8.1"
+    },
+    "pnpm": {
+        "packageExtensions": {
+            "@supabase/functions-js@*": {
+                "dependencies": {
+                    "tslib": "^2.8.1"
+                }
+            }
+        }
+    }
 }
