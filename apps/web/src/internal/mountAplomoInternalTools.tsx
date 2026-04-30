@@ -1,3 +1,4 @@
+import { AplomoSupabaseMvpPanel } from "./AplomoSupabaseMvpPanel.js";
 import { useState, type CSSProperties } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -100,6 +101,7 @@ function AplomoInternalToolsShell() {
             Cerrar herramientas internas
           </button>
 
+          <AplomoSupabaseMvpPanel />
           <AplomoOperationsMapPanel />
           <AplomoOperationalScorePanel />
           <AplomoOperationalAlertsPanel />
