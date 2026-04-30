@@ -7,12 +7,12 @@ import {
   type AplomoDataQualityRule,
   type AplomoDataQualityRun
 } from "@iyi/domain";
-import type {
+import type {
+import { getAplomoSupabaseClient } from "./supabaseClient.js";
   AplomoCreateDataQualityRunResponse,
   AplomoDataQualityLineageExportResponse,
   AplomoDataQualityLineageListResponse
 } from "@iyi/api-contracts";
-import { getAplomoSupabaseClient } from "./supabaseClient.js";
 
 type DbRow = Record<string, unknown>;
 

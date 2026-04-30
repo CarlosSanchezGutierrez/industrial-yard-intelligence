@@ -73,6 +73,7 @@ import "./styles/namiki-polish-p1-0b-gps-backend.css";
 import "./styles/namiki-polish-p1-1-gps-device-demo.css";
 import "./styles/namiki-polish-p1-2-gps-extreme-ux.css";
 import "./styles/namiki-polish-p1-3-navigation-ux.css";
+import { AplomoDemoAccessLanding } from "./internal/AplomoDemoAccessLanding.js";
 function applyThemeVariables(): CSSProperties {
   return themeToCssVariables(industrialDarkTheme) as CSSProperties;
 }
@@ -140,6 +141,7 @@ function downloadJsonFile(fileName: string, value: unknown): void {
 }
 
 function App() {
+  if (window.location.pathname === "/") { return <AplomoDemoAccessLanding />; }
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const packageInputRef = useRef<HTMLInputElement | null>(null);
   const packageImportInputRef = useRef<HTMLInputElement | null>(null);
