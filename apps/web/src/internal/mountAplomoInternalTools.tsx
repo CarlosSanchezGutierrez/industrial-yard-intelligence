@@ -18,6 +18,16 @@ import { AplomoOperationalScorePanel } from "./AplomoOperationalScorePanel.js";
 import { AplomoOperationsAdminPanel } from "./AplomoOperationsAdminPanel.js";
 import { AplomoOperationsMapPanel } from "./AplomoOperationsMapPanel.js";
 import { AplomoOperationsRuntimeProvider } from "./AplomoOperationsRuntime.js";
+const shouldMountAplomoInternalTools = (): boolean => {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+
+  return params.get("aplomoInternal") === "1";
+};
+
 
 const hostId = "aplomo-internal-tools-root";
 const storageKey = "aplomo_internal_tools";
@@ -128,7 +138,11 @@ function AplomoInternalToolsShell() {
 }
 
 export const mountAplomoInternalTools = (): void => {
-  if (typeof document === "undefined") {
+    if (!shouldMountAplomoInternalTools()) {
+    return;
+  }
+
+if (typeof document === "undefined") {
     return;
   }
 
