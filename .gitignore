@@ -152,3 +152,5 @@ vite.config.ts.timestamp-*
 apps/edge/.edge-data/
 .api-data/
 apps/api/.api-data/
+
+.vercel/
