@@ -3,3 +3,7 @@ export * from "./validation.js";
 export * from "./confidence.js";
 export * from "./measurement.js";
 export * from "./stockpile-lifecycle.js";
+export * from "./aplomoDevice.js";
+export * from "./aplomoConnection.js";
+export * from "./aplomoTelemetry.js";
+export * from "./aplomoRoles.js";
