@@ -1,3 +1,4 @@
+import { AplomoSystemSurfaceAuditMatrixPanel } from "./AplomoSystemSurfaceAuditMatrixPanel.js";
 import { AplomoAiGovernancePromptRegistryPanel } from "./AplomoAiGovernancePromptRegistryPanel.js";
 import { AplomoAiReadinessPanel } from "./AplomoAiReadinessPanel.js";
 import { AplomoPlatformSupportHealthCrosswalkPanel } from "./AplomoPlatformSupportHealthCrosswalkPanel.js";
@@ -151,6 +152,9 @@ function AplomoInternalToolsShell() {
             <AplomoAiReadinessPanel />
           <AplomoRouteScopedPanel panelId="platform_admin">
             <AplomoAiGovernancePromptRegistryPanel />
+          <AplomoRouteScopedPanel panelId="platform_admin">
+            <AplomoSystemSurfaceAuditMatrixPanel />
+          </AplomoRouteScopedPanel>
           </AplomoRouteScopedPanel>
           </AplomoRouteScopedPanel>
           </AplomoRouteScopedPanel>
