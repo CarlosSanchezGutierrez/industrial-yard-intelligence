@@ -24,12 +24,15 @@ export function AplomoDemoAccessLanding() {
 
   async function login() {
     if (!selectedAccount) return;
+
     if (!password.trim()) {
       setStatus("Escribe la contraseña demo.");
       return;
     }
+
     setIsLoading(true);
-    setStatus(Iniciando sesión como ...);
+    setStatus(`Iniciando sesión como ${selectedAccount.displayName}...`);
+
     try {
       const result = await signInWithAplomoDemoAccount(selectedAccount.email, password, selectedAccount.intendedEntrypoint);
       window.location.href = result.redirectedTo;
@@ -42,6 +45,7 @@ export function AplomoDemoAccessLanding() {
 
   async function logout() {
     setIsLoading(true);
+
     try {
       await signOutAplomoDemoAccount();
       setSessionEmail(null);

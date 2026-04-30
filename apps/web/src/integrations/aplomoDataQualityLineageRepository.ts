@@ -1,50 +1,19 @@
-import {
-  aplomoDataQualitySnapshotToCsv,
-  calculateAplomoDataQualityLineageMetrics,
-  type AplomoDataAsset,
-  type AplomoDataLineageEdge,
-  type AplomoDataQualityLineageSnapshot,
-  type AplomoDataQualityRule,
-  type AplomoDataQualityRun
-} from "@iyi/domain";
-import type {
+import { aplomoDataQualitySnapshotToCsv, calculateAplomoDataQualityLineageMetrics, type AplomoDataAsset, type AplomoDataLineageEdge, type AplomoDataQualityLineageSnapshot, type AplomoDataQualityRule, type AplomoDataQualityRun } from "@iyi/domain";
+import type { AplomoCreateDataQualityRunResponse, AplomoDataQualityLineageExportResponse, AplomoDataQualityLineageListResponse } from "@iyi/api-contracts";
 import { getAplomoSupabaseClient } from "./supabaseClient.js";
-  AplomoCreateDataQualityRunResponse,
-  AplomoDataQualityLineageExportResponse,
-  AplomoDataQualityLineageListResponse
-} from "@iyi/api-contracts";
 
 type DbRow = Record<string, unknown>;
-
 const supabaseAny = getAplomoSupabaseClient as any;
 
-function asString(value: unknown, fallback = ""): string {
-  return typeof value === "string" ? value : fallback;
-}
-
-function asNumber(value: unknown, fallback = 0): number {
-  const numeric = typeof value === "number" ? value : Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
-}
-
-function asBoolean(value: unknown, fallback = false): boolean {
-  return typeof value === "boolean" ? value : fallback;
-}
-
-function asJsonRecord(value: unknown): Record<string, unknown> {
-  return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
-}
-
-function asRows(value: unknown): DbRow[] {
-  return Array.isArray(value) ? value.map((item) => asJsonRecord(item)) : [];
-}
+function asString(value: unknown, fallback = ""): string { return typeof value === "string" ? value : fallback; }
+function asNumber(value: unknown, fallback = 0): number { const numeric = typeof value === "number" ? value : Number(value); return Number.isFinite(numeric) ? numeric : fallback; }
+function asBoolean(value: unknown, fallback = false): boolean { return typeof value === "boolean" ? value : fallback; }
+function asJsonRecord(value: unknown): Record<string, unknown> { return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {}; }
+function asRows(value: unknown): DbRow[] { return Array.isArray(value) ? value.map((item) => asJsonRecord(item)) : []; }
 
 async function unwrapRows(query: Promise<{ data: unknown; error: { message?: string } | null }>): Promise<DbRow[]> {
   const result = await query;
-  if (result.error) {
-    throw new Error(result.error.message ?? "Supabase request failed");
-  }
-
+  if (result.error) { throw new Error(result.error.message ?? "Supabase request failed"); }
   return asRows(result.data);
 }
 
@@ -143,73 +112,24 @@ export async function listAplomoDataQualityLineage(): Promise<AplomoDataQualityL
     lineageEdges: edgeRows.map(mapEdge)
   };
 
-  return {
-    snapshot,
-    metrics: calculateAplomoDataQualityLineageMetrics(snapshot)
-  };
+  return { snapshot, metrics: calculateAplomoDataQualityLineageMetrics(snapshot) };
 }
 
 export async function createDemoAplomoDataQualityRun(): Promise<AplomoCreateDataQualityRunResponse> {
   const current = await listAplomoDataQualityLineage();
   const rule = current.snapshot.rules[0];
-
-  if (!rule) {
-    throw new Error("No hay reglas de calidad. Primero confirma que el seed SQL ya fue aplicado en Supabase.");
-  }
-
+  if (!rule) { throw new Error("No hay reglas de calidad. Primero confirma que el seed SQL ya fue aplicado en Supabase."); }
   const now = new Date().toISOString();
   const runKey = `demo_${rule.ruleKey}_${now.replace(/[^0-9]/g, "").slice(0, 14)}`;
-
-  const result = await supabaseAny
-    .from("aplomo_data_quality_runs")
-    .insert({
-      run_key: runKey,
-      rule_key: rule.ruleKey,
-      asset_key: rule.assetKey,
-      status: "passed",
-      score: 100,
-      checked_count: 1,
-      passed_count: 1,
-      failed_count: 0,
-      started_at: now,
-      completed_at: now,
-      message: "Demo quality run created from Aplomo Data Quality + Lineage Core.",
-      evidence: {
-        source: "manual_demo",
-        expectation: rule.expectation
-      },
-      metadata: {
-        generatedBy: "AplomoDataQualityLineagePanel"
-      }
-    })
-    .select("*")
-    .single();
-
-  if (result.error) {
-    throw new Error(result.error.message ?? "Could not create demo quality run.");
-  }
-
-  return {
-    run: mapRun(asJsonRecord(result.data))
-  };
+  const result = await supabaseAny.from("aplomo_data_quality_runs").insert({ run_key: runKey, rule_key: rule.ruleKey, asset_key: rule.assetKey, status: "passed", score: 100, checked_count: 1, passed_count: 1, failed_count: 0, started_at: now, completed_at: now, message: "Demo quality run created from Aplomo Data Quality + Lineage Core.", evidence: { source: "manual_demo", expectation: rule.expectation }, metadata: { generatedBy: "AplomoDataQualityLineagePanel" } }).select("*").single();
+  if (result.error) { throw new Error(result.error.message ?? "Could not create demo quality run."); }
+  return { run: mapRun(asJsonRecord(result.data)) };
 }
 
-export function exportAplomoDataQualityLineageJson(
-  snapshot: AplomoDataQualityLineageSnapshot
-): AplomoDataQualityLineageExportResponse {
-  return {
-    fileName: "aplomo-data-quality-lineage.json",
-    mimeType: "application/json;charset=utf-8",
-    content: JSON.stringify(snapshot, null, 2)
-  };
+export function exportAplomoDataQualityLineageJson(snapshot: AplomoDataQualityLineageSnapshot): AplomoDataQualityLineageExportResponse {
+  return { fileName: "aplomo-data-quality-lineage.json", mimeType: "application/json;charset=utf-8", content: JSON.stringify(snapshot, null, 2) };
 }
 
-export function exportAplomoDataQualityLineageCsv(
-  snapshot: AplomoDataQualityLineageSnapshot
-): AplomoDataQualityLineageExportResponse {
-  return {
-    fileName: "aplomo-data-quality-lineage.csv",
-    mimeType: "text/csv;charset=utf-8",
-    content: aplomoDataQualitySnapshotToCsv(snapshot)
-  };
+export function exportAplomoDataQualityLineageCsv(snapshot: AplomoDataQualityLineageSnapshot): AplomoDataQualityLineageExportResponse {
+  return { fileName: "aplomo-data-quality-lineage.csv", mimeType: "text/csv;charset=utf-8", content: aplomoDataQualitySnapshotToCsv(snapshot) };
 }

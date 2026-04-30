@@ -29,14 +29,20 @@ export const APLOMO_DEMO_ROLE_ACCOUNTS: readonly AplomoDemoRoleAccount[] = [
 
 export async function signInWithAplomoDemoAccount(email: string, password: string, redirectedTo = "/aplomo-admin") {
   const result = await supabaseAny.auth.signInWithPassword({ email, password });
+
   if (result.error) {
     throw new Error(result.error.message ?? "No se pudo iniciar sesión.");
   }
-  return { email, redirectedTo };
+
+  return {
+    email,
+    redirectedTo
+  };
 }
 
 export async function signOutAplomoDemoAccount(): Promise<void> {
   const result = await supabaseAny.auth.signOut();
+
   if (result.error) {
     throw new Error(result.error.message ?? "No se pudo cerrar sesión.");
   }
@@ -44,8 +50,10 @@ export async function signOutAplomoDemoAccount(): Promise<void> {
 
 export async function getCurrentAplomoDemoSessionEmail(): Promise<string | null> {
   const result = await supabaseAny.auth.getSession();
+
   if (result.error) {
     return null;
   }
+
   return result.data?.session?.user?.email ?? null;
 }
