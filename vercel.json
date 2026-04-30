@@ -1,6 +1,6 @@
 {
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter @iyi/web build",
+  "buildCommand": "pnpm --filter @iyi/web... build",
   "outputDirectory": "apps/web/dist",
   "rewrites": [
     {
