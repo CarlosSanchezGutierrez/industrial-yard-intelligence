@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { track } from "@vercel/analytics/server";
 import { routeApiRequest } from "./routes.js";
 
 import { tryHandleGpsCaptureRoute } from "./gps-capture-routes.js";
@@ -64,18 +63,6 @@ const server = createServer(async (request, response) => {
       requestId: randomUUID(),
       now: new Date().toISOString(),
       body
-    });
-
-    // Track API request with Vercel Analytics
-    void track("api_request", {
-      method: request.method ?? "GET",
-      pathname: requestUrl.pathname,
-      statusCode: apiResponse.statusCode
-    }, {
-      headers: request.headers as Record<string, string | string[] | undefined>
-    }).catch((error: unknown) => {
-      // Silently fail analytics tracking to not affect API responses
-      console.error("Analytics tracking error:", error);
     });
 
     writeResponse(response, apiResponse.statusCode, apiResponse.headers, apiResponse.body);

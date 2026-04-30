@@ -12,8 +12,7 @@
     "@iyi/api-contracts": "workspace:^",
     "@iyi/db": "workspace:*",
     "@iyi/domain": "workspace:^",
-    "@iyi/seed-data": "workspace:*",
-    "@vercel/analytics": "^2.0.1"
+    "@iyi/seed-data": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "25.6.0",
