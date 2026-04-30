@@ -8,13 +8,6 @@ Este componente permite probar sincronización cloud con Supabase desde una herr
 
 apps/web/src/internal/AplomoCloudSyncDevPanel.tsx
 
-## Archivos relacionados
-
-- apps/web/src/integrations/companyRepository.ts
-- apps/web/src/integrations/gpsSyncService.ts
-- apps/web/src/integrations/gpsCaptureRepository.ts
-- apps/web/src/integrations/supabaseClient.ts
-
 ## Cómo abrirlo
 
 Abrir la app con:
@@ -24,10 +17,11 @@ https://aplomosystems.com/?aplomoInternal=1
 ## Qué permite
 
 - Ver el modo backend.
-- Cargar la empresa demo por slug `cooper-t-smith`.
-- Llenar automáticamente el `companyId`.
+- Cargar el contexto demo por slug `cooper-t-smith`.
+- Llenar automáticamente IDs de empresa, sitio, patio, zona y operador.
 - Probar una captura GPS contra Supabase.
-- Ver el resultado de sincronización.
+- Listar capturas recientes de la empresa.
+- Ver si la sincronización realmente quedó guardada.
 
 ## Requisito
 
@@ -37,7 +31,18 @@ VITE_SUPABASE_URL
 
 VITE_SUPABASE_ANON_KEY
 
-Y el schema debe estar ejecutado en Supabase.
+Y Supabase debe tener ejecutados:
+
+- docs/sql/aplomo_schema_v1.sql
+- docs/sql/aplomo_seed_demo_v1.sql
+
+## Flujo de prueba recomendado
+
+1. Abrir `?aplomoInternal=1`.
+2. Presionar `Cargar contexto demo`.
+3. Presionar `Probar sincronización cloud`.
+4. Presionar `Listar capturas`.
+5. Confirmar que aparece la captura nueva.
 
 ## Importante
 

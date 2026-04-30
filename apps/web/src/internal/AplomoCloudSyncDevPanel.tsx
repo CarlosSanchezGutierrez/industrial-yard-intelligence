@@ -2,6 +2,10 @@ import { useMemo, useState, type CSSProperties } from "react";
 
 import { findAplomoDemoContextByCompanySlug } from "../integrations/demoContextRepository.js";
 import {
+  listRecentAplomoGpsCaptures,
+  type AplomoGpsCaptureRow,
+} from "../integrations/gpsCaptureRepository.js";
+import {
   getAplomoGpsSyncStatus,
   syncAplomoGpsCapture,
   type AplomoGpsSyncInput,
@@ -139,6 +143,17 @@ const formatResult = (result: AplomoGpsSyncResult): string => {
   ].join("\n");
 };
 
+const formatCapture = (capture: AplomoGpsCaptureRow, index: number): string => {
+  return [
+    `#${index + 1}`,
+    `ID: ${capture.id}`,
+    `Estado: ${capture.status}`,
+    `Tipo: ${capture.capture_type}`,
+    `Lat/Lng: ${capture.latitude ?? "sin lat"}, ${capture.longitude ?? "sin lng"}`,
+    `Creada: ${capture.created_at}`,
+  ].join("\n");
+};
+
 export function AplomoCloudSyncDevPanel() {
   const syncStatus = useMemo(() => getAplomoGpsSyncStatus(), []);
 
@@ -156,10 +171,12 @@ export function AplomoCloudSyncDevPanel() {
 
   const [isSending, setIsSending] = useState(false);
   const [isLoadingContext, setIsLoadingContext] = useState(false);
+  const [isLoadingCaptures, setIsLoadingCaptures] = useState(false);
   const [resultText, setResultText] = useState("");
 
   const canTrySync = fields.companyId.trim().length > 0 && !isSending;
   const canLoadContext = !isLoadingContext;
+  const canListCaptures = fields.companyId.trim().length > 0 && !isLoadingCaptures;
 
   const updateField = (key: keyof FieldState, value: string) => {
     setFields((current) => ({
@@ -288,6 +305,49 @@ export function AplomoCloudSyncDevPanel() {
     }
   };
 
+  const handleListCaptures = async () => {
+    if (!canListCaptures) {
+      return;
+    }
+
+    setIsLoadingCaptures(true);
+    setResultText("");
+
+    try {
+      const result = await listRecentAplomoGpsCaptures(fields.companyId.trim(), 5);
+
+      if (!result.ok) {
+        setResultText(
+          [
+            "Estado: no se pudieron listar capturas",
+            `Modo: ${result.mode}`,
+            `Mensaje: ${result.error}`,
+          ].join("\n"),
+        );
+        return;
+      }
+
+      if (result.data.length === 0) {
+        setResultText("Estado: consulta correcta\nCapturas recientes: 0");
+        return;
+      }
+
+      setResultText(
+        [
+          "Estado: capturas recientes cargadas",
+          `Total mostrado: ${result.data.length}`,
+          "",
+          ...result.data.map((capture, index) => formatCapture(capture, index)),
+        ].join("\n\n"),
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      setResultText(`Estado: error\nMensaje: ${message}`);
+    } finally {
+      setIsLoadingCaptures(false);
+    }
+  };
+
   return (
     <section style={styles.panel} aria-label="Panel interno de sincronización cloud">
       <h2 style={styles.title}>Prueba interna cloud sync</h2>
@@ -403,6 +463,15 @@ export function AplomoCloudSyncDevPanel() {
           onClick={handleTrySync}
         >
           {isSending ? "Probando..." : "Probar sincronización cloud"}
+        </button>
+
+        <button
+          type="button"
+          style={canListCaptures ? styles.secondaryButton : styles.mutedButton}
+          disabled={!canListCaptures}
+          onClick={handleListCaptures}
+        >
+          {isLoadingCaptures ? "Consultando..." : "Listar capturas"}
         </button>
       </div>
 
