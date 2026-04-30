@@ -1,16 +1,17 @@
 {
-  "name": "Aplomo Systems",
-  "short_name": "Aplomo",
-  "description": "Software para patios industriales y operaciones en campo.",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#020617",
-  "theme_color": "#020617",
-  "icons": [
-    {
-      "src": "/favicon.svg",
-      "sizes": "64x64",
-      "type": "image/svg+xml"
-    }
-  ]
+    "name":  "Aplomo Systems",
+    "short_name":  "Aplomo",
+    "description":  "Consola visual para controlar patios, materiales, GPS, evidencia y operaciones en campo. Diseñada para puertos, cementeras, minería, construcción e industria física.",
+    "start_url":  "/",
+    "display":  "standalone",
+    "background_color":  "#020617",
+    "theme_color":  "#020617",
+    "icons":  [
+                  {
+                      "src":  "/favicon.svg",
+                      "sizes":  "64x64",
+                      "type":  "image/svg+xml"
+                  }
+              ],
+    "scope":  "/"
 }
