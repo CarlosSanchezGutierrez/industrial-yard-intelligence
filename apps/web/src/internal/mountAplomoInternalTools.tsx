@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { AplomoCloudSyncDevPanel } from "./AplomoCloudSyncDevPanel.js";
 import { AplomoDeviceDetailPanel } from "./AplomoDeviceDetailPanel.js";
 import { AplomoDeviceTimelinePanel } from "./AplomoDeviceTimelinePanel.js";
+import { AplomoGovernedDataExportPanel } from "./AplomoGovernedDataExportPanel.js";
 import { AplomoIndustrialIntegrationPanel } from "./AplomoIndustrialIntegrationPanel.js";
 import { AplomoOperationalAlertsPanel } from "./AplomoOperationalAlertsPanel.js";
 import { AplomoOperationalScorePanel } from "./AplomoOperationalScorePanel.js";
@@ -101,6 +102,7 @@ function AplomoInternalToolsShell() {
           <AplomoOperationsMapPanel />
           <AplomoOperationalScorePanel />
           <AplomoOperationalAlertsPanel />
+          <AplomoGovernedDataExportPanel />
           <AplomoDeviceDetailPanel />
           <AplomoDeviceTimelinePanel />
           <AplomoIndustrialIntegrationPanel />
