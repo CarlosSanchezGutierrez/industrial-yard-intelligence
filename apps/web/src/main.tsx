@@ -1,14 +1,14 @@
 import { StrictMode, createElement } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App.js";
-import { AplomoDemoAccessLanding } from "./internal/AplomoDemoAccessLanding.js";
+import App from "./App.js";
+import { AplomoDemoAccessDock } from "./internal/AplomoDemoAccessDock.js";
 
 function AplomoAppShell() {
   const path = window.location.pathname;
   const isAppPath = path === "/aplomo-admin" || path.startsWith("/aplomo-admin/");
 
   if (isAppPath) {
-    return createElement(App);
+    return createElement("div", null, createElement(App), createElement(AplomoDemoAccessDock));
   }
 
   return createElement(AplomoDemoAccessLanding);

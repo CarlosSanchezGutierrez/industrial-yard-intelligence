@@ -1,11 +1,17 @@
-# Aplomo Demo Login Landing
+# Aplomo Demo Access Dock
 
-Landing estable de acceso demo.
+Solucion aplicada:
 
-La app ahora usa un gate duro desde main para evitar la pantalla azul de la presentacion improvisada.
+- Se restaura la app original.
+- No se fuerza ninguna ruta inicial.
+- No se intercepta la mini presentacion.
+- Se agrega un boton flotante global de acceso demo.
+- Desde cualquier pantalla, incluida la azul, se puede entrar a /aplomo-admin.
 
-Rutas de entrada demo: cualquier ruta que no sea /aplomo-admin.
+Cuenta demo principal:
 
-Ruta de app real: /aplomo-admin.
+demo+aplomo-owner@aplomodemo.test
 
-Contrasena demo recomendada local: AplomoDemo-2026!
+Contrasena:
+
+AplomoDemo-2026!
