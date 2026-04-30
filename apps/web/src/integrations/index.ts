@@ -10,3 +10,4 @@ export type {
 export * from "./demoContextRepository.js";
 export * from "./gpsCaptureRepository.js";
 export * from "./gpsSyncService.js";
+export * from "./evidenceRepository.js";
