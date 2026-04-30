@@ -234,8 +234,16 @@ const getAverageQualityScore = (
 };
 
 export function AplomoOperationsAdminPanel() {
-  const { runtime, tick, snapshot, governedEvents, advanceTicks, resetDemo } =
-    useAplomoOperationsRuntime();
+  const {
+    runtime,
+    tick,
+    snapshot,
+    governedEvents,
+    selectedDeviceId,
+    setSelectedDeviceId,
+    advanceTicks,
+    resetDemo,
+  } = useAplomoOperationsRuntime();
 
   const [filters, setFilters] = useState<AdminFilterState>({
     search: "",
@@ -292,8 +300,8 @@ export function AplomoOperationsAdminPanel() {
         }
 
         if (
-          filters.selectedDeviceId !== "all" &&
-          device.id !== filters.selectedDeviceId
+          selectedDeviceId !== "all" &&
+          device.id !== selectedDeviceId
         ) {
           return false;
         }
@@ -320,8 +328,8 @@ export function AplomoOperationsAdminPanel() {
         }
 
         if (
-          filters.selectedDeviceId !== "all" &&
-          position.deviceId !== filters.selectedDeviceId
+          selectedDeviceId !== "all" &&
+          position.deviceId !== selectedDeviceId
         ) {
           return false;
         }
@@ -339,8 +347,8 @@ export function AplomoOperationsAdminPanel() {
         }
 
         if (
-          filters.selectedDeviceId !== "all" &&
-          item.event.deviceId !== filters.selectedDeviceId
+          selectedDeviceId !== "all" &&
+          item.event.deviceId !== selectedDeviceId
         ) {
           return false;
         }
@@ -475,8 +483,8 @@ export function AplomoOperationsAdminPanel() {
           Dispositivo específico
           <select
             style={styles.input}
-            value={filters.selectedDeviceId}
-            onChange={(event) => updateFilter("selectedDeviceId", event.target.value)}
+            value={selectedDeviceId}
+            onChange={(event) => setSelectedDeviceId(event.target.value)}
           >
             <option value="all">Todos</option>
             {snapshot.devices.map((device) => (
@@ -502,7 +510,7 @@ export function AplomoOperationsAdminPanel() {
           </thead>
           <tbody>
             {filteredDevices.map((device) => (
-              <tr key={device.id}>
+              <tr key={device.id} onClick={() => setSelectedDeviceId(device.id)} style={{ cursor: "pointer" }}>
                 <td style={styles.td}>{device.name}</td>
                 <td style={styles.td}>
                   <span style={styles.pill}>{device.type}</span>
@@ -537,7 +545,7 @@ export function AplomoOperationsAdminPanel() {
               const accuracy = position.quality?.accuracyMeters;
 
               return (
-                <tr key={position.deviceId}>
+                <tr key={position.deviceId} onClick={() => setSelectedDeviceId(position.deviceId)} style={{ cursor: "pointer" }}>
                   <td style={styles.td}>{device?.name ?? position.deviceId}</td>
                   <td style={styles.td}>
                     <span style={styles.pill}>{position.source}</span>
@@ -595,7 +603,7 @@ export function AplomoOperationsAdminPanel() {
                   : 0;
 
               return (
-                <tr key={item.event.id}>
+                <tr key={item.event.id} onClick={() => setSelectedDeviceId(item.event.deviceId)} style={{ cursor: "pointer" }}>
                   <td style={{ ...styles.td, ...styles.mono }}>{item.event.id}</td>
                   <td style={styles.td}>{device?.name ?? item.event.deviceId}</td>
                   <td style={{ ...styles.td, ...styles.mono }}>

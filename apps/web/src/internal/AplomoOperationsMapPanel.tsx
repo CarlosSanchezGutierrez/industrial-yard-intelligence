@@ -274,7 +274,7 @@ const formatAccuracy = (value: number | undefined): string => {
 };
 
 export function AplomoOperationsMapPanel() {
-  const { tick, snapshot, advanceTicks, resetDemo } = useAplomoOperationsRuntime();
+  const { tick, snapshot, selectedDeviceId, setSelectedDeviceId, advanceTicks, resetDemo } = useAplomoOperationsRuntime();
 
   const [layers, setLayers] = useState<MapLayerState>({
     showPhones: true,
@@ -552,7 +552,7 @@ export function AplomoOperationsMapPanel() {
                   : 40;
 
               return (
-                <g key={point.position.deviceId}>
+                <g key={point.position.deviceId} onClick={() => setSelectedDeviceId(point.device.id)} style={{ cursor: "pointer" }}>
                   {layers.showAccuracy ? (
                     <circle
                       cx={point.x}
@@ -571,8 +571,8 @@ export function AplomoOperationsMapPanel() {
                     cy={point.y}
                     r="22"
                     fill={point.color}
-                    stroke="#020617"
-                    strokeWidth="4"
+                    stroke={point.device.id === selectedDeviceId ? "#ffffff" : "#020617"}
+                    strokeWidth={point.device.id === selectedDeviceId ? 6 : 4}
                   />
 
                   <text
@@ -782,7 +782,7 @@ export function AplomoOperationsMapPanel() {
                 typeof accuracy === "number" && accuracy <= 1;
 
               return (
-                <tr key={item.position.deviceId}>
+                <tr key={item.position.deviceId} onClick={() => setSelectedDeviceId(item.device.id)} style={{ cursor: "pointer" }}>
                   <td style={styles.td}>{item.device.name}</td>
                   <td style={styles.td}>
                     <span style={styles.pill}>{item.device.type}</span>
