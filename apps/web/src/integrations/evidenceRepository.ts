@@ -43,6 +43,30 @@ export type AplomoEvidenceUploadResult =
       error: string;
     };
 
+export type AplomoEvidenceListResult =
+  | {
+      ok: true;
+      mode: "supabase";
+      data: AplomoEvidenceFileRow[];
+    }
+  | {
+      ok: false;
+      mode: "local-demo" | "supabase";
+      error: string;
+    };
+
+export type AplomoEvidenceSignedUrlResult =
+  | {
+      ok: true;
+      mode: "supabase";
+      signedUrl: string;
+    }
+  | {
+      ok: false;
+      mode: "local-demo" | "supabase";
+      error: string;
+    };
+
 const cleanText = (value: string | undefined): string | undefined => {
   if (typeof value !== "string") {
     return undefined;
@@ -64,11 +88,11 @@ const sanitizeFileName = (fileName: string): string => {
 };
 
 const createClientId = (): string => {
-  try {
+  if (typeof window !== "undefined" && window.crypto?.randomUUID) {
     return window.crypto.randomUUID();
-  } catch {
-    return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 };
 
 const inferFileType = (
@@ -220,5 +244,147 @@ export const uploadAplomoEvidenceFile = async (
     mode: "supabase",
     data: metadataResult.data as AplomoEvidenceFileRow,
     storagePath,
+  };
+};
+
+export const listAplomoEvidenceFilesForCapture = async (
+  gpsCaptureId: string,
+  limit = 25,
+): Promise<AplomoEvidenceListResult> => {
+  const state = getAplomoSupabaseClient();
+
+  if (!state.isConfigured) {
+    return {
+      ok: false,
+      mode: "local-demo",
+      error: state.reason,
+    };
+  }
+
+  const cleanCaptureId = cleanText(gpsCaptureId);
+
+  if (!cleanCaptureId) {
+    return {
+      ok: false,
+      mode: "supabase",
+      error: "Missing gpsCaptureId.",
+    };
+  }
+
+  const safeLimit = Math.max(1, Math.min(limit, 100));
+
+  const { data, error } = await state.client
+    .from("evidence_files")
+    .select("*")
+    .eq("gps_capture_id", cleanCaptureId)
+    .order("created_at", { ascending: false })
+    .limit(safeLimit);
+
+  if (error) {
+    return {
+      ok: false,
+      mode: "supabase",
+      error: error.message,
+    };
+  }
+
+  return {
+    ok: true,
+    mode: "supabase",
+    data: (data ?? []) as AplomoEvidenceFileRow[],
+  };
+};
+
+export const listRecentAplomoEvidenceFilesForCompany = async (
+  companyId: string,
+  limit = 25,
+): Promise<AplomoEvidenceListResult> => {
+  const state = getAplomoSupabaseClient();
+
+  if (!state.isConfigured) {
+    return {
+      ok: false,
+      mode: "local-demo",
+      error: state.reason,
+    };
+  }
+
+  const cleanCompanyId = cleanText(companyId);
+
+  if (!cleanCompanyId) {
+    return {
+      ok: false,
+      mode: "supabase",
+      error: "Missing companyId.",
+    };
+  }
+
+  const safeLimit = Math.max(1, Math.min(limit, 100));
+
+  const { data, error } = await state.client
+    .from("evidence_files")
+    .select("*")
+    .eq("company_id", cleanCompanyId)
+    .order("created_at", { ascending: false })
+    .limit(safeLimit);
+
+  if (error) {
+    return {
+      ok: false,
+      mode: "supabase",
+      error: error.message,
+    };
+  }
+
+  return {
+    ok: true,
+    mode: "supabase",
+    data: (data ?? []) as AplomoEvidenceFileRow[],
+  };
+};
+
+export const createAplomoEvidenceSignedUrl = async (
+  storagePath: string,
+  expiresInSeconds = 300,
+  bucket = aplomoEvidenceBucket,
+): Promise<AplomoEvidenceSignedUrlResult> => {
+  const state = getAplomoSupabaseClient();
+
+  if (!state.isConfigured) {
+    return {
+      ok: false,
+      mode: "local-demo",
+      error: state.reason,
+    };
+  }
+
+  const cleanStoragePath = cleanText(storagePath);
+
+  if (!cleanStoragePath) {
+    return {
+      ok: false,
+      mode: "supabase",
+      error: "Missing storagePath.",
+    };
+  }
+
+  const safeExpiresIn = Math.max(60, Math.min(expiresInSeconds, 3600));
+
+  const { data, error } = await state.client.storage
+    .from(bucket)
+    .createSignedUrl(cleanStoragePath, safeExpiresIn);
+
+  if (error) {
+    return {
+      ok: false,
+      mode: "supabase",
+      error: error.message,
+    };
+  }
+
+  return {
+    ok: true,
+    mode: "supabase",
+    signedUrl: data.signedUrl,
   };
 };
