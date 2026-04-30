@@ -1,9 +1,6 @@
 import { useMemo, useState, type CSSProperties } from "react";
 
-import {
-  advanceAplomoGovernedIndustrialDemo,
-  createAplomoGovernedIndustrialDemoStore,
-} from "@iyi/sync-core";
+import { useAplomoOperationsRuntime } from "./AplomoOperationsRuntime.js";
 
 type MapLayerState = {
   showPhones: boolean;
@@ -15,6 +12,8 @@ type MapLayerState = {
   showLabels: boolean;
   selectedSource: string;
 };
+
+type BooleanLayerKey = Exclude<keyof MapLayerState, "selectedSource">;
 
 const styles = {
   panel: {
@@ -275,11 +274,8 @@ const formatAccuracy = (value: number | undefined): string => {
 };
 
 export function AplomoOperationsMapPanel() {
-  const [runtime, setRuntime] = useState(() =>
-    createAplomoGovernedIndustrialDemoStore(),
-  );
-  const [tick, setTick] = useState(0);
-  const [snapshot, setSnapshot] = useState(runtime.initialState.snapshot);
+  const { tick, snapshot, advanceTicks, resetDemo } = useAplomoOperationsRuntime();
+
   const [layers, setLayers] = useState<MapLayerState>({
     showPhones: true,
     showDrones: true,
@@ -317,7 +313,10 @@ export function AplomoOperationsMapPanel() {
           return false;
         }
 
-        if (!layers.showRtk && (type === "rtk_base" || type === "rtk_rover" || type === "gnss_receiver")) {
+        if (
+          !layers.showRtk &&
+          (type === "rtk_base" || type === "rtk_rover" || type === "gnss_receiver")
+        ) {
           return false;
         }
 
@@ -375,7 +374,7 @@ export function AplomoOperationsMapPanel() {
     return positionsWithDevices.map((item) => {
       const x =
         ((item.position.position.longitude - bounds.minLng) / lngRange) *
-        (viewWidth - 120) +
+          (viewWidth - 120) +
         60;
 
       const y =
@@ -417,33 +416,18 @@ export function AplomoOperationsMapPanel() {
     };
   }, [positionsWithDevices, snapshot]);
 
-  const setLayer = (key: keyof MapLayerState, value: boolean | string) => {
+  const setBooleanLayer = (key: BooleanLayerKey, value: boolean) => {
     setLayers((current) => ({
       ...current,
       [key]: value,
     }));
   };
 
-  const advanceTicks = (count: number) => {
-    let nextTick = tick;
-    let latestSnapshot = snapshot;
-
-    for (let index = 0; index < count; index += 1) {
-      nextTick += 1;
-      const result = advanceAplomoGovernedIndustrialDemo(runtime.store, nextTick);
-      latestSnapshot = result.snapshot;
-    }
-
-    setTick(nextTick);
-    setSnapshot(latestSnapshot);
-  };
-
-  const resetMap = () => {
-    const nextRuntime = createAplomoGovernedIndustrialDemoStore();
-
-    setRuntime(nextRuntime);
-    setTick(0);
-    setSnapshot(nextRuntime.initialState.snapshot);
+  const setSelectedSource = (value: string) => {
+    setLayers((current) => ({
+      ...current,
+      selectedSource: value,
+    }));
   };
 
   return (
@@ -453,8 +437,9 @@ export function AplomoOperationsMapPanel() {
           <p style={styles.eyebrow}>Aplomo Live Map</p>
           <h2 style={styles.title}>Mapa operativo de dispositivos vivos</h2>
           <p style={styles.text}>
-            Vista visual interna para administradores: emisores, receptores,
-            precisión GPS, RTK, drones, camiones y fuentes de telemetría.
+            Vista visual interna compartida con el panel administrativo:
+            emisores, receptores, precisión GPS, RTK, drones, camiones y fuentes
+            de telemetría.
           </p>
         </div>
 
@@ -465,7 +450,7 @@ export function AplomoOperationsMapPanel() {
           <button type="button" style={styles.secondaryButton} onClick={() => advanceTicks(10)}>
             Simular 10 ticks
           </button>
-          <button type="button" style={styles.secondaryButton} onClick={resetMap}>
+          <button type="button" style={styles.secondaryButton} onClick={resetDemo}>
             Reiniciar mapa
           </button>
         </div>
@@ -529,7 +514,7 @@ export function AplomoOperationsMapPanel() {
             </text>
 
             <text x="115" y="165" fill="#94a3b8" fontSize="14">
-              Coordenadas relativas · no georreferenciado todavía
+              Runtime compartido · tick {tick}
             </text>
 
             {layers.showReceivers
@@ -643,7 +628,7 @@ export function AplomoOperationsMapPanel() {
           <div style={styles.card}>
             <h3 style={styles.cardTitle}>Estado del mapa</h3>
             <div style={styles.metric}>
-              <span>Tick</span>
+              <span>Tick compartido</span>
               <strong style={styles.metricStrong}>{tick}</strong>
             </div>
             <div style={styles.metric}>
@@ -675,7 +660,7 @@ export function AplomoOperationsMapPanel() {
               <input
                 type="checkbox"
                 checked={layers.showPhones}
-                onChange={(event) => setLayer("showPhones", event.target.checked)}
+                onChange={(event) => setBooleanLayer("showPhones", event.target.checked)}
               />
               Celulares/tablets
             </label>
@@ -684,7 +669,7 @@ export function AplomoOperationsMapPanel() {
               <input
                 type="checkbox"
                 checked={layers.showDrones}
-                onChange={(event) => setLayer("showDrones", event.target.checked)}
+                onChange={(event) => setBooleanLayer("showDrones", event.target.checked)}
               />
               Drones
             </label>
@@ -693,7 +678,7 @@ export function AplomoOperationsMapPanel() {
               <input
                 type="checkbox"
                 checked={layers.showRtk}
-                onChange={(event) => setLayer("showRtk", event.target.checked)}
+                onChange={(event) => setBooleanLayer("showRtk", event.target.checked)}
               />
               RTK/GNSS
             </label>
@@ -702,7 +687,7 @@ export function AplomoOperationsMapPanel() {
               <input
                 type="checkbox"
                 checked={layers.showVehicles}
-                onChange={(event) => setLayer("showVehicles", event.target.checked)}
+                onChange={(event) => setBooleanLayer("showVehicles", event.target.checked)}
               />
               Vehículos
             </label>
@@ -711,7 +696,7 @@ export function AplomoOperationsMapPanel() {
               <input
                 type="checkbox"
                 checked={layers.showReceivers}
-                onChange={(event) => setLayer("showReceivers", event.target.checked)}
+                onChange={(event) => setBooleanLayer("showReceivers", event.target.checked)}
               />
               Receptores
             </label>
@@ -720,7 +705,7 @@ export function AplomoOperationsMapPanel() {
               <input
                 type="checkbox"
                 checked={layers.showAccuracy}
-                onChange={(event) => setLayer("showAccuracy", event.target.checked)}
+                onChange={(event) => setBooleanLayer("showAccuracy", event.target.checked)}
               />
               Radio de precisión
             </label>
@@ -729,7 +714,7 @@ export function AplomoOperationsMapPanel() {
               <input
                 type="checkbox"
                 checked={layers.showLabels}
-                onChange={(event) => setLayer("showLabels", event.target.checked)}
+                onChange={(event) => setBooleanLayer("showLabels", event.target.checked)}
               />
               Etiquetas
             </label>
@@ -740,7 +725,7 @@ export function AplomoOperationsMapPanel() {
             <select
               style={styles.input}
               value={layers.selectedSource}
-              onChange={(event) => setLayer("selectedSource", event.target.value)}
+              onChange={(event) => setSelectedSource(event.target.value)}
             >
               <option value="all">Todas</option>
               {sources.map((source) => (

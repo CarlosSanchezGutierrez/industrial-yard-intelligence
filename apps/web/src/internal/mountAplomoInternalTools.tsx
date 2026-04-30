@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { AplomoCloudSyncDevPanel } from "./AplomoCloudSyncDevPanel.js";
 import { AplomoOperationsAdminPanel } from "./AplomoOperationsAdminPanel.js";
 import { AplomoOperationsMapPanel } from "./AplomoOperationsMapPanel.js";
+import { AplomoOperationsRuntimeProvider } from "./AplomoOperationsRuntime.js";
 
 const hostId = "aplomo-internal-tools-root";
 const storageKey = "aplomo_internal_tools";
@@ -78,24 +79,26 @@ function AplomoInternalToolsShell() {
   }
 
   return (
-    <div style={styles.host}>
-      <div style={styles.shell}>
-        <button
-          type="button"
-          style={styles.closeButton}
-          onClick={() => {
-            writeStoredFlag(false);
-            setIsOpen(false);
-          }}
-        >
-          Cerrar herramientas internas
-        </button>
+    <AplomoOperationsRuntimeProvider>
+      <div style={styles.host}>
+        <div style={styles.shell}>
+          <button
+            type="button"
+            style={styles.closeButton}
+            onClick={() => {
+              writeStoredFlag(false);
+              setIsOpen(false);
+            }}
+          >
+            Cerrar herramientas internas
+          </button>
 
-        <AplomoOperationsMapPanel />
-        <AplomoOperationsAdminPanel />
-        <AplomoCloudSyncDevPanel />
+          <AplomoOperationsMapPanel />
+          <AplomoOperationsAdminPanel />
+          <AplomoCloudSyncDevPanel />
+        </div>
       </div>
-    </div>
+    </AplomoOperationsRuntimeProvider>
   );
 }
 

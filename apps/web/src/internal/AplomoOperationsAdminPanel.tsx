@@ -1,10 +1,8 @@
 import { useMemo, useState, type CSSProperties } from "react";
 
-import {
-  advanceAplomoGovernedIndustrialDemo,
-  createAplomoGovernedIndustrialDemoStore,
-  type AplomoGovernedTelemetryOutput,
-} from "@iyi/sync-core";
+import type { AplomoGovernedTelemetryOutput } from "@iyi/sync-core";
+
+import { useAplomoOperationsRuntime } from "./AplomoOperationsRuntime.js";
 
 type AdminFilterState = {
   search: string;
@@ -236,14 +234,9 @@ const getAverageQualityScore = (
 };
 
 export function AplomoOperationsAdminPanel() {
-  const [runtime, setRuntime] = useState(() =>
-    createAplomoGovernedIndustrialDemoStore(),
-  );
-  const [tick, setTick] = useState(0);
-  const [snapshot, setSnapshot] = useState(runtime.initialState.snapshot);
-  const [governedEvents, setGovernedEvents] = useState<
-    AplomoGovernedTelemetryOutput[]
-  >(runtime.initialState.governedEvents);
+  const { runtime, tick, snapshot, governedEvents, advanceTicks, resetDemo } =
+    useAplomoOperationsRuntime();
+
   const [filters, setFilters] = useState<AdminFilterState>({
     search: "",
     deviceType: "all",
@@ -298,7 +291,10 @@ export function AplomoOperationsAdminPanel() {
           return false;
         }
 
-        if (filters.selectedDeviceId !== "all" && device.id !== filters.selectedDeviceId) {
+        if (
+          filters.selectedDeviceId !== "all" &&
+          device.id !== filters.selectedDeviceId
+        ) {
           return false;
         }
 
@@ -323,7 +319,10 @@ export function AplomoOperationsAdminPanel() {
           return false;
         }
 
-        if (filters.selectedDeviceId !== "all" && position.deviceId !== filters.selectedDeviceId) {
+        if (
+          filters.selectedDeviceId !== "all" &&
+          position.deviceId !== filters.selectedDeviceId
+        ) {
           return false;
         }
 
@@ -358,36 +357,14 @@ export function AplomoOperationsAdminPanel() {
     }));
   };
 
-  const resetDemo = () => {
-    const nextRuntime = createAplomoGovernedIndustrialDemoStore();
-
-    setRuntime(nextRuntime);
-    setTick(0);
-    setSnapshot(nextRuntime.initialState.snapshot);
-    setGovernedEvents(nextRuntime.initialState.governedEvents);
+  const handleReset = () => {
+    resetDemo();
     setFilters({
       search: "",
       deviceType: "all",
       source: "all",
       selectedDeviceId: "all",
     });
-  };
-
-  const advanceTicks = (count: number) => {
-    let nextTick = tick;
-    let latestSnapshot = snapshot;
-    const generatedEvents: AplomoGovernedTelemetryOutput[] = [];
-
-    for (let index = 0; index < count; index += 1) {
-      nextTick += 1;
-      const result = advanceAplomoGovernedIndustrialDemo(runtime.store, nextTick);
-      latestSnapshot = result.snapshot;
-      generatedEvents.push(...result.governedEvents);
-    }
-
-    setTick(nextTick);
-    setSnapshot(latestSnapshot);
-    setGovernedEvents((current) => [...generatedEvents, ...current].slice(0, 250));
   };
 
   return (
@@ -397,8 +374,8 @@ export function AplomoOperationsAdminPanel() {
           <p style={styles.eyebrow}>Aplomo Admin Ops</p>
           <h2 style={styles.title}>Centro operativo de dispositivos vivos</h2>
           <p style={styles.text}>
-            Panel interno para administradores: simulación gobernada de emisores,
-            receptores, conexiones, precisión GPS, calidad de datos y eventos listos
+            Panel interno para administradores: simulación gobernada compartida con
+            el mapa, conexiones, precisión GPS, calidad de datos y eventos listos
             para analítica e IA.
           </p>
         </div>
@@ -410,7 +387,7 @@ export function AplomoOperationsAdminPanel() {
           <button type="button" style={styles.secondaryButton} onClick={() => advanceTicks(10)}>
             Avanzar 10 ticks
           </button>
-          <button type="button" style={styles.secondaryButton} onClick={resetDemo}>
+          <button type="button" style={styles.secondaryButton} onClick={handleReset}>
             Reiniciar demo
           </button>
         </div>
@@ -610,10 +587,12 @@ export function AplomoOperationsAdminPanel() {
               );
 
               const averageQuality =
-                item.envelope.governance.quality.reduce(
-                  (sum, quality) => sum + quality.score,
-                  0,
-                ) / item.envelope.governance.quality.length;
+                item.envelope.governance.quality.length > 0
+                  ? item.envelope.governance.quality.reduce(
+                      (sum, quality) => sum + quality.score,
+                      0,
+                    ) / item.envelope.governance.quality.length
+                  : 0;
 
               return (
                 <tr key={item.event.id}>
@@ -642,11 +621,11 @@ export function AplomoOperationsAdminPanel() {
 
       <pre style={styles.result}>
 {[
-  `Tick actual: ${tick}`,
+  `Tick compartido actual: ${tick}`,
   `Data contract: ${runtime.telemetryContract.id}`,
   `Latest position contract: ${runtime.latestPositionContract.id}`,
-  "Modo: simulación local gobernada",
-  "Siguiente evolución: conectar este panel a mapa visual, API interna y persistencia real.",
+  "Modo: simulación local gobernada compartida",
+  "Mapa y panel administrativo ya usan el mismo runtime.",
 ].join("\n")}
       </pre>
     </section>
