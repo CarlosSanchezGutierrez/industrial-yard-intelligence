@@ -16,7 +16,8 @@ export type AplomoRouteScopedPanelId =
   | "cloud_sync_dev"
   | "data_platform"
   | "operational_intelligence"
-  | "internal_experiment";
+  | "internal_experiment"
+  | "platform_admin";
 
 export type AplomoRouteScopedPanelProps = {
   panelId: AplomoRouteScopedPanelId;
@@ -126,6 +127,7 @@ const routeVisibility: Record<AplomoRouteScopedPanelId, AplomoSaasRouteKind[]> =
     "internal_dev_tools",
   ],
   internal_experiment: ["internal_dev_tools"],
+  platform_admin: ["aplomo_super_admin", "internal_dev_tools"],
 };
 
 const panelTenantRoles: Record<AplomoRouteScopedPanelId, string[]> = {
@@ -139,6 +141,7 @@ const panelTenantRoles: Record<AplomoRouteScopedPanelId, string[]> = {
   data_platform: dataRoles,
   operational_intelligence: operationsRoles,
   internal_experiment: [],
+  platform_admin: [],
 };
 
 let accessStatePromise: Promise<AplomoSaasAccessState> | null = null;

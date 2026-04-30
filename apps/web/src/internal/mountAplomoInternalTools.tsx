@@ -1,3 +1,4 @@
+import { AplomoSuperAdminPanel } from "./AplomoSuperAdminPanel.js";
 import { AplomoSaasSurfaceLayoutPanel } from "./AplomoSaasSurfaceLayoutPanel.js";
 import { AplomoSaasAccessGatePanel } from "./AplomoSaasAccessGatePanel.js";
 import { AplomoRouteScopedPanel } from "./AplomoRouteScopedPanel.js";
@@ -124,6 +125,9 @@ function AplomoInternalToolsShell() {
           <AplomoSaasNavigationPanel />
           <AplomoSaasAccessGatePanel />
           <AplomoSaasSurfaceLayoutPanel />
+          <AplomoRouteScopedPanel panelId="platform_admin">
+            <AplomoSuperAdminPanel />
+          </AplomoRouteScopedPanel>
           <AplomoRouteScopedPanel panelId="supabase_mvp">
             <AplomoSupabaseMvpPanel />
           </AplomoRouteScopedPanel>
