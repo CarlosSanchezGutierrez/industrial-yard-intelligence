@@ -12,11 +12,11 @@ import type {
   AplomoDataQualityLineageExportResponse,
   AplomoDataQualityLineageListResponse
 } from "@iyi/api-contracts";
-import { supabase } from "./supabaseClient.js";
+import { getAplomoSupabaseClient } from "./supabaseClient.js";
 
 type DbRow = Record<string, unknown>;
 
-const supabaseAny = supabase as any;
+const supabaseAny = getAplomoSupabaseClient as any;
 
 function asString(value: unknown, fallback = ""): string {
   return typeof value === "string" ? value : fallback;
