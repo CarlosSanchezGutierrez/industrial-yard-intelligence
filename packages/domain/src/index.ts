@@ -11,3 +11,4 @@ export * from "./aplomoDataGovernance.js";
 export * from "./aplomoIndustrialDeviceIntegration.js";
 export * from "./aplomoDataInteroperability.js";
 export * from "./aplomoSaasDataPlatform.js";
+export * from "./aplomoSaasAccessModel.js";
