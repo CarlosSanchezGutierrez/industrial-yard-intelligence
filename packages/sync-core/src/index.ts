@@ -6,3 +6,4 @@ export * from "./aplomoGovernedDeviceSimulator.js";
 export * from "./aplomoOperationalAlertEngine.js";
 export * from "./aplomoOperationalScoreEngine.js";
 export * from "./aplomoGovernedDataExportEngine.js";
+export * from "./aplomoPersistencePorts.js";
