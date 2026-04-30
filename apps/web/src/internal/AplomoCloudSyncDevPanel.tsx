@@ -1,5 +1,6 @@
 import { useMemo, useState, type CSSProperties } from "react";
 
+import { findAplomoCompanyBySlug } from "../integrations/companyRepository.js";
 import {
   getAplomoGpsSyncStatus,
   syncAplomoGpsCapture,
@@ -57,8 +58,13 @@ const styles = {
     padding: "10px 12px",
     outline: "none",
   },
-  button: {
+  buttonRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 8,
     marginTop: 14,
+  },
+  button: {
     border: 0,
     borderRadius: 12,
     padding: "10px 14px",
@@ -67,8 +73,16 @@ const styles = {
     fontWeight: 800,
     cursor: "pointer",
   },
+  secondaryButton: {
+    border: "1px solid rgba(148, 163, 184, 0.32)",
+    borderRadius: 12,
+    padding: "10px 14px",
+    background: "rgba(15, 23, 42, 0.92)",
+    color: "#e2e8f0",
+    fontWeight: 700,
+    cursor: "pointer",
+  },
   mutedButton: {
-    marginTop: 14,
     border: "1px solid rgba(148, 163, 184, 0.32)",
     borderRadius: 12,
     padding: "10px 14px",
@@ -89,6 +103,8 @@ const styles = {
     color: "#e2e8f0",
   },
 } satisfies Record<string, CSSProperties>;
+
+const demoCompanySlug = "cooper-t-smith";
 
 const toNumber = (value: string): number | undefined => {
   const trimmed = value.trim();
@@ -131,15 +147,60 @@ export function AplomoCloudSyncDevPanel() {
   });
 
   const [isSending, setIsSending] = useState(false);
+  const [isLoadingCompany, setIsLoadingCompany] = useState(false);
   const [resultText, setResultText] = useState("");
 
   const canTrySync = fields.companyId.trim().length > 0 && !isSending;
+  const canLoadCompany = !isLoadingCompany;
 
   const updateField = (key: keyof FieldState, value: string) => {
     setFields((current) => ({
       ...current,
       [key]: value,
     }));
+  };
+
+  const handleLoadDemoCompany = async () => {
+    if (!canLoadCompany) {
+      return;
+    }
+
+    setIsLoadingCompany(true);
+    setResultText("");
+
+    try {
+      const result = await findAplomoCompanyBySlug(demoCompanySlug);
+
+      if (!result.ok) {
+        setResultText(
+          [
+            "Estado: no se pudo cargar empresa demo",
+            `Modo: ${result.mode}`,
+            `Mensaje: ${result.error}`,
+          ].join("\n"),
+        );
+        return;
+      }
+
+      setFields((current) => ({
+        ...current,
+        companyId: result.data.id,
+      }));
+
+      setResultText(
+        [
+          "Estado: empresa demo cargada",
+          `Empresa: ${result.data.name}`,
+          `Slug: ${result.data.slug}`,
+          `Company ID: ${result.data.id}`,
+        ].join("\n"),
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      setResultText(`Estado: error\nMensaje: ${message}`);
+    } finally {
+      setIsLoadingCompany(false);
+    }
   };
 
   const handleTrySync = async () => {
@@ -254,14 +315,25 @@ export function AplomoCloudSyncDevPanel() {
         </label>
       </div>
 
-      <button
-        type="button"
-        style={canTrySync ? styles.button : styles.mutedButton}
-        disabled={!canTrySync}
-        onClick={handleTrySync}
-      >
-        {isSending ? "Probando..." : "Probar sincronización cloud"}
-      </button>
+      <div style={styles.buttonRow}>
+        <button
+          type="button"
+          style={canLoadCompany ? styles.secondaryButton : styles.mutedButton}
+          disabled={!canLoadCompany}
+          onClick={handleLoadDemoCompany}
+        >
+          {isLoadingCompany ? "Buscando..." : "Cargar empresa demo"}
+        </button>
+
+        <button
+          type="button"
+          style={canTrySync ? styles.button : styles.mutedButton}
+          disabled={!canTrySync}
+          onClick={handleTrySync}
+        >
+          {isSending ? "Probando..." : "Probar sincronización cloud"}
+        </button>
+      </div>
 
       {resultText ? <pre style={styles.result}>{resultText}</pre> : null}
     </section>

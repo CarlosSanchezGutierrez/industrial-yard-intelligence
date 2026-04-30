@@ -2,41 +2,47 @@
 
 ## Objetivo
 
-Este avance crea un componente visual interno para probar sincronización cloud con Supabase.
+Este componente permite probar sincronización cloud con Supabase desde una herramienta interna.
 
-## Archivo creado
+## Archivo principal
 
 apps/web/src/internal/AplomoCloudSyncDevPanel.tsx
 
-## Estado
+## Archivos relacionados
 
-El panel existe, compila y está listo.
+- apps/web/src/integrations/companyRepository.ts
+- apps/web/src/integrations/gpsSyncService.ts
+- apps/web/src/integrations/gpsCaptureRepository.ts
+- apps/web/src/integrations/supabaseClient.ts
 
-Todavía no está montado en la UI principal.
+## Cómo abrirlo
 
-## Por qué no se monta todavía
+Abrir la app con:
 
-Para no arriesgar la demo actual.
+https://aplomosystems.com/?aplomoInternal=1
 
-Primero se deja listo el componente.
+## Qué permite
 
-Después se elige con cuidado dónde ponerlo:
+- Ver el modo backend.
+- Cargar la empresa demo por slug `cooper-t-smith`.
+- Llenar automáticamente el `companyId`.
+- Probar una captura GPS contra Supabase.
+- Ver el resultado de sincronización.
 
-- Herramientas internas.
-- Panel backend GPS.
-- Vista de diagnóstico.
-- Modo desarrollo.
+## Requisito
 
-## Qué permite probar después
+Primero deben existir variables reales:
 
-- Leer modo backend.
-- Escribir companyId.
-- Enviar una captura GPS demo.
-- Ver resultado de Supabase.
-- Confirmar si no hay variables configuradas.
+VITE_SUPABASE_URL
 
-## Siguiente paso
+VITE_SUPABASE_ANON_KEY
 
-Montarlo dentro de una sección interna, no en el flujo principal de operadores.
+Y el schema debe estar ejecutado en Supabase.
 
-El texto visible debe dejar claro que es herramienta interna.
+## Importante
+
+No aparece en la demo normal.
+
+No afecta el flujo principal.
+
+Es una herramienta interna.
