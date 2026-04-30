@@ -6,6 +6,7 @@ import { AplomoDeviceDetailPanel } from "./AplomoDeviceDetailPanel.js";
 import { AplomoDeviceTimelinePanel } from "./AplomoDeviceTimelinePanel.js";
 import { AplomoIndustrialIntegrationPanel } from "./AplomoIndustrialIntegrationPanel.js";
 import { AplomoOperationalAlertsPanel } from "./AplomoOperationalAlertsPanel.js";
+import { AplomoOperationalScorePanel } from "./AplomoOperationalScorePanel.js";
 import { AplomoOperationsAdminPanel } from "./AplomoOperationsAdminPanel.js";
 import { AplomoOperationsMapPanel } from "./AplomoOperationsMapPanel.js";
 import { AplomoOperationsRuntimeProvider } from "./AplomoOperationsRuntime.js";
@@ -98,6 +99,7 @@ function AplomoInternalToolsShell() {
           </button>
 
           <AplomoOperationsMapPanel />
+          <AplomoOperationalScorePanel />
           <AplomoOperationalAlertsPanel />
           <AplomoDeviceDetailPanel />
           <AplomoDeviceTimelinePanel />
