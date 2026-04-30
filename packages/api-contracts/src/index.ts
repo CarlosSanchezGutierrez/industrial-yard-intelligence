@@ -19,3 +19,4 @@ export * from "./aplomoDataInteroperabilityContracts.js";
 export * from "./aplomoSaasDataPlatformContracts.js";
 export * from "./aplomoSaasAccessContracts.js";
 export * from "./aplomoPlatformCapabilityContracts.js";
+export * from "./aplomoSchemaGovernanceContracts.js";
