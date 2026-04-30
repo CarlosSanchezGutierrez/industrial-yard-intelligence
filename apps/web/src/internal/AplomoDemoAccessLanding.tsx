@@ -95,19 +95,6 @@ export function AplomoDemoAccessLanding() {
             <div style={{ marginTop: 14, color: "#475569", fontSize: 13 }}>{status}</div>
           </aside>
         </div>
-        <section style={{ marginTop: 34 }}>
-          <h2 style={{ fontSize: 24, margin: "0 0 14px" }}>Tipos de cuenta demo</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
-            {APLOMO_DEMO_ROLE_ACCOUNTS.map((account) => (
-              <button key={account.accountKey} type="button" onClick={() => setSelectedEmail(account.email)} style={{ textAlign: "left", border: selectedEmail === account.email ? "2px solid #38bdf8" : "1px solid rgba(148,163,184,.35)", borderRadius: 18, padding: 16, background: selectedEmail === account.email ? "rgba(14,165,233,.16)" : "rgba(15,23,42,.78)", color: "#f8fafc", cursor: "pointer" }}>
-                <strong>{account.displayName}</strong>
-                <div style={{ color: "#bae6fd", fontSize: 12, fontWeight: 900, marginTop: 4 }}>{account.accountScope === "platform" ? account.platformRole : account.tenantRole}</div>
-                <div style={{ color: "#cbd5e1", fontSize: 13, lineHeight: 1.5, marginTop: 8 }}>{account.description}</div>
-                <div style={{ color: "#94a3b8", fontSize: 12, marginTop: 10 }}>{account.email}</div>
-              </button>
-            ))}
-          </div>
-        </section>
       </section>
     </main>
   );

@@ -1,8 +1,10 @@
 # Aplomo Demo Login Landing
 
-Landing inicial para acceso demo por roles.
+Landing inicial estable para acceso demo por roles.
 
-Ruta: /
+Rutas cubiertas por el gate de entrada: /, /login, /demo, /welcome, /intro, /start, /onboarding, /presentation, /presentacion, /inicio.
+
+Rutas de app real: /aplomo-admin, /admin, /app.
 
 Contrasena demo recomendada local: AplomoDemo-2026!
 
