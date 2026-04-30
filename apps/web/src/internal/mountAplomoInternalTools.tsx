@@ -1,3 +1,4 @@
+import { isolateAplomoInternalConsole } from "./aplomoInternalConsoleIsolation.js";
 import { AplomoTenantInvitePanel } from "./AplomoTenantInvitePanel.js";
 import { AplomoTenantAdminPanel } from "./AplomoTenantAdminPanel.js";
 import { AplomoSupabaseLiveMapPanel } from "./AplomoSupabaseLiveMapPanel.js";
@@ -146,6 +147,7 @@ export const mountAplomoInternalTools = (): void => {
 
     const host = document.createElement("div");
     host.id = hostId;
+    isolateAplomoInternalConsole(host);
     document.body.appendChild(host);
 
     createRoot(host).render(<AplomoInternalToolsShell />);
