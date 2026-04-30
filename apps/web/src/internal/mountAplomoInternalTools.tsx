@@ -1,3 +1,4 @@
+import { AplomoRouteScopedPanel } from "./AplomoRouteScopedPanel.js";
 import { AplomoSaasNavigationPanel } from "./AplomoSaasNavigationPanel.js";
 import { shouldMountAplomoSaasRoute } from "./aplomoSaasRoutes.js";
 import { isolateAplomoInternalConsole } from "./aplomoInternalConsoleIsolation.js";
@@ -119,21 +120,37 @@ function AplomoInternalToolsShell() {
           </button>
 
           <AplomoSaasNavigationPanel />
-          <AplomoSupabaseMvpPanel />
-          <AplomoSupabaseGpsCapturePanel />
-          <AplomoSupabaseLiveMapPanel />
-          <AplomoTenantAdminPanel />
-          <AplomoTenantInvitePanel />
-          <AplomoOperationsMapPanel />
+          <AplomoRouteScopedPanel panelId="supabase_mvp">
+            <AplomoSupabaseMvpPanel />
+          </AplomoRouteScopedPanel>
+          <AplomoRouteScopedPanel panelId="gps_capture">
+            <AplomoSupabaseGpsCapturePanel />
+          </AplomoRouteScopedPanel>
+          <AplomoRouteScopedPanel panelId="live_map">
+            <AplomoSupabaseLiveMapPanel />
+          </AplomoRouteScopedPanel>
+          <AplomoRouteScopedPanel panelId="tenant_admin">
+            <AplomoTenantAdminPanel />
+          </AplomoRouteScopedPanel>
+          <AplomoRouteScopedPanel panelId="tenant_invite">
+            <AplomoTenantInvitePanel />
+          </AplomoRouteScopedPanel>
+          <AplomoRouteScopedPanel panelId="operations_map">
+            <AplomoOperationsMapPanel />
+          </AplomoRouteScopedPanel>
           <AplomoOperationalScorePanel />
-          <AplomoOperationalAlertsPanel />
+          <AplomoRouteScopedPanel panelId="operational_intelligence">
+            <AplomoOperationalAlertsPanel />
+          </AplomoRouteScopedPanel>
           <AplomoDataPlatformReadinessPanel />
           <AplomoGovernedDataExportPanel />
           <AplomoDeviceDetailPanel />
           <AplomoDeviceTimelinePanel />
           <AplomoIndustrialIntegrationPanel />
           <AplomoOperationsAdminPanel />
-          <AplomoCloudSyncDevPanel />
+          <AplomoRouteScopedPanel panelId="cloud_sync_dev">
+            <AplomoCloudSyncDevPanel />
+          </AplomoRouteScopedPanel>
         </div>
       </div>
     </AplomoOperationsRuntimeProvider>
