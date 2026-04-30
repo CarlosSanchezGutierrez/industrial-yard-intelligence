@@ -15,6 +15,7 @@
     "@iyi/design-tokens": "workspace:*",
     "@iyi/kernel": "workspace:*",
     "@iyi/seed-data": "workspace:*",
+    "@iyi/sync-core": "workspace:^",
     "@iyi/sync-protocol": "workspace:*",
     "@supabase/supabase-js": "^2.105.1",
     "leaflet": "^1.9.4",

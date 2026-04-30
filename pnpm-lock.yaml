@@ -100,6 +100,9 @@ importers:
       '@iyi/seed-data':
         specifier: workspace:*
         version: link:../../packages/seed-data
+      '@iyi/sync-core':
+        specifier: workspace:^
+        version: link:../../packages/sync-core
       '@iyi/sync-protocol':
         specifier: workspace:*
         version: link:../../packages/sync-protocol

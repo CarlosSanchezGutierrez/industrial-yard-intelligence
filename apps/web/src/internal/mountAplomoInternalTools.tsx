@@ -2,6 +2,7 @@ import { useState, type CSSProperties } from "react";
 import { createRoot } from "react-dom/client";
 
 import { AplomoCloudSyncDevPanel } from "./AplomoCloudSyncDevPanel.js";
+import { AplomoOperationsAdminPanel } from "./AplomoOperationsAdminPanel.js";
 
 const hostId = "aplomo-internal-tools-root";
 const storageKey = "aplomo_internal_tools";
@@ -9,22 +10,25 @@ const storageKey = "aplomo_internal_tools";
 const styles = {
   host: {
     position: "fixed",
-    right: 16,
-    bottom: 16,
+    inset: 16,
     zIndex: 2147483647,
-    width: "min(440px, calc(100vw - 32px))",
-    maxHeight: "calc(100dvh - 32px)",
     overflow: "auto",
+    pointerEvents: "auto",
+  },
+  shell: {
+    display: "grid",
+    gap: 14,
+    maxWidth: 1280,
+    margin: "0 auto",
   },
   closeButton: {
     width: "100%",
-    marginBottom: 8,
     border: "1px solid rgba(148, 163, 184, 0.32)",
     borderRadius: 12,
-    padding: "9px 12px",
+    padding: "10px 12px",
     background: "rgba(2, 6, 23, 0.96)",
     color: "#cbd5e1",
-    fontWeight: 700,
+    fontWeight: 800,
     cursor: "pointer",
   },
 } satisfies Record<string, CSSProperties>;
@@ -74,18 +78,21 @@ function AplomoInternalToolsShell() {
 
   return (
     <div style={styles.host}>
-      <button
-        type="button"
-        style={styles.closeButton}
-        onClick={() => {
-          writeStoredFlag(false);
-          setIsOpen(false);
-        }}
-      >
-        Cerrar herramientas internas
-      </button>
+      <div style={styles.shell}>
+        <button
+          type="button"
+          style={styles.closeButton}
+          onClick={() => {
+            writeStoredFlag(false);
+            setIsOpen(false);
+          }}
+        >
+          Cerrar herramientas internas
+        </button>
 
-      <AplomoCloudSyncDevPanel />
+        <AplomoOperationsAdminPanel />
+        <AplomoCloudSyncDevPanel />
+      </div>
     </div>
   );
 }
