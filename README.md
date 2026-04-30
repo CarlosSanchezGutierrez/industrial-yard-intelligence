@@ -1,366 +1,164 @@
-# Industrial Yard Intelligence
+# Aplomo Systems
 
-Industrial Yard Intelligence is a local-first industrial SaaS platform for spatial yard operations, designed for ports, terminals, industrial yards, bulk material storage facilities, and heavy logistics environments.
+Software para patios industriales.
 
-The initial tenant and business case is Cooper/T. Smith, but the platform is designed to be multi-tenant, configurable, and reusable across industrial operations.
+Aplomo Systems es una consola visual para controlar patios, materiales, GPS, evidencia y operaciones en campo.
 
-## Product Vision
+El primer caso de uso está enfocado en Cooper/T. Smith. La visión a largo plazo es convertirlo en una plataforma SaaS industrial para puertos, cementeras, minería, construcción, patios ferroviarios, acereras, canteras, logística pesada e industria física.
 
-This is not a GPS app, a simple map, an ERP, or a traditional WMS.
+Sitio público:
 
-It is an Industrial Spatial Operations Platform that models industrial yards as living spatial systems.
+https://aplomosystems.com
 
-The core truth of the system is:
+## Problema
 
-Entity + Geometry + State + Event + Evidence + Validation + Audit + Measurement Source + Confidence Level
+En patios industriales, mucha información vive en registros manuales, mensajes, fotos aisladas y memoria del personal.
 
-The map is the visual interface. The system of record is the operational event and spatial data model.
+Eso provoca:
 
-## Core Capabilities
+- Incertidumbre sobre ubicación de materiales.
+- Falta de trazabilidad.
+- Registros incompletos.
+- Dificultad para delimitar zonas.
+- Pérdida de tiempo buscando información.
+- Poca visibilidad entre campo, supervisión y administración.
 
-- Yard and terminal configuration
-- Spatial map and GIS-ready layers
-- Materials and stockpile registry
-- Equipment and infrastructure tracking
-- Movement/event logging
-- Evidence and file attachments
-- Validation workflow
-- Audit log
-- Offline-first mobile workflows
-- Local edge server operation
-- Local network synchronization
-- Scenario simulation
-- Recommendation engine
-- KPI dashboard
-- Future professional measurement integrations
+## Solución
 
-## Target Architecture
+Aplomo busca convertir la operación física en datos útiles:
 
-Cloud SaaS Control Plane  
-↓  
-Edge Local Server per terminal  
-↓  
-Offline mobile apps  
-↓  
-Future measurement sources: GNSS RTK, GPS industrial, drone RTK/PPK, photogrammetry, LiDAR, total station, GeoTIFF, CAD/GIS, scales, and sensors.
+- Mapa.
+- GPS.
+- Puntos.
+- Perímetros.
+- Materiales.
+- Evidencia.
+- Responsables.
+- Historial.
+- Capturas de campo.
+- Revisión por supervisión.
 
-## Initial Technical Direction
+## MVP actual
 
-Potential stack:
+El MVP web ya permite demostrar:
 
-- React + TypeScript
-- Vite
-- Tailwind CSS
-- MapLibre GL
-- Capacitor
-- Node.js + TypeScript
-- Fastify or NestJS
-- PostgreSQL + PostGIS
-- SQLite for offline storage
-- GeoJSON as core spatial interchange format
+- Pantalla inicial.
+- Consola operativa.
+- Mapa.
+- GPS desde navegador.
+- Captura de puntos.
+- Dibujo de perímetros.
+- Materiales y registros.
+- Simulación de campo y supervisor.
+- Persistencia local.
+- Deploy público en Vercel.
+- Dominio propio.
+- Base técnica modular con TypeScript.
 
-Final technology choices must be justified before implementation.
+## Estado real
 
-## Working Principles
+El proyecto ya tiene una base funcional para demo.
 
-- Do not treat this as a demo.
-- Do not hardcode business data into UI components.
-- Do not assume unconfirmed operational facts.
-- Mark simulated data explicitly.
-- Keep business logic out of UI components.
-- Prefer configuration over hardcoding.
-- Design for offline/local-first operation.
-- Design for future SaaS multi-tenancy.
-- Keep every step small, reversible, and verifiable.
+Todavía no debe venderse como sistema final cerrado. Lo que sigue es:
 
-## Status
+- Backend público.
+- Base de datos cloud.
+- Autenticación real.
+- Usuarios, roles y permisos.
+- Evidencia con fotos y archivos.
+- Sincronización real.
+- Mejor experiencia móvil.
+- Piloto con Cooper/T. Smith.
 
-Early product architecture phase.
+## Arquitectura
 
-Current Cooper/T. Smith data is treated as seed/simulated configuration unless explicitly confirmed.
+El proyecto está organizado como monorepo con pnpm y TypeScript.
 
-## Local stack
+Estructura principal:
 
-Start the full local stack on Windows:
+apps/
+  web/
+  api/
+  edge/
 
-pnpm dev:stack:windows
+packages/
+  kernel/
+  design-tokens/
+  seed-data/
+  audit/
+  domain/
+  media/
+  db/
+  spatial/
+  sync-protocol/
+  api-contracts/
+  sync-core/
 
-Then run runtime smoke checks:
+## Tecnologías
 
-pnpm smoke:runtime
+- React.
+- TypeScript.
+- Vite.
+- pnpm.
+- Leaflet.
+- OpenStreetMap.
+- Geolocation API del navegador.
+- Persistencia local.
+- Node/TypeScript para API local.
+- Vercel para despliegue web.
 
-Main services:
+## Comandos
 
-- API: http://localhost:8788
-- Edge: http://localhost:8787
-- Web: Vite dev server
-## Architecture readiness
+Instalar dependencias:
 
-Run the architecture skeleton checklist with:
+pnpm install
 
-pnpm architecture:check
+Build web:
 
-This validates required v1 files, route markers, smoke scripts and docs.
-## Architecture v1 documents
+pnpm --filter @iyi/web... build
 
-Core architecture documents:
+Typecheck:
 
-- `docs/ARCHITECTURE_V1_BLUEPRINT.md`
-- `docs/ARCHITECTURE_V1_PHASE_GATE.md`
-- `docs/ARCHITECTURE_V1_ROADMAP.md`
-- `docs/ARCHITECTURE_V1_READINESS.md`
+pnpm typecheck
 
-Architecture decision records live under:
+Correr web local:
 
-- `docs/adr/`
-## Architecture diagrams
+pnpm --filter @iyi/web dev
 
-Architecture v1 diagrams:
-
-`docs/ARCHITECTURE_V1_DIAGRAMS.md`
-## Demo operator
-
-Run the v1 demo operator guide with:
-
-pnpm demo:operator
-
-Docs:
-
-- `docs/DEMO_OPERATOR_V1.md`
-- `docs/INVESTOR_TECHNICAL_NARRATIVE.md`
-## Architecture v1 status
-
-Run:
-
-pnpm architecture:status
-
-Status document:
-
-`docs/ARCHITECTURE_V1_STATUS.md`
-## Architecture v1 final gate
-
-Run:
-
-pnpm architecture:gate
-
-This validates the local v1 skeleton before demo/incubator presentation.
-## Architecture v1 runtime gate
-
-After starting the local stack:
+Stack local:
 
 pnpm dev:stack:windows
-pnpm architecture:runtime
 
-This validates the live API, Edge and sync runtime paths.
-## Architecture v1 manifest
+## Vercel
 
-Run:
+Configuración correcta:
 
-pnpm architecture:manifest
+- Root Directory: ./
+- Framework Preset: Vite
+- Install Command: pnpm install --frozen-lockfile
+- Build Command: pnpm --filter @iyi/web... build
+- Output Directory: apps/web/dist
 
-Document:
+El build con tres puntos es importante:
 
-`docs/ARCHITECTURE_V1_MANIFEST.md`
-## Architecture v1 closure
+pnpm --filter @iyi/web... build
 
-Run:
+Eso permite compilar también dependencias internas del monorepo.
 
-pnpm architecture:close
+## Documentación
 
-Document:
+La documentación principal está en docs/.
 
-`docs/ARCHITECTURE_V1_CLOSURE.md`
-## Phase 2 demo polish
+Archivos útiles:
 
-Phase 2 starts with cockpit demo polish.
+- docs/APLOMO-PRESENTATION-PACK.md
+- docs/APLOMO-ONE-PAGER.md
+- docs/APLOMO-TECHNICAL-CONTINUITY.md
+- docs/DEMO-APLOMO-COOPER.md
+- docs/QA-APLOMO-MVP.md
+- docs/APLOMO-REPO-INDEX.md
+- docs/APLOMO-STATUS.md
 
-Document:
+## Frase guía
 
-`docs/PHASE_2_DEMO_POLISH.md`
-
-First UI component:
-
-`apps/web/src/components/DemoCommandCenter.tsx`
-## Phase 2 cockpit navigation
-
-The web cockpit includes a guided demo navigation panel:
-
-`apps/web/src/components/DemoNavigationPanel.tsx`
-## Phase 2 operator workflow
-
-The cockpit includes an operator workflow progress panel:
-
-`apps/web/src/components/OperatorWorkflowProgressPanel.tsx`
-## Phase 2 runtime status
-
-The cockpit includes live local stack status cards:
-
-`apps/web/src/components/RuntimeConnectionStatusPanel.tsx`
-## Phase 2 demo data reset
-
-The cockpit includes a Cloud API demo reset panel:
-
-`apps/web/src/components/DemoDataResetPanel.tsx`
-## Phase 2 industrial value snapshot
-
-The cockpit includes an executive value panel:
-
-`apps/web/src/components/IndustrialValueSnapshotPanel.tsx`
-## Phase 2 stockpile demo summary
-
-The cockpit includes stockpile demo summary cards:
-
-`apps/web/src/components/StockpileDemoSummaryPanel.tsx`
-## Phase 2 audit timeline story
-
-The cockpit includes a clearer audit timeline panel:
-
-`apps/web/src/components/AuditTimelineStoryPanel.tsx`
-## Phase 2 sync demo story
-
-The cockpit includes a guided Edge-to-Cloud sync demo panel:
-
-`apps/web/src/components/SyncDemoStoryPanel.tsx`
-## Phase 2 yard operations map
-
-The cockpit includes a conceptual yard operations map:
-
-`apps/web/src/components/YardOperationsMapPanel.tsx`
-## Phase 2 demo polish gate
-
-Run:
-
-pnpm phase2:check
-
-Document:
-
-docs/PHASE_2_DEMO_POLISH_GATE.md
-## Phase 2 runtime smoke
-
-After starting the local stack:
-
-pnpm phase2:runtime
-
-Document:
-
-docs/PHASE_2_DEMO_RUNTIME_SMOKE.md
-## Phase 2 demo polish status
-
-Run:
-
-pnpm phase2:status
-
-Document:
-
-docs/PHASE_2_DEMO_POLISH_STATUS.md
-## Phase 2 cockpit section navigation
-
-The cockpit includes quick section navigation:
-
-`apps/web/src/components/CockpitSectionNavigationPanel.tsx`
-## Phase 2 presenter script
-
-Run:
-
-pnpm phase2:presenter
-
-Document:
-
-docs/PHASE_2_DEMO_PRESENTER_SCRIPT.md
-## Phase 2 demo polish closure
-
-Run:
-
-pnpm phase2:close
-
-Document:
-
-docs/PHASE_2_DEMO_POLISH_CLOSURE.md
-## Phase 2.5 premium UI shell
-
-Document:
-
-`docs/PHASE_2_5_PREMIUM_UI.md`
-
-Main files:
-
-- `apps/web/src/components/PremiumCockpitHero.tsx`
-- `apps/web/src/styles/premium-cockpit.css`
-## Phase 2.5 premium full cockpit
-
-Document:
-
-`docs/PHASE_2_5_PREMIUM_FULL_COCKPIT.md`
-
-Main files:
-
-- `apps/web/src/components/PremiumCockpitCommandDeck.tsx`
-- `apps/web/src/components/PremiumGpsPreviewPanel.tsx`
-- `apps/web/src/styles/premium-experience.css`
-## Phase 2.5 premium tabs
-
-Document:
-
-`docs/PHASE_2_5_PREMIUM_TABS.md`
-
-Main files:
-
-- `apps/web/src/components/PremiumCockpitTabs.tsx`
-- `apps/web/src/styles/premium-tabs.css`
-## Phase 2.5 deep premium UX pass
-
-Document:
-
-`docs/PHASE_2_5_DEEP_PREMIUM_UX.md`
-
-Main files:
-
-- `apps/web/src/components/PremiumUxFrame.tsx`
-- `apps/web/src/styles/premium-ux-depth.css`
-## Phase 2.5 dark product UX
-
-Document:
-
-`docs/PHASE_2_5_DARK_PRODUCT_UX.md`
-
-Main file:
-
-`apps/web/src/styles/premium-dark-product.css`
-## Phase 2.5 dark no-scroll UX
-
-Document:
-
-`docs/PHASE_2_5_DARK_NO_SCROLL_UX.md`
-
-Main CSS:
-
-`apps/web/src/styles/dark-product-final.css`
-## Namiki product shell
-
-Document:
-
-`docs/NAMIKI_PRODUCT_SHELL.md`
-
-Main files:
-
-- `apps/web/src/components/NamikiProductShell.tsx`
-- `apps/web/src/styles/namiki-product-shell.css`
-## Namiki operational product shell
-
-Document:
-
-`docs/NAMIKI_PRODUCT_SHELL.md`
-
-Main files:
-
-- `apps/web/src/components/NamikiProductShell.tsx`
-- `apps/web/src/styles/zz-namiki-black-operations.css`
-## Frontend surface implementation matrix
-
-Document:
-
-`docs/FRONTEND_SURFACE_IMPLEMENTATION_MATRIX.md`
-
-Purpose:
-
-Converts the frontend surface audit into a concrete implementation plan for showing existing backend/frontend capabilities in the product UI.
+Aplomo Systems convierte patios industriales en operaciones digitales trazables.
