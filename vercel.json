@@ -1,12 +1,28 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter @iyi/web... build",
-  "outputDirectory": "apps/web/dist",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+    "$schema":  "https://openapi.vercel.sh/vercel.json",
+    "installCommand":  "pnpm install --frozen-lockfile",
+    "buildCommand":  "pnpm --filter @iyi/web... build",
+    "outputDirectory":  "apps/web/dist",
+    "rewrites":  [
+                     {
+                         "source":  "/(.*)",
+                         "destination":  "/index.html"
+                     },
+                     {
+                         "source":  "/app",
+                         "destination":  "/index.html"
+                     },
+                     {
+                         "source":  "/app/:path*",
+                         "destination":  "/index.html"
+                     },
+                     {
+                         "source":  "/aplomo-admin",
+                         "destination":  "/index.html"
+                     },
+                     {
+                         "source":  "/dev-tools",
+                         "destination":  "/index.html"
+                     }
+                 ]
 }
