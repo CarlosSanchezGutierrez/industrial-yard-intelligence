@@ -198,6 +198,12 @@ importers:
 
   packages/sync-core:
     dependencies:
+      '@iyi/api-contracts':
+        specifier: workspace:^
+        version: link:../api-contracts
+      '@iyi/domain':
+        specifier: workspace:^
+        version: link:../domain
       '@iyi/kernel':
         specifier: workspace:*
         version: link:../kernel

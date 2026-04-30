@@ -18,6 +18,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@iyi/api-contracts": "workspace:^",
+    "@iyi/domain": "workspace:^",
     "@iyi/kernel": "workspace:*",
     "@iyi/sync-protocol": "workspace:*"
   }
